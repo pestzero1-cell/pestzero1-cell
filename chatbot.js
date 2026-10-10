@@ -32,7 +32,7 @@
     '.hb-links a{display:inline-block;background:var(--card,#f3f8f5);border:1px solid var(--line,#dfe8e3);color:var(--brand,#12408f);border-radius:999px;padding:5px 11px;font-size:.82rem;font-weight:700;text-decoration:none}' +
     '.hb-links a:hover{border-color:var(--brand,#12408f)}' +
     '.hb-links a.call{background:var(--accent,#e5531d);color:#fff;border-color:transparent}.hb-links a.kk{background:#fee500;color:#191600;border-color:transparent}' +
-    '.hb-chips{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;padding:8px 14px 2px;background:var(--card,#f3f8f5);scrollbar-width:thin}.hb-chips:empty{display:none}' +
+    '.hb-chips{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;padding:8px 14px 2px;background:var(--card,#f3f8f5);scrollbar-width:thin}.hb-chips:empty{display:none}.hb-chips.wrap{flex-wrap:wrap;overflow-x:hidden;max-height:132px;overflow-y:auto}' +
     '.hb-chips button{white-space:nowrap;flex:none;background:var(--bg,#fff);border:1px solid var(--brand,#12408f);color:var(--brand,#12408f);border-radius:999px;padding:6px 12px;font:600 .82rem/1.2 inherit;font-family:inherit;cursor:pointer}' +
     '.hb-chips button:hover{background:var(--brand,#12408f);color:var(--on,#fff)}' +
     '.hb-form{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line,#dfe8e3);background:var(--bg,#fff)}' +
@@ -81,7 +81,8 @@
     scroll();
     return d;
   }
-  function setChips(list) {
+  function setChips(list, wrap) {
+    chips.classList.toggle("wrap", !!wrap);
     chips.innerHTML = (list || []).map(function (t) { return '<button type="button">' + esc(t) + "</button>"; }).join("");
     chips.scrollLeft = 0;
   }
@@ -168,6 +169,8 @@
     }
     if (/견적|얼마|가격|비용|금액|요금|단가/.test(text) && !findIntent(text)) { startEstimate(); return; }
     if (/^(견적알아보기|다른견적)$/.test(q)) { startEstimate(); return; }
+    var pest = (B.pests || []).filter(function (p) { return norm(p.label) === q; })[0];
+    if (pest) { var pit = B.intents.filter(function (i) { return i.id === pest.intent; })[0]; if (pit) { handleIntent(pit); return; } }
     var hit = findIntent(text);
     if (/견적알아보기|다른견적/.test(q)) { startEstimate(); return; }
     if (hit) handleIntent(hit);
@@ -178,7 +181,12 @@
       '<a class="hb-bigcall" href="' + esc(TEL) + '">☎ 전문가 상담 연결 ' + esc(PHONE) + '</a><span class="hb-sub">모바일에서 누르면 바로 전화가 연결돼요</span>' +
       (KAKAO ? '<div class="hb-links"><a class="kk" href="' + esc(KAKAO) + '" target="_blank" rel="noopener noreferrer">카카오톡으로 사진 보내기</a></div>' : "") + "</div>";
   }
+  function pestChips() { return (B.pests || []).map(function (p) { return p.label; }); }
   function handleIntent(it) {
+    if (it.id === "pests" && B.pests) {
+      botSay(rich(it.answer), function () { setChips(pestChips(), true); });
+      return;
+    }
     if (it.expert) {
       botSay(rich(it.answer) + linkHtml(it.links, false) + expertBox(), function () { setChips(B.chips.filter(function (c) { return norm(c) !== norm(it.label); }).slice(0, 5)); });
       return;
