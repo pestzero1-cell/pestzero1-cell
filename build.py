@@ -219,6 +219,14 @@ def kakao_fab():
     return '<a class="kk kkfab" href="%s" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#191600" d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.8 5.3 4.6 6.7l-1 3.6c-.1.3.2.5.5.4l4.2-2.8c.6.1 1.1.1 1.7.1 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg>%s</a>' % (e(u), e(S.get("kakaoLabel", "카카오톡 상담")))
 
 
+def bot_scripts(depth):
+    """정적 페이지에 자동응답 도우미를 붙입니다. (bot.enabled 가 true 일 때만)"""
+    if not (S.get("bot") or {}).get("enabled", True) or not S.get("bot"):
+        return ""
+    r = rel(depth)
+    return '<script>window.SITE_BASE="%s";</script><script src="%sassets/bot-data.js"></script><script src="%schatbot.js" defer></script>' % (r, r, r)
+
+
 def crumbs(items, depth):
     return '<nav class="crumbs" aria-label="현재 위치">%s</nav>' % " › ".join(
         '<a href="%s">%s</a>' % (rel(depth) + h, e(t)) if h else "<span>%s</span>" % e(t) for t, h in items)
@@ -258,6 +266,7 @@ def build_section_page(key, sec_title, d, items, idx):
 </html>
 """ % (crumbs([(BRAND, "index.html"), (sec_title, None), (label, None)], depth), e(sec_title), e(sec_title), side, e(label), body, foot,
        kakao_fab(), e(re.sub(r"[^0-9]", "", S["phone"])), e(S["phone"]))
+    page = page.replace("</body>", bot_scripts(depth) + "\n</body>")
     out = ROOT / d / it["slug"]
     out.mkdir(parents=True, exist_ok=True)
     (out / "index.html").write_text(page, encoding="utf-8")
@@ -364,6 +373,7 @@ def build_post(i, p):
 """ % (crumbs([(BRAND, "index.html"), ("현장일지", "posts/"), (p["title"], None)], depth), e(p["title"]), sample, e(p["date"]), e(p["date"].replace("-", ".")), tags,
        ('<img class="phero" src="%s" alt="%s">' % (e(img_src(p["image"], depth)), e(p["title"]))) if p["image"] else "", body,
        e(BRAND), e(re.sub(r"[^0-9]", "", S["phone"])), e(S["phone"]), kakao_fab().replace("kkfab", ""), blogs, pn, foot)
+    page = page.replace("</body>", bot_scripts(depth) + "\n</body>")
     out = ROOT / "posts" / p["slug"]
     out.mkdir(parents=True, exist_ok=True)
     (out / "index.html").write_text(page, encoding="utf-8")
@@ -387,6 +397,7 @@ def build_posts_index():
 </body>
 </html>
 """ % (crumbs([(BRAND, "index.html"), ("현장일지", None)], depth), cards, foot)
+    page = page.replace("</body>", bot_scripts(depth) + "\n</body>")
     (pdir).mkdir(exist_ok=True)
     (pdir / "index.html").write_text(page, encoding="utf-8")
 
@@ -400,6 +411,12 @@ def build_rss():
     (pdir / "rss.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel><title>%s 현장일지</title><link>%s/posts/</link><description>방역·하수구·배관 현장일지</description><language>ko</language>%s</channel></rss>\n' % (
             e(BRAND), SITE_URL, items), encoding="utf-8")
+
+
+def build_bot_data():
+    data = {"phone": S["phone"], "kakaoUrl": S.get("kakaoUrl", ""), "bot": S.get("bot")}
+    (ROOT / "assets").mkdir(exist_ok=True)
+    (ROOT / "assets" / "bot-data.js").write_text("// build.py 가 자동으로 만드는 파일입니다. 직접 고치지 마세요.\nwindow.SITE_BOT=%s;\n" % json.dumps(data, ensure_ascii=False), encoding="utf-8")
 
 
 def build_posts_data():
@@ -487,6 +504,7 @@ def main():
         urls.append((build_post(i, p), "0.6"))
     build_rss()
     build_posts_data()
+    build_bot_data()
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n%s</urlset>\n' % "".join(
         "<url><loc>%s/%s</loc><lastmod>%s</lastmod><priority>%s</priority></url>\n" % (SITE_URL, u, TODAY, pr) for u, pr in urls)
     (ROOT / "sitemap.xml").write_text(sm, encoding="utf-8")
