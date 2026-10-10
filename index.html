@@ -46,6 +46,15 @@ form{display:grid;gap:12px;max-width:520px}
 input,select,textarea{font:inherit;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg);width:100%}
 button{font:inherit;border:0;cursor:pointer}
 .note{font-size:.85rem;color:var(--muted)}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:700}
+details p{margin-top:8px;color:var(--muted)}
+.why{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.why div{padding:20px;border-radius:16px;border:1px solid var(--line)}
+.why b{display:block;margin:6px 0 4px}
+.why span{color:var(--muted);font-size:.93rem}
+.area{display:flex;flex-wrap:wrap;gap:8px}
+.area span{border:1px solid var(--brand);color:var(--brand);border-radius:999px;padding:4px 14px;font-size:.9rem}
 footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-size:.88rem}
 .fab{position:fixed;right:16px;bottom:16px;z-index:20;box-shadow:0 6px 18px rgba(0,0,0,.25)}
 </style>
@@ -54,7 +63,7 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
 <header>
   <div class="wrap">
     <a class="logo" href="#top">PESTZERO</a>
-    <nav><a href="#services">서비스</a><a href="#process">진행순서</a><a href="#contact">문의</a></nav>
+    <nav><a href="#services">서비스</a><a href="#why">강점</a><a href="#faq">FAQ</a><a href="#process">진행순서</a><a href="#contact">문의</a></nav>
   </div>
 </header>
 
@@ -92,6 +101,19 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
     </div>
   </section>
 
+  <section id="why">
+    <div class="wrap">
+      <h2>왜 저희일까요</h2>
+      <p class="sub">작은 업체라서 가능한 방식입니다.</p>
+      <div class="why">
+        <div><span style="font-size:1.6rem">👤</span><b>사장이 직접 방문</b><span>상담부터 마무리까지 같은 사람이 책임집니다.</span></div>
+        <div><span style="font-size:1.6rem">💬</span><b>작업 전 설명</b><span>원인과 작업 범위, 비용을 먼저 말씀드립니다.</span></div>
+        <div><span style="font-size:1.6rem">🔁</span><b>원인부터 차단</b><span>겉만 치우지 않고 재발 경로를 함께 잡습니다.</span></div>
+        <div><span style="font-size:1.6rem">📞</span><b>사후 상담</b><span>작업 후 문제가 생기면 다시 연락 주세요.</span></div>
+      </div>
+    </div>
+  </section>
+
   <section id="process" style="background:var(--card)">
     <div class="wrap">
       <h2>진행 순서</h2>
@@ -105,10 +127,22 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
     </div>
   </section>
 
+  <section id="faq">
+    <div class="wrap">
+      <h2>자주 묻는 질문</h2>
+      <p class="sub">&nbsp;</p>
+      <details><summary>비용은 어떻게 정해지나요?</summary><p>현장 상태와 작업 범위에 따라 다릅니다. 사진이나 증상을 보내주시면 대략적인 견적을 먼저 안내해 드립니다.</p></details>
+      <details><summary>방역 후 집에 있어도 되나요?</summary><p>사용하는 약제와 공간에 따라 안내가 다릅니다. 작업 전에 환기 시간과 주의사항을 알려드립니다.</p></details>
+      <details><summary>하수구 냄새와 벌레가 같이 올라오는데요?</summary><p>배수구 트랩 상태와 배관 막힘이 원인인 경우가 많아, 배관 점검과 방역을 함께 진행하면 효과적입니다.</p></details>
+      <details><summary>급하게 오실 수 있나요?</summary><p>일정이 되는 대로 빠르게 방문합니다. 전화로 상황을 말씀해 주세요.</p></details>
+    </div>
+  </section>
+
   <section id="contact">
     <div class="wrap">
       <h2>문의하기</h2>
       <p class="sub">남겨주시면 확인 후 바로 연락드립니다.</p>
+      <div class="area" style="margin-bottom:20px"><!-- TODO: 실제 서비스 지역으로 교체 --><span>서비스 지역 입력 1</span><span>서비스 지역 입력 2</span></div>
       <form id="f">
         <select name="svc" aria-label="서비스">
           <option>방역 (홈로취케어)</option>
