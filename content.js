@@ -17,7 +17,12 @@ window.SITE = {
   company: { bizNo: "113-91-16219", mailOrderNo: "2014-서울구로-1298", address: "08233 서울 구로구 개봉동 455-7" },
   phone: "1661-6179",          // 표시용 (하이픈 가능)
   smsNumber: "16616179",        // 문자 문의 수신 번호 (숫자만)
-  blogUrl: "",                     // 네이버 블로그 주소. 비워두면 버튼 숨김
+  // 네이버 블로그: 서비스 카드(services[].blog)와 문의 영역 버튼에 연결됩니다. 비워두면 버튼 숨김
+  blogs: [
+    { label: "홈로취케어 블로그", url: "https://blog.naver.com/giberga1" },
+    { label: "헬로하수구 블로그", url: "https://blog.naver.com/hellodrain_number1" }
+  ],
+  blogUrl: "",
   kakaoUrl: "",                    // 카카오톡 채널 주소. 비워두면 버튼 숨김
 
   // 상단 메뉴: label=표시 이름, href=이동할 곳(#섹션 또는 주소)
@@ -1116,9 +1121,9 @@ window.SITE = {
   },
 
   services: [
-    { icon: "🐾", tag: "방역", name: "홈로취케어", image: "images/svc-pest.jpg",
+    { icon: "🐾", tag: "방역", name: "홈로취케어", image: "images/svc-pest.jpg", blog: "https://blog.naver.com/giberga1",
       items: ["바퀴벌레·개미·모기 등 해충 방제", "가정·상가·사무실 정기 방역", "배수구 해충 유입 차단 관리"] },
-    { icon: "🔧", tag: "배관", name: "헬로하수구", image: "images/svc-pipe.jpg",
+    { icon: "🔧", tag: "배관", name: "헬로하수구", image: "images/svc-pipe.jpg", blog: "https://blog.naver.com/hellodrain_number1",
       items: ["하수구·배수구 막힘 뚫음", "배관 누수·역류 원인 점검", "주방·욕실·베란다 배관 정비"] }
   ],
 

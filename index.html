@@ -157,7 +157,12 @@ header{position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px s
 .sl-dots button[aria-current=true]{background:#fff;width:26px;border-radius:6px}
 .sl-ctl{position:absolute;right:12px;bottom:6px;z-index:3;background:rgba(0,0,0,.35);color:#fff;border-radius:4px;padding:2px 8px;font-size:.78rem}
 @media(prefers-reduced-motion:reduce){.slide{transition:none}}
-.card.svc{padding:0;overflow:hidden}.card.svc>:not(.svc-img){margin-inline:24px}.card.svc ul{margin-bottom:24px;padding-left:42px}.card.svc .tag{margin-top:16px;align-self:flex-start}.svc-img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+.card.svc{padding:0;overflow:hidden}.card.svc>:not(.svc-img):not(.svc-link){margin-inline:24px}.card.svc ul{margin-bottom:24px;padding-left:42px}.card.svc .tag{margin-top:16px;align-self:flex-start}.svc-img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+.svc-link{position:relative;display:block;cursor:pointer}
+.svc-link:hover .svc-img{filter:brightness(.92)}
+.svc-badge{display:flex;align-items:center;justify-content:center;gap:8px;background:#03c75a;color:#fff;font-size:.95rem;font-weight:700;padding:10px 14px}
+.svc-badge b{background:#fff;color:#03c75a;border-radius:3px;width:20px;height:20px;display:inline-grid;place-items:center;font-size:.78rem}
+.svc-link:hover .svc-badge{background:#02a64b}
 .soon{padding:40px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
 .btn.cta{background:var(--accent);color:#fff}
 .btn{display:inline-block;padding:13px 26px;border-radius:999px;background:var(--brand);color:var(--on);font-weight:700;margin:4px}
@@ -256,7 +261,7 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
     '<div class="tiles">'+tiles+'</div></div></div>'+
 
   '<section id="services"><div class="wrap"><h2>서비스</h2><p class="sub">필요한 분야만 골라 맡기세요.</p><div class="grid">'+
-    list(S.services,function(x){return '<div class="card svc">'+(x.image?'<img class="svc-img" loading="lazy" src="'+e(x.image)+'" alt="'+e(x.name)+'">':'<div class="ico">'+e(x.icon)+'</div>')+'<span class="tag">'+e(x.tag)+'</span><h3>'+e(x.name)+'</h3><ul>'+list(x.items,function(i){return '<li>'+e(i)+'</li>'})+'</ul></div>'})+
+    list(S.services,function(x){var bl=x.blog&&/^https?:\/\//.test(x.blog)?x.blog:"";var im=x.image?'<img class="svc-img" loading="lazy" src="'+e(x.image)+'" alt="'+e(x.name)+'">':'<div class="ico">'+e(x.icon)+'</div>';return '<div class="card svc">'+(bl?'<a class="svc-link" href="'+e(bl)+'" target="_blank" rel="noopener noreferrer" aria-label="'+e(x.name)+' 네이버 블로그 새 창으로 열기">'+im+'<span class="svc-badge"><b>N</b> 네이버 블로그 바로가기 (클릭하면 새 창으로 열립니다) ↗</span></a>':im)+'<span class="tag">'+e(x.tag)+'</span><h3>'+e(x.name)+'</h3><ul>'+list(x.items,function(i){return '<li>'+e(i)+'</li>'})+'</ul>'+'</div>'})+
   '</div></div></section>'+
 
   ((S.about)?'<section id="about"><div class="wrap about"><aside class="about-side"><h2>'+e(S.about.title)+'</h2><div class="tabs" role="tablist"><button type="button" role="tab" data-tab="g" aria-selected="true">'+e(S.about.greeting.title)+'</button><button type="button" role="tab" data-tab="o" aria-selected="false">'+e(S.about.org.title)+'</button></div></aside>'+
@@ -290,7 +295,7 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
     '<button class="btn" type="submit">문자로 문의 보내기</button><p class="note">버튼을 누르면 휴대폰 문자 앱이 열립니다.</p></form>'+
     '<p style="margin-top:16px">'+
       (S.kakaoUrl?'<a class="btn ghost" href="'+e(S.kakaoUrl)+'" target="_blank" rel="noopener">카카오톡 상담</a>':'')+
-      (S.blogUrl?'<a class="btn ghost" href="'+e(S.blogUrl)+'" target="_blank" rel="noopener">블로그 보기</a>':'')+'</p>'+
+      list(S.blogs,function(b){return /^https?:\/\//.test(b.url)?'<a class="btn ghost" href="'+e(b.url)+'" target="_blank" rel="noopener noreferrer">'+e(b.label)+' ↗</a>':''})+(S.blogUrl?'<a class="btn ghost" href="'+e(S.blogUrl)+'" target="_blank" rel="noopener">블로그 보기</a>':'')+'</p>'+
   '</div></section></main>'+
 
   '<footer><div class="wrap"><b>'+e(S.pageTitle)+'</b><br>대표 '+e(S.owner)+' · 전화 <a href="'+e(tel)+'">'+e(S.phone)+'</a>'+(S.company?'<br>사업자등록번호 '+e(S.company.bizNo)+' · 통신판매업신고번호 '+e(S.company.mailOrderNo)+'<br>'+e(S.company.address):'')+'<br>© '+new Date().getFullYear()+' All rights reserved.</div></footer>'+
