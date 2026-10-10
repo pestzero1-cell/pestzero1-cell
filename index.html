@@ -198,6 +198,22 @@ header{position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px s
 .fabs{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:20;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
 .fabs .fab{position:static;margin:0}
 .fabs .kk{box-shadow:0 6px 18px rgba(0,0,0,.25);margin:0}
+.channels{margin-top:34px;padding-top:26px;border-top:1px solid var(--line)}
+.ch-title{font-size:.9rem;font-weight:700;color:var(--muted);margin-bottom:12px;max-width:none}
+.ch-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.ch{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:var(--bg);transition:transform .15s,box-shadow .15s,border-color .15s}
+a.ch:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.1)}
+@media(prefers-reduced-motion:reduce){.ch{transition:none}a.ch:hover{transform:none}}
+.ch-ic{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center}
+.ch-ic svg{width:24px;height:24px}
+.ch-tx{display:grid;gap:2px;min-width:0;flex:1}
+.ch-tx b{font-size:.98rem;color:var(--fg)}
+.ch-tx small{font-size:.8rem;color:var(--muted)}
+.ch-go{font-size:1.1rem;color:var(--muted)}
+.ch.kakao .ch-ic{background:#fee500;color:#191600}
+.ch.naver .ch-ic{background:#03c75a;color:#fff}
+a.ch.kakao:hover{border-color:#e6cf00}a.ch.naver:hover{border-color:#03c75a}
+.ch.off{opacity:.7;border-style:dashed;cursor:help}
 .soon{padding:40px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
 .btn.cta{background:var(--accent);color:#fff}
 .btn{display:inline-block;padding:13px 26px;border-radius:999px;background:var(--brand);color:var(--on);font-weight:700;margin:4px}
@@ -259,9 +275,18 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
   var tel="tel:"+String(S.phone||"").replace(/[^0-9+]/g,"");
   var sample=S.sampleMode?'<div class="sample">⚠ 예시 내용입니다 — content.js 에서 실제 내용으로 바꿔주세요</div>':"";
   var h=S.hero||{};
+
   var KK_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#191600" d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.8 5.3 4.6 6.7l-1 3.6c-.1.3.2.5.5.4l4.2-2.8c.6.1 1.1.1 1.7.1 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg>';
   var kkOk=/^https?:\/\//.test(S.kakaoUrl||"");
   var kkBtn=function(extra){return kkOk?'<a class="kk '+(extra||"")+'" href="'+e(S.kakaoUrl)+'" target="_blank" rel="noopener noreferrer">'+KK_ICON+e(S.kakaoLabel||"카카오톡 상담")+'</a>':(S.sampleMode?'<span class="kk off '+(extra||"")+'" title="content.js 의 kakaoUrl 에 카카오톡 채널 주소를 넣으면 연결됩니다">'+KK_ICON+'카카오톡 상담 (주소 입력 필요)</span>':'')};
+  var NV_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.3 3v9.3L7.7 3H3v18h4.7v-9.3L16.3 21H21V3z"/></svg>';
+  var chRow=function(cls,icon,title,sub,href,off){var inner='<span class="ch-ic">'+icon+'</span><span class="ch-tx"><b>'+title+'</b><small>'+sub+'</small></span><span class="ch-go" aria-hidden="true">'+(off?'':'↗')+'</span>';
+    return off?'<div class="ch '+cls+' off" title="content.js 의 kakaoUrl 에 카카오톡 채널 주소를 넣으면 연결됩니다">'+inner+'</div>':'<a class="ch '+cls+'" href="'+e(href)+'" target="_blank" rel="noopener noreferrer">'+inner+'</a>'};
+  var chItems=[];
+  if(kkOk)chItems.push(chRow("kakao",KK_ICON,e(S.kakaoLabel||"카카오톡 상담"),"채팅으로 빠르게 문의",S.kakaoUrl));
+  else if(S.sampleMode)chItems.push(chRow("kakao",KK_ICON,"카카오톡 상담","주소 입력 필요 (content.js)","",true));
+  (S.blogs||[]).forEach(function(b,i){if(/^https?:\/\//.test(b.url))chItems.push(chRow("naver",NV_ICON,e(b.label),i===0?"방역 · 소독 현장 기록":"하수구 · 배관 현장 기록",b.url))});
+  var channelsHtml=chItems.length?'<div class="channels"><p class="ch-title">다른 방법으로도 만나보세요</p><div class="ch-grid">'+chItems.join("")+'</div></div>':'';
 
   var P=window.POSTS||[];
   var dirSecs=[["about","회사소개"],["price","서비스단가표"],["system","서비스시스템"],["info","소독/해충정보"],["drain","하수구막힘 뚫음"]];
@@ -343,9 +368,7 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
     '<input name="name" placeholder="성함" required><input name="phone" type="tel" placeholder="연락처" required>'+
     '<textarea name="msg" rows="4" placeholder="지역과 증상을 간단히 적어주세요"></textarea>'+
     '<button class="btn" type="submit">문자로 문의 보내기</button><p class="note">버튼을 누르면 휴대폰 문자 앱이 열립니다.</p></form>'+
-    '<p style="margin-top:16px">'+
-      kkBtn()+' '+
-      list(S.blogs,function(b){return /^https?:\/\//.test(b.url)?'<a class="btn ghost" href="'+e(b.url)+'" target="_blank" rel="noopener noreferrer">'+e(b.label)+' ↗</a>':''})+(S.blogUrl?'<a class="btn ghost" href="'+e(S.blogUrl)+'" target="_blank" rel="noopener">블로그 보기</a>':'')+'</p>'+
+    channelsHtml+
   '</div></section></main>'+
 
   '<footer><div class="wrap"><b>'+e(S.pageTitle)+'</b><br>대표 '+e(S.owner)+' · 전화 <a href="'+e(tel)+'">'+e(S.phone)+'</a>'+(S.company?'<br>사업자등록번호 '+e(S.company.bizNo)+' · 통신판매업신고번호 '+e(S.company.mailOrderNo)+'<br>'+e(S.company.address):'')+'<br>© '+new Date().getFullYear()+' All rights reserved.</div></footer>'+
