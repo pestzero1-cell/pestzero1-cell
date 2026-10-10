@@ -214,6 +214,9 @@ a.ch:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.1)}
 .ch.naver .ch-ic{background:#03c75a;color:#fff}
 a.ch.kakao:hover{border-color:#e6cf00}a.ch.naver:hover{border-color:#03c75a}
 .ch.off{opacity:.7;border-style:dashed;cursor:help}
+.note.warn{color:#c8321e;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .note.warn{color:#ff8a70}}
+:root[data-theme=dark] .note.warn{color:#ff8a70}
 .soon{padding:40px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
 .btn.cta{background:var(--accent);color:#fff}
 .btn{display:inline-block;padding:13px 26px;border-radius:999px;background:var(--brand);color:var(--on);font-weight:700;margin:4px}
@@ -367,7 +370,7 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
     '<form id="f"><select name="svc" aria-label="서비스">'+list(S.contactOptions,function(o){return '<option>'+e(o)+'</option>'})+'</select>'+
     '<input name="name" placeholder="성함" required><input name="phone" type="tel" placeholder="연락처" required>'+
     '<textarea name="msg" rows="4" placeholder="지역과 증상을 간단히 적어주세요"></textarea>'+
-    '<button class="btn" type="submit">문자로 문의 보내기</button><p class="note">버튼을 누르면 휴대폰 문자 앱이 열립니다.</p></form>'+
+    '<button class="btn" type="submit">문자로 문의 보내기</button><p class="note" id="note">휴대폰에서 버튼을 누르면 문자 앱이 열립니다. 문자 문의 번호 <b>'+e(S.smsDisplay||S.smsNumber)+'</b></p></form>'+
     channelsHtml+
   '</div></section></main>'+
 
@@ -531,6 +534,10 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
     ev.preventDefault();
     var d=new FormData(ev.target);
     var body="["+d.get("svc")+"]\n성함: "+d.get("name")+"\n연락처: "+d.get("phone")+"\n"+(d.get("msg")||"");
+    var mobile=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&innerWidth<900);
+    var note=document.getElementById("note");
+    if(!mobile){note.innerHTML='컴퓨터에서는 문자 앱이 열리지 않습니다. <b>'+e(S.smsDisplay||S.smsNumber)+'</b> 로 문자를 보내시거나 전화 <b>'+e(S.phone)+'</b>, 카카오톡으로 문의해 주세요.';note.classList.add("warn");return}
+    note.textContent="문자 앱을 여는 중입니다. 열리지 않으면 "+(S.smsDisplay||S.smsNumber)+" 로 직접 보내 주세요.";
     location.href="sms:"+S.smsNumber+"?body="+encodeURIComponent(body);
   });
 })();
