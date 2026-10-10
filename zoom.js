@@ -25,6 +25,8 @@
   root.innerHTML = '<div class="zv-bar"><span class="zv-cap"></span><button type="button" data-a="out" aria-label="축소">−</button><button type="button" data-a="in" aria-label="확대">+</button><button type="button" data-a="close" aria-label="닫기">×</button></div><div class="zv-stage"><img alt=""></div><p class="zv-hint">두 손가락으로 확대·축소, 한 손가락으로 이동 · 두 번 누르면 확대</p>';
   document.body.appendChild(root);
   var stage = root.querySelector(".zv-stage"), img = stage.querySelector("img"), cap = root.querySelector(".zv-cap"), hint = root.querySelector(".zv-hint");
+  var BLANK = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+  img.src = BLANK;
   var z = 1, lastFocus = null;
 
   function baseW() { return Math.min(stage.clientWidth, (stage.clientHeight * img.naturalWidth) / Math.max(1, img.naturalHeight)) || stage.clientWidth; }
@@ -53,7 +55,7 @@
     root.querySelector('[data-a="close"]').focus();
   }
   function close() {
-    root.classList.remove("open"); document.documentElement.style.overflow = ""; img.removeAttribute("src");
+    root.classList.remove("open"); document.documentElement.style.overflow = ""; img.src = BLANK;
     if (lastFocus && lastFocus.focus) try { lastFocus.focus(); } catch (e) {}
   }
 
