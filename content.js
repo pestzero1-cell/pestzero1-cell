@@ -7,6 +7,7 @@ window.SITE = {
   // 예시 모드: true면 화면 상단에 "예시 내용" 띠가 보입니다. 실제 입력이 끝나면 false.
   sampleMode: true,
 
+  logo: "images/logo.png",          // 로고 이미지. 비우면 글자 로고로 표시됩니다.
   brand: "홈로취케어",
   tagline: "소독 · 방역 · 하수구 냄새차단",
   pageTitle: "홈로취케어",

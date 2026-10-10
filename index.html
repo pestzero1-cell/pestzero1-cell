@@ -163,6 +163,8 @@ header{position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px s
 .svc-badge{display:flex;align-items:center;justify-content:center;gap:8px;background:#03c75a;color:#fff;font-size:.95rem;font-weight:700;padding:10px 14px}
 .svc-badge b{background:#fff;color:#03c75a;border-radius:3px;width:20px;height:20px;display:inline-grid;place-items:center;font-size:.78rem}
 .svc-link:hover .svc-badge{background:#02a64b}
+.logo-img{display:block;height:52px;width:auto;background:#fff;border-radius:4px}
+@media(max-width:480px){.logo-img{height:44px}}
 .soon{padding:40px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
 .btn.cta{background:var(--accent);color:#fff}
 .btn{display:inline-block;padding:13px 26px;border-radius:999px;background:var(--brand);color:var(--on);font-weight:700;margin:4px}
@@ -250,7 +252,7 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
   var tiles=(h.tiles||[]).map(function(t){return '<div>'+(t.image?'<img loading="lazy" src="'+e(t.image)+'" alt="'+e(t.label)+'">':'')+'<span>'+e(t.label)+'</span></div>'}).join("");
 
   var html=sample+
-  '<header><div class="wrap top"><a class="logo" href="#top"><span class="mark">H</span><span><b>'+e(S.brand)+'</b><small>'+e(S.tagline)+'</small></span></a>'+
+  '<header><div class="wrap top"><a class="logo" href="#top" aria-label="'+e(S.brand)+' 홈">'+(S.logo?'<img class="logo-img" src="'+e(S.logo)+'" alt="'+e(S.brand)+' — '+e(S.tagline)+'">':'<span class="mark">H</span><span><b>'+e(S.brand)+'</b><small>'+e(S.tagline)+'</small></span>')+'</a>'+
     '<a class="tel" href="'+e(tel)+'">☎ '+e(S.phone)+'</a></div>'+
     '<nav class="bar"><div class="wrap">'+list(S.menu,function(m){return '<a href="'+e(m.href)+'">'+e(m.label)+'</a>'})+'</div></nav></header>'+
   '<main id="top">'+sliderHtml+'<div class="hero"><div class="wrap hero-in"><div>'+
