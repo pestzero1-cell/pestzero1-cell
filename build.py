@@ -227,10 +227,11 @@ def kakao_fab():
 
 def bot_scripts(depth):
     """정적 페이지에 자동응답 도우미를 붙입니다. (bot.enabled 가 true 일 때만)"""
-    if not (S.get("bot") or {}).get("enabled", True) or not S.get("bot"):
-        return ""
     r = rel(depth)
-    return '<script>window.SITE_BASE="%s";</script><script src="%sassets/bot-data.js"></script><script src="%schatbot.js" defer></script>' % (r, r, r)
+    zoom = '<script src="%szoom.js" defer></script>' % r
+    if not (S.get("bot") or {}).get("enabled", True) or not S.get("bot"):
+        return zoom
+    return zoom + '<script>window.SITE_BASE="%s";</script><script src="%sassets/bot-data.js"></script><script src="%schatbot.js" defer></script>' % (r, r, r)
 
 
 def crumbs(items, depth):
