@@ -798,8 +798,24 @@ window.SITE = {
         { heading: "아파트, 빌라 욕조 배수구 막힘", image: "images/case-bath.jpg" },
         { heading: "세면대 벽배관 배수구 막힘", image: "images/case-basin.jpg" }
       ] },
-      { label: "겨울철 하수구 해빙" },
-      { label: "2층필로티 세탁실 베란다 화장실 언배관 시공사례" }
+      { label: "겨울철 하수구 해빙", sections: [
+        { heading: "겨울철 배수구 얼었을때 해빙 (2층 필로티 구조 세탁실, 베란다, 화장실, 싱크대연결 배관)",
+          bullets: [
+            "지구 온난화 현상이 앞으로 겨울의 한파가 점점 길어져 동파에 대비 및 한파로 하수구 역류",
+            "한파로 인한 꽁꽁 얼은 동파 위험과 막힌 곳을 시원하게 뚫어 드립니다.",
+            "가장 취약한 곳이 아파트, 빌라 필로트 구조(주차장 라인 기둥)입니다."
+          ] }
+      ] },
+      { label: "2층필로티 세탁실 베란다 화장실 언배관 시공사례", sections: [
+        { intro: "365일 상황 발생시 빠른 출동 서비스로 현장 불편함을 최소화 해 드립니다." },
+        { heading: "세탁실 얼음으로 막힘 역류", image: "images/ice-laundry.jpg" },
+        { heading: "3층 베란다 얼음 해빙", image: "images/ice-veranda3.jpg" },
+        { heading: "필로티 2층 세탁실 얼음", image: "images/ice-pilotis2.jpg" },
+        { heading: "외풍으로 베란다 얼음", image: "images/ice-wind.jpg" },
+        { heading: "세탁실 2층 얼음 역류", image: "images/ice-laundry2.jpg" },
+        { heading: "필로티 3층 세탁실 얼음", image: "images/ice-pilotis3.jpg" },
+        { heading: "연구소 사무실 얼음 막힘", image: "images/ice-lab.jpg" }
+      ] }
     ]
   },
 
