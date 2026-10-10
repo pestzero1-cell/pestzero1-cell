@@ -63,9 +63,9 @@
   function scroll() { log.scrollTop = log.scrollHeight; }
   function linkHtml(links, withContact) {
     var out = (links || []).map(function (l) {
-      var href = BASE + l.href;
-      if (PREVIEW) { var seg = l.href.split("/")[0]; href = "#" + ({ posts: "journal", price: "price", system: "system", info: "info", drain: "drain", about: "about" }[seg] || "top"); }
-      return '<a href="' + esc(href) + '">' + esc(l.label) + "</a>";
+      var ext = /^https?:\/\//.test(l.href), href = ext ? l.href : BASE + l.href;
+      if (PREVIEW && !ext) { var seg = l.href.split("/")[0]; href = "#" + ({ posts: "journal", price: "price", system: "system", info: "info", drain: "drain", about: "about" }[seg] || "top"); }
+      return '<a href="' + esc(href) + '"' + (ext ? ' target="_blank" rel="noopener noreferrer"' : "") + ">" + esc(l.label) + "</a>";
     });
     if (withContact) {
       out.push('<a class="call" href="' + esc(TEL) + '">☎ ' + esc(PHONE) + "</a>");
@@ -83,6 +83,7 @@
   }
   function setChips(list) {
     chips.innerHTML = (list || []).map(function (t) { return '<button type="button">' + esc(t) + "</button>"; }).join("");
+    chips.scrollLeft = 0;
   }
   function botSay(html, then, delay) {
     var t = add("bot", '<span class="hb-typing"><i></i><i></i><i></i></span>');
@@ -167,7 +168,7 @@
     else botSay(rich(B.fallback) + linkHtml([], true), function () { setChips(B.chips); });
   }
   function handleIntent(it) {
-    botSay(rich(it.answer) + linkHtml(it.links, it.id === "apply" || it.id === "urgent" || it.id === "area" || it.id === "drain" || it.id === "bedbug"), function () {
+    botSay(rich(it.answer) + linkHtml(it.links, it.id === "apply" || it.id === "urgent" || it.id === "area" || it.id === "drain" || it.id === "bedbug" || it.id === "smell" || it.id === "hello"), function () {
       setChips(B.chips.filter(function (c) { return norm(c) !== norm(it.label); }).slice(0, 5));
     });
   }
