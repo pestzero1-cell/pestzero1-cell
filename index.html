@@ -224,7 +224,7 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
       (S.blogUrl?'<a class="btn ghost" href="'+e(S.blogUrl)+'" target="_blank" rel="noopener">블로그 보기</a>':'')+'</p>'+
   '</div></section></main>'+
 
-  '<footer><div class="wrap"><b>'+e(S.pageTitle)+'</b><br>대표 '+e(S.owner)+' · 전화 <a href="'+e(tel)+'">'+e(S.phone)+'</a><br>© '+new Date().getFullYear()+' All rights reserved.</div></footer>'+
+  '<footer><div class="wrap"><b>'+e(S.pageTitle)+'</b><br>대표 '+e(S.owner)+' · 전화 <a href="'+e(tel)+'">'+e(S.phone)+'</a>'+(S.company?'<br>사업자등록번호 '+e(S.company.bizNo)+' · 통신판매업신고번호 '+e(S.company.mailOrderNo)+'<br>'+e(S.company.address):'')+'<br>© '+new Date().getFullYear()+' All rights reserved.</div></footer>'+
   '<a class="btn fab" href="'+e(tel)+'">📞 전화상담</a>';
 
   $("#app").innerHTML=html;
