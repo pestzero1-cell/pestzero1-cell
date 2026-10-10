@@ -260,6 +260,17 @@ h1,h2,h3,h4{text-wrap:balance}
 .callcard{background:var(--brand);color:var(--on);border-radius:16px;padding:22px 24px;display:grid;gap:6px}
 .callcard small{opacity:.85}.callcard p{opacity:.9;font-size:.9rem;max-width:none;margin:2px 0 0}
 .callnum{font-size:clamp(1.6rem,4vw,2.1rem);font-weight:800;color:var(--on)}
+.why{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}
+@media(min-width:900px){.why{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:18px!important}}
+.why-card{padding:0!important;overflow:hidden;background:var(--bg);border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;transition:box-shadow .2s,transform .2s}
+.why-card:hover{box-shadow:0 12px 28px rgba(18,64,143,.14);transform:translateY(-3px)}
+@media(prefers-reduced-motion:reduce){.why-card{transition:none}.why-card:hover{transform:none}}
+.why-img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;object-position:50% 22%;background:var(--card)}
+.why-body{padding:14px 16px 18px;display:grid;gap:4px}
+.why-card .why-no{font-size:.7rem;font-weight:800;letter-spacing:.08em;color:var(--accent);display:block}
+.why-body b{font-size:1.02rem;margin:0}
+.why-tx{font-size:.88rem;color:var(--muted);line-height:1.55;display:block}
+.why-card .why-ic{margin:18px 16px 0}
 .soon{padding:40px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
 .btn.cta{background:var(--accent);color:#fff}
 .btn{display:inline-block;padding:13px 26px;border-radius:999px;background:var(--brand);color:var(--on);font-weight:700;margin:4px}
@@ -384,7 +395,7 @@ footer{border-top:1px solid var(--line);padding:32px 0 calc(96px + env(safe-area
   quickHtml+
 
   '<section id="why" class="alt"><div class="wrap"><h2>왜 저희일까요</h2><p class="sub">작은 업체라서 가능한 방식입니다.</p><div class="why">'+
-    list(S.why,function(x){return '<div><span class="why-ic">'+(WHY_IC[x.icon]||e(x.icon))+'</span><b>'+e(x.title)+'</b><span>'+e(x.text)+'</span></div>'})+'</div></div></section>'+
+    list(S.why,function(x,i){return '<div class="why-card">'+(x.image?'<img class="why-img" loading="lazy" src="'+e(x.image)+'" alt="'+e(x.title)+'">':'<span class="why-ic">'+(WHY_IC[x.icon]||e(x.icon))+'</span>')+'<div class="why-body"><span class="why-no">POINT 0'+(i+1)+'</span><b>'+e(x.title)+'</b><span class="why-tx">'+e(x.text)+'</span></div></div>'})+'</div></div></section>'+
 
   '<section id="process"><div class="wrap"><h2>진행 순서</h2><p class="sub">전화 한 통이면 시작됩니다.</p><div class="steps">'+
     list(S.steps,function(x){return '<div><b>'+e(x.title)+'</b><span>'+e(x.text)+'</span></div>'})+'</div></div></section>'+

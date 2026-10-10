@@ -1290,10 +1290,10 @@ window.SITE = {
   ],
 
   why: [
-    { icon: "👤", title: "사장이 직접 방문", text: "상담부터 마무리까지 같은 사람이 책임집니다." },
-    { icon: "💬", title: "작업 전 설명", text: "원인과 작업 범위, 비용을 먼저 말씀드립니다." },
-    { icon: "🔁", title: "원인부터 차단", text: "겉만 치우지 않고 재발 경로를 함께 잡습니다." },
-    { icon: "📞", title: "사후 상담", text: "작업 후 문제가 생기면 다시 연락 주세요." }
+    { icon: "👤", image: "images/why-visit.jpg", title: "사장이 직접 방문", text: "상담부터 마무리까지 같은 사람이 책임집니다." },
+    { icon: "💬", image: "images/why-explain.jpg", title: "작업 전 설명", text: "원인과 작업 범위, 비용을 먼저 말씀드립니다." },
+    { icon: "🔁", image: "images/why-cause.jpg", title: "원인부터 차단", text: "겉만 치우지 않고 재발 경로를 함께 잡습니다." },
+    { icon: "📞", image: "images/why-after.jpg", title: "사후 상담", text: "작업 후 문제가 생기면 다시 연락 주세요." }
   ],
 
   steps: [
