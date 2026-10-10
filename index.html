@@ -157,6 +157,7 @@ header{position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px s
 .sl-dots button[aria-current=true]{background:#fff;width:26px;border-radius:6px}
 .sl-ctl{position:absolute;right:12px;bottom:6px;z-index:3;background:rgba(0,0,0,.35);color:#fff;border-radius:4px;padding:2px 8px;font-size:.78rem}
 @media(prefers-reduced-motion:reduce){.slide{transition:none}}
+.card.svc{padding:0;overflow:hidden}.card.svc>:not(.svc-img){margin-inline:24px}.card.svc ul{margin-bottom:24px;padding-left:42px}.card.svc .tag{margin-top:16px;align-self:flex-start}.svc-img{display:block;width:100%;aspect-ratio:5/3;object-fit:cover}
 .soon{padding:40px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
 .btn.cta{background:var(--accent);color:#fff}
 .btn{display:inline-block;padding:13px 26px;border-radius:999px;background:var(--brand);color:var(--on);font-weight:700;margin:4px}
@@ -255,7 +256,7 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
     '<div class="tiles">'+tiles+'</div></div></div>'+
 
   '<section id="services"><div class="wrap"><h2>서비스</h2><p class="sub">필요한 분야만 골라 맡기세요.</p><div class="grid">'+
-    list(S.services,function(x){return '<div class="card"><div class="ico">'+e(x.icon)+'</div><span class="tag">'+e(x.tag)+'</span><h3>'+e(x.name)+'</h3><ul>'+list(x.items,function(i){return '<li>'+e(i)+'</li>'})+'</ul></div>'})+
+    list(S.services,function(x){return '<div class="card svc">'+(x.image?'<img class="svc-img" loading="lazy" src="'+e(x.image)+'" alt="'+e(x.name)+'">':'<div class="ico">'+e(x.icon)+'</div>')+'<span class="tag">'+e(x.tag)+'</span><h3>'+e(x.name)+'</h3><ul>'+list(x.items,function(i){return '<li>'+e(i)+'</li>'})+'</ul></div>'})+
   '</div></div></section>'+
 
   ((S.about)?'<section id="about"><div class="wrap about"><aside class="about-side"><h2>'+e(S.about.title)+'</h2><div class="tabs" role="tablist"><button type="button" role="tab" data-tab="g" aria-selected="true">'+e(S.about.greeting.title)+'</button><button type="button" role="tab" data-tab="o" aria-selected="false">'+e(S.about.org.title)+'</button></div></aside>'+
