@@ -7,23 +7,50 @@ window.SITE = {
   // 예시 모드: true면 화면 상단에 "예시 내용" 띠가 보입니다. 실제 입력이 끝나면 false.
   sampleMode: true,
 
-  brand: "PESTZERO",
-  pageTitle: "홈로취케어 · 헬로하수구",
-  description: "방역·배관, 현장에서 끝까지 책임지는 1인 전문 업체.",
+  brand: "홈로취케어",
+  tagline: "소독 · 방역 · 하수구 냄새차단",
+  pageTitle: "홈로취케어",
+  description: "소독·방역·하수구 막힘 뚫음·냄새차단 전문 홈로취케어. 출장비 0원, 미해결시 0원.",
 
   owner: "오창환",
-  phone: "010-0000-0000",          // 표시용 (하이픈 가능)
-  smsNumber: "01000000000",        // 문자 문의 수신 번호 (숫자만)
+  phone: "1661-6179",          // 표시용 (하이픈 가능)
+  smsNumber: "16616179",        // 문자 문의 수신 번호 (숫자만)
   blogUrl: "",                     // 네이버 블로그 주소. 비워두면 버튼 숨김
   kakaoUrl: "",                    // 카카오톡 채널 주소. 비워두면 버튼 숨김
 
+  // 상단 메뉴: label=표시 이름, href=이동할 곳(#섹션 또는 주소)
+  menu: [
+    { label: "회사소개", href: "#why" },
+    { label: "서비스단가표", href: "#services" },
+    { label: "서비스시스템", href: "#process" },
+    { label: "소독/해충정보", href: "#faq" },
+    { label: "하수구막힘 뚫음", href: "#services" },
+    { label: "하수구 냄새차단", href: "#services" },
+    { label: "현장갤러리", href: "#gallery" },
+    { label: "고객센터", href: "#contact" }
+  ],
+
   hero: {
-    title: "해충도 막힌 배관도",
-    highlight: "한 번에, 끝까지",
-    titleEnd: "해결합니다",
-    text: "방역·소독부터 하수구·배관까지. 사장이 직접 방문하고 직접 책임지는 현장 전문 업체입니다.",
+    badge: "위기탈출 넘버원 촬영업체",
+    kicker: "하수구 막힘 케어",
+    deal: "출장비 0원 / 미해결시 0원",
+    title: "정확한 원인 분석",
+    highlight: "한방에 해결",
+    bullets: [
+      "싱크대, 화장실, 욕조배수구 막힘 해결사!",
+      "공동배관, 소변기, 양변기 막힘까지!",
+      "쾌적하고 위생적인 환경을 만들어 드리겠습니다."
+    ],
     button1: "무료 상담 신청",
-    button2: "서비스 보기"
+    button2: "홈로취케어 소개 바로가기",
+    // 첫 화면 오른쪽 사진 타일. image 에 사진 경로를 넣으면 사진이 표시됩니다.
+    tiles: [
+      { label: "세탁실 막힘", image: "" },
+      { label: "양변기 막힘", image: "" },
+      { label: "소변기 막힘", image: "" },
+      { label: "배수구 해빙", image: "" },
+      { label: "건물공동배관막힘", image: "" }
+    ]
   },
 
   services: [
