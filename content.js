@@ -478,7 +478,7 @@ window.SITE = {
             { icon: "phone", text: "희망일자 / 시간 남겨주시면 **전화로 일정확인 후 접수처리**" }
           ] },
         { heading: "전화신청",
-          contact: { label: "고객센터", phone: "1661-6179", image: "" } }
+          contact: { label: "고객센터", phone: "1661-6179", image: "images/consult.jpg" } }
       ] },
       { label: "진행순서", sections: [
         { heading: "진행순서",
@@ -513,7 +513,17 @@ window.SITE = {
             "작업방법은 도포 및 훈증, 분무, 연무방식 등 적합한 방법을 선택해 작업하며 비래해충 등의 경우 장비를 임대하기도 합니다."
           ] }
       ] },
-      { label: "긴급서비스" },
+      { label: "긴급서비스", sections: [
+        { heading: "서비스시스템",
+          bullets: [
+            "서비스를 신청하시면 신청에서 방문까지 보통 1~3일이 소요 됩니다.",
+            "개인사정상 또는 다급한 업무처리로 당일 및 주말(일요일)방문을 원하시는 고객분들을 위해 마련한 서비스이며, 서비스 이용시 별도의 추가 요금이 발생 합니다.",
+            "당일출동 30,000원",
+            "주말출동 50,000원"
+          ] },
+        { heading: "전화신청",
+          contact: { label: "고객센터", phone: "1661-6179", image: "images/consult.jpg" } }
+      ] },
       { label: "환불보장제도" }
     ]
   },
