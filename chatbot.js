@@ -64,7 +64,7 @@
   function linkHtml(links, withContact) {
     var out = (links || []).map(function (l) {
       var ext = /^https?:\/\//.test(l.href), href = ext ? l.href : BASE + l.href;
-      if (PREVIEW && !ext) { var seg = l.href.split("/")[0]; href = "#" + ({ posts: "journal", price: "price", system: "system", info: "info", drain: "drain", about: "about" }[seg] || "top"); }
+      if (PREVIEW && !ext && /\/$/.test(href)) href += "index.html"; // 미리보기(아티팩트)에서는 폴더 주소가 열리지 않아 index.html 을 붙입니다
       return '<a href="' + esc(href) + '"' + (ext ? ' target="_blank" rel="noopener noreferrer"' : "") + ">" + esc(l.label) + "</a>";
     });
     if (withContact) {
