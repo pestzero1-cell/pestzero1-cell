@@ -32,6 +32,17 @@ window.SITE = {
     { label: "고객센터", href: "#support" }
   ],
 
+  // 메인 슬라이드: 몇 초마다 자동으로 넘어갑니다. images 는 오른쪽에 나오는 사진(최대 3장), theme: blue | navy | warm
+  slider: {
+    interval: 5000,
+    slides: [
+      { theme: "blue", kicker: "위기탈출 넘버원 촬영업체", title: "철저하고 완벽한 박멸시스템", sub: "친환경 소독, 방역 & 해충을 완벽하게!", text: "자연과 사람을 중시하며, 변화하는 환경속에서 연구 개발과 꾸준한 전문인재육성으로 고객님께 보다 진보된 방역기술과 서비스를 드리겠습니다.", button: { label: "홈로취케어 소개 바로가기", href: "#about" }, images: ["images/case1.jpg", "images/case2.jpg", "images/case3.jpg"] },
+      { theme: "navy", kicker: "하수구 막힘 케어", title: "정확한 원인 분석, 한방에 해결", sub: "출장비 0원 / 미해결시 0원", text: "싱크대, 화장실, 욕조배수구 막힘부터 공동배관, 소변기, 양변기 막힘까지 해결해 드립니다.", button: { label: "하수구 시공사례 보기", href: "#drain" }, images: ["images/case-toilet.jpg", "images/case-shower.jpg", "images/case-bath.jpg"] },
+      { theme: "warm", kicker: "독보적인 홈로취케어만의 기술", title: "빈대퇴치, 안전하게 지켜드립니다", sub: "방역 중 외출 NO, 생활 그대로 OK", text: "2014년부터 쌓아온 빈대퇴치 노하우와 단독제작 장비·천연약품으로 박멸합니다.", button: { label: "빈대 정보 보기", href: "#info" }, images: ["images/bedbug-1.jpg", "images/bb-flow.jpg"] },
+      { theme: "blue", kicker: "투명한 가격 안내", title: "서비스 단가표를 확인하세요", sub: "바퀴벌레 · 개미 · 쥐 · 특수방역 · 소독", text: "평수별 단가와 보장 기간을 한눈에 확인하고 전화 한 통으로 상담받으세요.", button: { label: "서비스단가표 보기", href: "#price" }, images: ["images/banner-pest.jpg"] }
+    ]
+  },
+
   hero: {
     badge: "위기탈출 넘버원 촬영업체",
     kicker: "하수구 막힘 케어",
