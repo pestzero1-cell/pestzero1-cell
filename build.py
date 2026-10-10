@@ -433,7 +433,7 @@ def build_css():
 .crumbs{font-size:.85rem;color:var(--muted);padding:14px 0 0}.crumbs a:hover{color:var(--brand);text-decoration:underline}
 .ptabs.side{display:flex;flex-wrap:wrap}.ptabs.side a{flex:1 1 auto;padding:13px 18px;border-bottom:1px solid var(--line);color:var(--fg)}
 .ptabs.side a[aria-current]{background:var(--card);color:var(--brand);font-weight:700}
-@media(min-width:800px){.ptabs.side{flex-direction:column}}
+@media(min-width:1000px){.ptabs.side{flex-direction:column}}
 .about-side .h2like{background:var(--brand);color:var(--on);padding:28px 22px;margin:0;border-radius:4px 4px 0 0;font-size:1.5rem;font-weight:700}
 .about-main h1{font-size:1.6rem;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:22px}
 .about-main h2.ph{font-size:1.2rem;color:var(--brand);margin:28px 0 10px}.about-main h2.ph:first-of-type{margin-top:0}

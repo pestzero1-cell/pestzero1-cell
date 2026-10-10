@@ -38,7 +38,7 @@ header{position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px s
 .bar a:hover{background:rgba(255,255,255,.14)}
 .hero{padding:40px 0 48px;background:linear-gradient(180deg,var(--card),var(--bg))}
 .hero-in{display:grid;gap:32px;grid-template-columns:1fr;align-items:center}
-@media(min-width:800px){.hero-in{grid-template-columns:1fr 1.15fr}}
+@media(min-width:1000px){.hero-in{grid-template-columns:1fr 1.15fr}}
 .badge{display:inline-block;font-size:.8rem;font-weight:700;background:var(--brand);color:var(--on);padding:3px 10px;border-radius:4px}
 .kicker{margin-top:10px;color:var(--accent);font-weight:800;font-size:1.3rem}
 .deal{font-size:1.15rem;font-weight:800;margin-top:6px}
@@ -53,11 +53,11 @@ header{position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px s
 .tiles span{position:relative;width:100%;padding:6px 8px;background:rgba(0,0,0,.55);color:#fff;font-size:.82rem;font-weight:700}
 .about{display:grid;gap:24px;grid-template-columns:minmax(0,1fr)}
 .about>*{min-width:0}
-@media(min-width:800px){.about{grid-template-columns:260px minmax(0,1fr);gap:40px}}
+@media(min-width:1000px){.about{grid-template-columns:260px minmax(0,1fr);gap:40px}}
 .about-side h2{background:var(--brand);color:var(--on);padding:28px 22px;margin:0;border-radius:4px 4px 0 0}
 .tabs,.ptabs{display:flex;flex-wrap:wrap;border:1px solid var(--line);border-top:0}
 .tabs button,.ptabs button{flex:1 1 auto;text-align:left;padding:13px 18px;background:transparent;color:var(--fg);border-bottom:1px solid var(--line)}
-@media(min-width:800px){.tabs,.ptabs{flex-direction:column}}
+@media(min-width:1000px){.tabs,.ptabs{flex-direction:column}}
 .tabs button[aria-selected=true],.ptabs button[aria-selected=true]{background:var(--card);color:var(--brand);font-weight:700}
 .about-main h3{font-size:1.6rem;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:22px}
 .about-main .lead{font-size:clamp(1.3rem,3.4vw,1.8rem);line-height:1.4;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:22px}
@@ -162,6 +162,7 @@ header{position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px s
 .sl-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.35);color:#fff;font-size:1.4rem;line-height:1}
 .sl-arrow:hover{background:rgba(0,0,0,.6)}
 .sl-prev{left:10px}.sl-next{right:10px}
+@media(max-width:860px){.sl-in{padding-inline:60px}}
 @media(max-width:600px){.sl-arrow{width:34px;height:34px;font-size:1.1rem}.sl-in{padding-inline:48px}}
 .sl-dots{position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:8px;z-index:3}
 .sl-dots button{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.45);padding:0}
@@ -217,6 +218,13 @@ a.ch.kakao:hover{border-color:#e6cf00}a.ch.naver:hover{border-color:#03c75a}
 .note.warn{color:#c8321e;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
 @media(prefers-color-scheme:dark){:root:not([data-theme=light]) .note.warn{color:#ff8a70}}
 :root[data-theme=dark] .note.warn{color:#ff8a70}
+body{word-break:keep-all;overflow-wrap:anywhere}
+h1,h2,h3,h4{text-wrap:balance}
+.tabs button,.ptabs button{text-align:left}
+@media(max-width:999px){.tabs,.ptabs,.ptabs.side{display:flex;flex-direction:row;flex-wrap:wrap;gap:0}.tabs button,.ptabs button,.ptabs.side a{flex:1 1 auto;min-width:0;padding:11px 14px;font-size:.92rem;border-right:1px solid var(--line)}.about-side h2,.about-side .h2like{padding:18px 20px;font-size:1.25rem}}
+@media(max-width:900px){.bar a{padding:12px 11px}}
+@media(max-width:999px){.tbl table{min-width:520px}}
+.bar .wrap{scroll-snap-type:x proximity}.bar a{scroll-snap-align:start}
 .soon{padding:40px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
 .btn.cta{background:var(--accent);color:#fff}
 .btn{display:inline-block;padding:13px 26px;border-radius:999px;background:var(--brand);color:var(--on);font-weight:700;margin:4px}
@@ -256,7 +264,7 @@ form{display:grid;gap:12px;max-width:520px}
 input,select,textarea{font:inherit;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg);width:100%}
 button{font:inherit;border:0;cursor:pointer}
 .note{font-size:.85rem;color:var(--muted)}
-footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-size:.88rem}
+footer{border-top:1px solid var(--line);padding:32px 0 calc(96px + env(safe-area-inset-bottom,0px));color:var(--muted);font-size:.88rem}
 .fab{position:fixed;right:16px;bottom:16px;z-index:20;box-shadow:0 6px 18px rgba(0,0,0,.25)}
 [hidden]{display:none!important}
 </style>
