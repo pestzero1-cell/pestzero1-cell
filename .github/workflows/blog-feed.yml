@@ -1,0 +1,38 @@
+# 매일 아침 네이버 블로그 RSS 에서 최신글(제목·요약·링크)을 가져와 홈페이지 데이터를 갱신합니다.
+# - 기본 브랜치에 합쳐진 뒤부터 동작합니다. (예약 실행은 기본 브랜치에서만 돌아갑니다)
+# - GitHub 저장소 > Actions 탭에서 "Run workflow" 버튼으로 바로 실행해 볼 수도 있습니다.
+# - 가져오기에 실패하면 기존 데이터를 그대로 두므로 홈페이지가 비지 않습니다.
+name: blog-feed
+on:
+  schedule:
+    - cron: "0 21 * * *"   # 한국시간 매일 06:00
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fetch blog posts (RSS)
+        run: python3 fetch_blog.py
+        continue-on-error: true
+      - name: Rebuild pages
+        run: python3 build.py
+      - name: Commit changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore: update blog feed"
+            git push
+          else
+            echo "변경 없음"
+          fi

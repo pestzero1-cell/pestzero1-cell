@@ -30,6 +30,22 @@ window.SITE = {
     { label: "홈로취케어 블로그", url: "https://blog.naver.com/giberga1" },
     { label: "헬로하수구 블로그", url: "https://blog.naver.com/hellodrain_number1" }
   ],
+  // ---- 블로그 최신글 카드 ----
+  // 네이버 블로그 RSS 에서 "제목·날짜·짧은 요약·링크"만 가져와 보여줍니다. 본문은 가져오지 않고, 누르면 블로그로 이동합니다.
+  // (본문 전체를 홈페이지에 옮기지 않으므로 중복 문서 위험이 없습니다)
+  // 실제 글 가져오기: python3 fetch_blog.py  →  python3 build.py   (자동 실행은 .github/workflows/blog-feed.yml)
+  blogFeed: {
+    enabled: true,
+    title: "블로그 최신글",
+    subtitle: "현장 사진과 자세한 작업기는 네이버 블로그에서 확인하세요.",
+    perSource: 3,            // 블로그마다 가져올 글 수
+    maxItems: 6,             // 화면에 보일 최대 글 수
+    excerptLength: 90,       // 요약 글자 수 (짧게 유지하세요)
+    sources: [
+      { id: "giberga1", label: "홈로취케어 블로그", tag: "방역", url: "https://blog.naver.com/giberga1", rss: "https://rss.blog.naver.com/giberga1.xml" },
+      { id: "hellodrain_number1", label: "헬로하수구 블로그", tag: "배관", url: "https://blog.naver.com/hellodrain_number1", rss: "https://rss.blog.naver.com/hellodrain_number1.xml" }
+    ]
+  },
   blogUrl: "",
   // 카카오톡 채널 1:1 채팅 주소 (카카오톡 채널 관리자센터 > 홍보하기 > 채팅 URL, 예: https://pf.kakao.com/_xxxxxx/chat)
   // 비워두면 실제 버튼은 숨겨지고, 예시 모드(sampleMode)에서만 "주소 입력 필요" 버튼이 보입니다.
