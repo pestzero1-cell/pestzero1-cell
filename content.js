@@ -38,15 +38,15 @@ window.SITE = {
 
   // 상단 메뉴: label=표시 이름, href=이동할 곳(#섹션 또는 주소)
   menu: [
-    { label: "회사소개", href: "#about" },
-    { label: "서비스단가표", href: "#price" },
-    { label: "서비스시스템", href: "#system" },
-    { label: "소독/해충정보", href: "#info" },
-    { label: "하수구막힘 뚫음", href: "#drain" },
-    { label: "하수구 냄새차단", href: "#services" },
+    { label: "회사소개", href: "about/greeting/" },
+    { label: "서비스단가표", href: "price/roach/" },
+    { label: "서비스시스템", href: "system/apply/" },
+    { label: "소독/해충정보", href: "info/cockroach/" },
+    { label: "하수구막힘 뚫음", href: "drain/clogged-drain/" },
+    { label: "하수구 냄새차단", href: "price/drain-trap/" },
     { label: "현장갤러리", href: "#gallery" },
     { label: "현장일지", href: "posts/" },
-    { label: "고객센터", href: "#support" }
+    { label: "고객센터", href: "support/" }
   ],
 
   // 메인 슬라이드: 몇 초마다 자동으로 넘어갑니다. images 는 오른쪽에 나오는 사진(최대 3장), theme: blue | navy | warm
@@ -59,6 +59,24 @@ window.SITE = {
       { theme: "blue", kicker: "투명한 가격 안내", title: "서비스 단가표를 확인하세요", sub: "바퀴벌레 · 개미 · 쥐 · 특수방역 · 소독", text: "평수별 단가와 보장 기간을 한눈에 확인하고 전화 한 통으로 상담받으세요.", button: { label: "서비스단가표 보기", href: "#price" }, images: ["images/banner-pest.jpg"] }
     ]
   },
+
+  // 홈페이지 중간의 "무엇이 궁금하세요?" 바로가기 카드. icon: price | system | info | drain | journal | support
+  quickLinks: [
+    { icon: "price", title: "서비스단가표", text: "바퀴벌레·개미·쥐 등 가격과 보장기간", href: "price/roach/" },
+    { icon: "system", title: "서비스시스템", text: "신청부터 방문, 사후관리까지", href: "system/apply/" },
+    { icon: "info", title: "소독/해충정보", text: "해충 종류별 특징과 대처법", href: "info/cockroach/" },
+    { icon: "drain", title: "하수구막힘 뚫음", text: "시공사례와 막힘 원인", href: "drain/clogged-drain/" },
+    { icon: "journal", title: "현장일지", text: "현장에서 해결한 사례 기록", href: "posts/" },
+    { icon: "support", title: "고객센터", text: "공지사항, 후기, 온라인 문의", href: "support/" }
+  ],
+
+  // 첫 화면 아래 신뢰 띠 (4개). 근거 없는 수치는 넣지 마세요.
+  trust: [
+    { value: "10년 이상", label: "현장 노하우" },
+    { value: "0원", label: "출장비" },
+    { value: "0원", label: "미해결시 비용" },
+    { value: "1661-6179", label: "전화 상담" }
+  ],
 
   hero: {
     badge: "위기탈출 넘버원 촬영업체",

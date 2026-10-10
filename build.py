@@ -157,16 +157,19 @@ for key, title, d, items in SECTIONS:
 
 
 def nav_html(depth, current_key=None):
-    links = [
-        ("회사소개", MENU_TARGET["about"], "about"),
-        ("서비스단가표", MENU_TARGET["price"], "price"),
-        ("서비스시스템", MENU_TARGET["system"], "system"),
-        ("소독/해충정보", MENU_TARGET["info"], "info"),
-        ("하수구막힘 뚫음", MENU_TARGET["drain"], "drain"),
-        ("현장일지", "posts/", "posts"),
-        ("고객센터", "index.html#support", "support"),
-    ]
-    return "".join('<a href="%s%s"%s>%s</a>' % (rel(depth), h, ' aria-current="page"' if k == current_key else "", e(l)) for l, h, k in links)
+    """상단 메뉴: content.js 의 menu 항목을 그대로 사용 (홈페이지와 같은 메뉴)"""
+    out, used = [], False
+    for m in S.get("menu", []):
+        href = m["href"]
+        key = href.split("/")[0].lstrip("#")
+        if href.startswith("#"):
+            href = "index.html" + href
+        if not re.match(r"^(https?:|/)", href):
+            href = rel(depth) + href
+        cur = key == current_key and not used
+        used = used or cur
+        out.append('<a href="%s"%s>%s</a>' % (e(href), ' aria-current="page"' if cur else "", e(m["label"])))
+    return "".join(out)
 
 
 def head(title, desc, path, depth, og_image=None, extra="", jsonld=None):
@@ -193,10 +196,13 @@ def head(title, desc, path, depth, og_image=None, extra="", jsonld=None):
 <meta property="og:description" content="%s">
 <meta property="og:url" content="%s">
 %s%s%s<link rel="alternate" type="application/rss+xml" title="%s 현장일지" href="%sposts/rss.xml">
+<link rel="icon" type="image/png" sizes="32x32" href="%simages/favicon-32.png">
+<link rel="apple-touch-icon" href="%simages/favicon.png">
+<meta name="theme-color" content="#12408f">
 <link rel="stylesheet" href="%sassets/site.css">
 %s</head>
 """ % (e(title), e(desc), e(canon), e(BRAND), e(title), e(desc), e(canon),
-       ('<meta property="og:image" content="%s">\n' % e(og_img)) if og_img else "", verify, extra, e(BRAND), rel(depth), rel(depth), ld)
+       ('<meta property="og:image" content="%s">\n' % e(og_img)) if og_img else "", verify, extra, e(BRAND), rel(depth), rel(depth), rel(depth), rel(depth), ld)
 
 
 def header_footer(depth, current_key=None):
@@ -380,6 +386,27 @@ def build_post(i, p):
     return path
 
 
+def build_support():
+    """고객센터(게시판) 페이지. 예시 글이 들어 있는 동안은 검색에 노출되지 않게(noindex) 합니다."""
+    if not S.get("board"):
+        return
+    depth = 1
+    top, foot = header_footer(depth, "support")
+    desc = "홈로취케어 고객센터: 공지사항, 1:1문의 및 이용후기, 온라인문의."
+    page = head("고객센터 | %s" % BRAND, desc, "support/", depth, extra='<meta name="robots" content="noindex">\n') + "<body>\n" + top + """
+<main><div class="wrap">%s<h1 style="margin:10px 0 0">고객센터</h1></div>
+<div id="board-root"></div><noscript><div class="wrap"><p>자바스크립트를 켜면 게시판을 볼 수 있습니다. 문의는 전화 %s 로 연락 주세요.</p></div></noscript></main>
+%s
+<script src="../content.js"></script><script src="../board.js"></script>
+</body>
+</html>
+""" % (crumbs([(BRAND, "index.html"), ("고객센터", None)], depth), e(S["phone"]), foot)
+    page = page.replace("</body>", bot_scripts(depth) + "\n</body>")
+    out = ROOT / "support"
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "index.html").write_text(page, encoding="utf-8")
+
+
 def build_posts_index():
     depth = 1
     top, foot = header_footer(depth, "posts")
@@ -475,7 +502,7 @@ def inject_home():
         verify += '<meta name="naver-site-verification" content="%s">\n' % e(S["naverVerification"])
     if S.get("googleVerification"):
         verify += '<meta name="google-site-verification" content="%s">\n' % e(S["googleVerification"])
-    headseo = ('<link rel="canonical" href="%s/">\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="%s">\n<meta property="og:title" content="%s">\n'
+    headseo = ('<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">\n<link rel="apple-touch-icon" href="images/favicon.png">\n<meta name="theme-color" content="#12408f">\n<link rel="canonical" href="%s/">\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="%s">\n<meta property="og:title" content="%s">\n'
                '<meta property="og:description" content="%s">\n<meta property="og:url" content="%s/">\n<meta property="og:image" content="%s/%s">\n%s'
                '<link rel="alternate" type="application/rss+xml" title="%s 현장일지" href="posts/rss.xml">\n<script type="application/ld+json">%s</script>\n') % (
         SITE_URL, e(BRAND), e(title), e(desc), SITE_URL, SITE_URL, e(S.get("ogImage", "")), verify, e(BRAND), json.dumps(ld, ensure_ascii=False))
@@ -499,6 +526,7 @@ def main():
             path, _ = build_section_page(key, sec_title, d, items, i)
             urls.append((path, "0.8"))
     build_posts_index()
+    build_support()
     urls.append(("posts/", "0.7"))
     for i, p in enumerate(posts):
         urls.append((build_post(i, p), "0.6"))

@@ -6,6 +6,9 @@
 <title>홈로취케어 | 소독·방역·하수구 막힘 뚫음·냄새차단</title>
 <meta name="description" content="소독·방역·하수구 막힘 뚫음·냄새차단 전문 홈로취케어. 출장비 0원, 미해결시 0원.">
 <!--HEAD-SEO-START-->
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="apple-touch-icon" href="images/favicon.png">
+<meta name="theme-color" content="#12408f">
 <link rel="canonical" href="https://YOUR-DOMAIN.example/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="홈로취케어">
@@ -199,7 +202,7 @@ header{position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px s
 .fabs{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:20;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
 .fabs .fab{position:static;margin:0}
 .fabs .kk{box-shadow:0 6px 18px rgba(0,0,0,.25);margin:0}
-.channels{margin-top:34px;padding-top:26px;border-top:1px solid var(--line)}
+.channels{margin-top:20px}
 .ch-title{font-size:.9rem;font-weight:700;color:var(--muted);margin-bottom:12px;max-width:none}
 .ch-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
 .ch{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:var(--bg);transition:transform .15s,box-shadow .15s,border-color .15s}
@@ -225,6 +228,38 @@ h1,h2,h3,h4{text-wrap:balance}
 @media(max-width:900px){.bar a{padding:12px 11px}}
 @media(max-width:999px){.tbl table{min-width:520px}}
 .bar .wrap{scroll-snap-type:x proximity}.bar a{scroll-snap-align:start}
+.ql-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.ql{display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--bg);border:1px solid var(--line);border-radius:14px;transition:transform .15s,box-shadow .15s,border-color .15s}
+.ql:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(18,64,143,.12);border-color:var(--brand)}
+@media(prefers-reduced-motion:reduce){.ql{transition:none}.ql:hover{transform:none}}
+.ql-ic{flex:none;width:52px;height:52px;border-radius:14px;background:var(--card);color:var(--brand);display:grid;place-items:center}
+.ql-ic svg{width:28px;height:28px}
+.ql-tx{display:grid;gap:2px;min-width:0;flex:1}.ql-tx b{font-size:1.02rem}.ql-tx small{font-size:.85rem;color:var(--muted)}
+.ql-go{font-size:1.6rem;color:var(--muted);line-height:1}
+.about-teaser{display:grid;gap:18px;max-width:820px}
+.about-teaser h2{margin-bottom:12px}
+.at-lead{font-size:clamp(1.3rem,3.6vw,1.9rem);line-height:1.4;font-weight:700;max-width:none}.at-lead em{font-style:normal;color:var(--brand)}
+.at-body{color:var(--muted);max-width:62ch;margin-top:12px}
+.at-btns{margin-top:18px;max-width:none}
+.hero{padding:28px 0 32px}
+.hero h1{font-size:clamp(1.7rem,4.2vw,2.4rem)}
+.kicker{font-size:1.1rem}.deal{font-size:1.02rem}
+.hero .btn{padding:11px 20px;font-size:.95rem;margin:4px 6px 4px 0}
+@media(min-width:1000px){.tiles{grid-template-columns:repeat(5,1fr)}.tiles div,.tiles div:nth-child(4),.tiles div:nth-child(5){grid-column:auto;aspect-ratio:1/1.1}.tiles span{font-size:.74rem;padding:5px 6px}.hero-in{grid-template-columns:1fr 1.5fr}}
+.trust{background:var(--bg);border-bottom:1px solid var(--line)}
+.trust-in{display:grid;grid-template-columns:repeat(2,1fr);gap:0}
+@media(min-width:700px){.trust-in{grid-template-columns:repeat(4,1fr)}}
+.trust-in div{padding:16px 10px;text-align:center;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:grid;gap:2px}
+.trust-in div:nth-child(2n){border-right:0}
+@media(min-width:700px){.trust-in div{border-bottom:0}.trust-in div:nth-child(2n){border-right:1px solid var(--line)}.trust-in div:last-child{border-right:0}}
+.trust-in b{font-size:1.25rem;color:var(--brand)}.trust-in span{font-size:.82rem;color:var(--muted)}
+.why-ic{display:grid!important;place-items:center;width:48px;height:48px;border-radius:12px;background:var(--bg);color:var(--brand);margin-bottom:6px}
+.why-ic svg{width:26px;height:26px}
+.cg{display:grid;gap:28px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:960px){.cg{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:44px;align-items:start}}
+.callcard{background:var(--brand);color:var(--on);border-radius:16px;padding:22px 24px;display:grid;gap:6px}
+.callcard small{opacity:.85}.callcard p{opacity:.9;font-size:.9rem;max-width:none;margin:2px 0 0}
+.callnum{font-size:clamp(1.6rem,4vw,2.1rem);font-weight:800;color:var(--on)}
 .soon{padding:40px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
 .btn.cta{background:var(--accent);color:#fff}
 .btn{display:inline-block;padding:13px 26px;border-radius:999px;background:var(--brand);color:var(--on);font-weight:700;margin:4px}
@@ -310,32 +345,26 @@ footer{border-top:1px solid var(--line);padding:32px 0 calc(96px + env(safe-area
 
   var sliderHtml=(S.slider&&(S.slider.slides||[]).length)?'<div class="slider" id="slider" role="region" aria-roledescription="carousel" aria-label="홈로취케어 소개"><div class="sl-track">'+list(S.slider.slides,function(s,i){var n=(s.images||[]).length;return '<div class="slide'+(i===0?' on':'')+'" data-theme="'+e(s.theme||"blue")+'" role="group" aria-label="'+(i+1)+' / '+S.slider.slides.length+'"><div class="wrap sl-in"><div><span class="sl-k">'+e(s.kicker)+'</span><h2 class="sl-t">'+e(s.title)+'</h2><p class="sl-s">'+e(s.sub)+'</p><p class="sl-x">'+e(s.text)+'</p>'+(s.button?'<a class="sl-b" href="'+e(s.button.href)+'">'+e(s.button.label)+'</a>':'')+'</div>'+(n?'<div class="sl-img" style="--n:'+n+'">'+list(s.images,function(im){return '<img loading="'+(i===0?'eager':'lazy')+'" src="'+e(im)+'" alt="">'})+'</div>':'')+'</div></div>'})+'</div><button type="button" class="sl-arrow sl-prev" aria-label="이전">‹</button><button type="button" class="sl-arrow sl-next" aria-label="다음">›</button><div class="sl-dots">'+list(S.slider.slides,function(s,i){return '<button type="button" data-i="'+i+'" aria-label="'+(i+1)+'번 슬라이드"'+(i===0?' aria-current="true"':'')+'></button>'})+'</div></div>':'';
 
-  var cell=function(c,b){if(c&&c.img)return '<td style="text-align:center"><img class="cellimg" loading="lazy" src="'+e(c.img)+'" alt="'+e(c.t)+'"><br><span style="font-size:.85rem;color:var(--muted)">'+e(c.t)+'</span></td>';var o=typeof c==="object",t=e(o?c.t:c).replace(/\n/g,"<br>");return '<td'+(o&&c.rs?' rowspan="'+c.rs+'"':'')+(o&&c.cs?' colspan="'+c.cs+'"':'')+((b||(o&&c.b))?' style="font-weight:700"':'')+'>'+t+'</td>'};
-  var tbl=function(t){return t?'<div class="tbl"><table><thead>'+(t.caption?'<tr><th colspan="'+t.head.length+'">'+e(t.caption)+'</th></tr>':'')+'<tr>'+list(t.head,function(x){return '<th>'+e(x)+'</th>'})+'</tr></thead><tbody>'+list(t.rows,function(r){return '<tr>'+list(r,function(c,i){return cell(c,t.boldCols&&t.boldCols.indexOf(i)>=0)})+'</tr>'})+'</tbody></table></div>':''};
-  var psec=function(s){return (s.imageTop?'<img class="pimg" loading="lazy" src="'+e(s.imageTop)+'" alt="">':'')+(s.heading?'<h4 class="ph">'+e(s.heading)+'</h4>':'')+(s.intro?'<p class="introbox">'+e(s.intro).replace(/\n/g,'<br>')+'</p>':'')+(s.lead?'<p class="safe" style="margin:8px 0 14px">◆ '+e(s.lead)+'</p>':'')+list(s.notes,function(n){return '<p class="red">※ '+e(n)+'</p>'})+(s.bulletsFirst?(s.bullets?'<ul class="bl">'+list(s.bullets,function(b){return '<li>'+e(b)+'</li>'})+'</ul>':''):'')+tbl(s.table)+(s.afterNote?'<p class="red">※ '+e(s.afterNote)+'</p>':'')+(s.bulletsFirst?'':(s.bullets?'<ul class="bl">'+list(s.bullets,function(b){return '<li>'+e(b)+'</li>'})+'</ul>':''))+(s.images?'<div class="pgrid">'+list(s.images,function(x){return '<img loading="lazy" src="'+e(x)+'" alt="">'})+'</div>':'')+(s.image?'<img class="pimg" loading="lazy" src="'+e(s.image)+'" alt="">':'')+(s.footer?'<p class="safe">◆ '+e(s.footer)+'</p>':'')};
-  var fmt=function(t){return e(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\n/g,"<br>")};
-  var ICONS={
-    monitor:'<svg viewBox="0 0 64 64" width="72" height="72" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><rect x="8" y="10" width="48" height="34" rx="4"/><path d="M22 54h20M32 44v10"/></svg>',
-    click:'<svg viewBox="0 0 64 64" width="72" height="72" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="10" width="44" height="32" rx="4"/><path d="M18 52h20M28 42v10M40 28l14 8-6 2 5 8-4 2-5-8-4 4z"/></svg>',
-    note:'<svg viewBox="0 0 64 64" width="72" height="72" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 12h36v30L38 54H14z"/><path d="M38 54V42h12M22 8v8M32 8v8M42 8v8M22 26h20M22 34h14"/></svg>',
-    phone:'<svg viewBox="0 0 64 64" width="72" height="72" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M16 10l8 2 4 10-6 4c3 8 7 12 14 16l4-6 10 4 2 8c-4 6-12 6-20 2C18 42 10 30 10 20c0-6 2-9 6-10z"/><path d="M40 8h14v10H46l-4 4z"/></svg>'
-  };
-  var stepsHtml=function(s){return s.steps?'<div class="sysSteps">'+list(s.steps,function(x,i){return '<div><b>0'+(i+1)+'</b>'+(ICONS[x.icon]||'')+'<p>'+fmt(x.text)+'</p></div>'})+'</div>':''};
-  var contactHtml=function(s){return s.contact?'<div class="contact-card"><div><b>'+e(s.contact.label)+'</b><span class="bigtel">'+e(s.contact.phone)+'</span></div><div class="cc-img"'+(s.contact.image?' style="background-image:url(\''+e(s.contact.image)+'\')"':'')+'></div></div>':''};
-  var pageHtml=function(id,P,soon){return P?'<section id="'+id+'" style="padding:0">'+(P.banner?'<div class="pbanner"'+(P.banner.image?' style="background-image:linear-gradient(100deg,rgba(12,47,110,.95) 35%,rgba(12,47,110,.2)),url(\''+e(P.banner.image)+'\');background-size:cover;background-position:right center"':'')+'><div class="wrap"><small>'+e(P.banner.small)+'</small><b>'+e(P.banner.title)+'</b><span>'+e(P.banner.sub)+'</span></div></div>':'')+
-    '<div class="wrap about" style="padding-block:40px"><aside class="about-side"><h2>'+e(P.title)+'</h2><div class="ptabs" role="tablist">'+
-    list(P.items,function(it,i){return '<button type="button" role="tab" data-p="'+i+'" aria-selected="'+(i===0)+'">'+e(it.label)+'</button>'})+'</div></aside><div class="about-main">'+
-    list(P.items,function(it,i){return '<div class="pp" id="pp-'+id+'-'+i+'"'+(i?' hidden':'')+'><h3>'+e(it.label)+'</h3>'+((it.sections||[]).length?list(it.sections,function(s){return psec(s)+stepsHtml(s)+contactHtml(s)}):'<p class="soon">'+soon+'</p>')+'</div>'})+
-    '</div></div></section>':''};
-  var priceHtml=pageHtml("price",S.price,"단가표 준비 중입니다. 전화로 문의해 주세요.");
-  var infoHtml=pageHtml("info",S.info,"내용 준비 중입니다. 전화로 문의해 주세요.");
-  var drainHtml=pageHtml("drain",S.drain,"내용 준비 중입니다. 전화로 문의해 주세요.");
-  var supportHtml=S.board?'<section id="support" style="padding:0"><div class="wrap about" style="padding-block:40px"><aside class="about-side"><h2>'+e(S.board.title)+'</h2><div class="ptabs" id="btabs" role="tablist">'+list(S.board.boards,function(b,i){return '<button type="button" role="tab" data-b="'+e(b.id)+'" aria-selected="'+(b.id==="inquiry")+'">'+e(b.label)+'</button>'})+'</div></aside><div class="about-main" id="board-main"></div></div></section>':'';
-  var systemHtml=pageHtml("system",S.system,"내용 준비 중입니다. 전화로 문의해 주세요.");
 
 
   var tiles=(h.tiles||[]).map(function(t){return '<div>'+(t.image?'<img loading="lazy" src="'+e(t.image)+'" alt="'+e(t.label)+'">':'')+'<span>'+e(t.label)+'</span></div>'}).join("");
 
+  var QI={
+    price:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16.5V5h11.5L28 17.5 17.5 28z"/><circle cx="10" cy="11" r="1.6"/></svg>',
+    system:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="16" r="3"/><circle cx="16" cy="16" r="3"/><circle cx="26" cy="16" r="3"/><path d="M9 16h4M19 16h4"/></svg>',
+    info:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="16" cy="18" rx="6" ry="8"/><path d="M16 10V6M12 6l4 2 4-2M10 14l-5-2M22 14l5-2M10 20H4M22 20h6M11 25l-4 3M21 25l4 3"/></svg>',
+    drain:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4c5 6.5 8 10.5 8 14.5a8 8 0 0 1-16 0C8 14.5 11 10.5 16 4z"/><path d="M12.5 19a3.6 3.6 0 0 0 3.5 3.6"/></svg>',
+    journal:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 27l1.5-6L22 5.5 26.5 10 11 25.5zM19 8.5l4.5 4.5"/></svg>',
+    support:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6h22v15H14l-6 5v-5H5z"/><path d="M11 12h10M11 16h6"/></svg>'
+  };
+  var WHY_IC={
+    "👤":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="11" r="5"/><path d="M5 27c1.5-6 6-9 11-9s9.5 3 11 9"/></svg>',
+    "💬":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6h22v15H14l-6 5v-5H5z"/><path d="M11 12h10M11 16h6"/></svg>',
+    "🔁":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14a10 10 0 0 1 17-5l3 3M26 6v6h-6M26 18a10 10 0 0 1-17 5l-3-3M6 26v-6h6"/></svg>',
+    "📞":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5l5 1.5 2 6-3.5 2.5c2 4 5 7 9 9L23 20l6 2 1.5 5c-2 2.5-6 2.5-10 1C12 25.5 6 18.5 4.5 11 4.5 8 6 6 8 5z"/></svg>'
+  };
+  var quickHtml=(S.quickLinks||[]).length?'<section id="quick" class="alt"><div class="wrap"><h2>무엇이 궁금하세요?</h2><p class="sub">자주 찾는 메뉴를 바로 확인하세요.</p><div class="ql-grid">'+list(S.quickLinks,function(q){return '<a class="ql" href="'+e(q.href)+'"><span class="ql-ic">'+(QI[q.icon]||"")+'</span><span class="ql-tx"><b>'+e(q.title)+'</b><small>'+e(q.text)+'</small></span><span class="ql-go" aria-hidden="true">›</span></a>'})+'</div></div></section>':'';
+  var trustHtml=(S.trust||[]).length?'<div class="trust"><div class="wrap trust-in">'+list(S.trust,function(t){return '<div><b>'+e(t.value)+'</b><span>'+e(t.label)+'</span></div>'})+'</div></div>':'';
   var html=sample+
   '<header><div class="wrap top"><a class="logo" href="#top" aria-label="'+e(S.brand)+' 홈">'+(S.logo?'<img class="logo-img" src="'+e(S.logo)+'" alt="'+e(S.brand)+' — '+e(S.tagline)+'">':'<span class="mark">H</span><span><b>'+e(S.brand)+'</b><small>'+e(S.tagline)+'</small></span>')+'</a>'+
     '<a class="tel" href="'+e(tel)+'">☎ '+e(S.phone)+'</a></div>'+
@@ -344,21 +373,17 @@ footer{border-top:1px solid var(--line);padding:32px 0 calc(96px + env(safe-area
     '<span class="badge">'+e(h.badge)+'</span><p class="kicker">'+e(h.kicker)+'</p><p class="deal">'+e(h.deal)+'</p>'+
     '<h1>'+e(h.title)+'<br><span>'+e(h.highlight)+'</span></h1>'+
     '<ul class="hbul">'+list(h.bullets,function(b){return '<li>'+e(b)+'</li>'})+'</ul>'+
-    '<a class="btn cta" href="#contact">'+e(h.button1)+'</a><a class="btn ghost" href="#why">'+e(h.button2)+'</a></div>'+
-    '<div class="tiles">'+tiles+'</div></div></div>'+
+    '<a class="btn cta" href="#contact">'+e(h.button1)+'</a><a class="btn ghost" href="#about">'+e(h.button2)+'</a></div>'+
+    '<div class="tiles">'+tiles+'</div></div></div>'+trustHtml+
 
   '<section id="services"><div class="wrap"><h2>서비스</h2><p class="sub">필요한 분야만 골라 맡기세요.</p><div class="grid">'+
     list(S.services,function(x){var bl=x.blog&&/^https?:\/\//.test(x.blog)?x.blog:"";var im=x.image?'<img class="svc-img" loading="lazy" src="'+e(x.image)+'" alt="'+e(x.name)+'">':'<div class="ico">'+e(x.icon)+'</div>';return '<article class="card svc">'+(bl?'<a class="svc-media" href="'+e(bl)+'" target="_blank" rel="noopener noreferrer" aria-label="'+e(x.name)+' 네이버 블로그 새 창으로 열기">'+im+'</a>':'<div class="svc-media">'+im+'</div>')+'<div class="svc-body"><div class="svc-head"><h3>'+e(x.name)+'</h3><span class="tag">'+e(x.tag)+'</span></div><ul class="svc-list">'+list(x.items,function(i){return '<li>'+e(i)+'</li>'})+'</ul>'+(bl?'<a class="svc-blog" href="'+e(bl)+'" target="_blank" rel="noopener noreferrer"><b>N</b>네이버 블로그 바로가기<span aria-hidden="true">↗</span></a>':'')+'</div></article>';return '<div class="card svc">'+(bl?'<a class="svc-link" href="'+e(bl)+'" target="_blank" rel="noopener noreferrer" aria-label="'+e(x.name)+' 네이버 블로그 새 창으로 열기">'+im+'<span class="svc-badge"><b>N</b> 네이버 블로그 바로가기 (클릭하면 새 창으로 열립니다) ↗</span></a>':im)+'<span class="tag">'+e(x.tag)+'</span><h3>'+e(x.name)+'</h3><ul>'+list(x.items,function(i){return '<li>'+e(i)+'</li>'})+'</ul>'+'</div>'})+
   '</div></div></section>'+
 
-  ((S.about)?'<section id="about"><div class="wrap about"><aside class="about-side"><h2>'+e(S.about.title)+'</h2><div class="tabs" role="tablist"><button type="button" role="tab" data-tab="g" aria-selected="true">'+e(S.about.greeting.title)+'</button><button type="button" role="tab" data-tab="o" aria-selected="false">'+e(S.about.org.title)+'</button></div></aside>'+
-    '<div class="about-main"><div id="tab-g"><h3>'+e(S.about.greeting.title)+'</h3><p class="lead">'+e(S.about.greeting.headline)+'<br><em>'+e(S.about.greeting.highlight)+'</em></p>'+list(S.about.greeting.paragraphs,function(p){return '<p>'+e(p)+'</p>'})+'</div>'+
-    '<div id="tab-o" hidden><h3>'+e(S.about.org.title)+'</h3><p class="slogan">'+e(S.about.org.slogan)+'</p><div class="ceo">'+e(S.about.org.ceo)+'</div><div class="teams">'+list(S.about.org.teams,function(t){return '<div class="team"><h4>'+e(t.name)+'</h4><ul style="padding:0">'+list(t.members,function(m){return '<li>'+e(m)+'</li>'})+'</ul></div>'})+'</div></div></div></div></section>':'')+
-
-  priceHtml+systemHtml+infoHtml+drainHtml+supportHtml+postsHtml+dirHtml+
+  quickHtml+
 
   '<section id="why" class="alt"><div class="wrap"><h2>왜 저희일까요</h2><p class="sub">작은 업체라서 가능한 방식입니다.</p><div class="why">'+
-    list(S.why,function(x){return '<div><span style="font-size:1.6rem">'+e(x.icon)+'</span><b>'+e(x.title)+'</b><span>'+e(x.text)+'</span></div>'})+'</div></div></section>'+
+    list(S.why,function(x){return '<div><span class="why-ic">'+(WHY_IC[x.icon]||e(x.icon))+'</span><b>'+e(x.title)+'</b><span>'+e(x.text)+'</span></div>'})+'</div></div></section>'+
 
   '<section id="process"><div class="wrap"><h2>진행 순서</h2><p class="sub">전화 한 통이면 시작됩니다.</p><div class="steps">'+
     list(S.steps,function(x){return '<div><b>'+e(x.title)+'</b><span>'+e(x.text)+'</span></div>'})+'</div></div></section>'+
@@ -367,37 +392,31 @@ footer{border-top:1px solid var(--line);padding:32px 0 calc(96px + env(safe-area
     list(S.gallery,function(x){return '<div class="card"><div class="shot">'+(x.image?'<img loading="lazy" src="'+e(x.image)+'" alt="'+e(x.title)+'">':'사진 자리')+'</div><span class="tag">'+e(x.tag)+'</span><h3>'+e(x.title)+'</h3><p class="meta">'+e(x.area)+'</p><p style="color:var(--muted);font-size:.93rem;margin-top:6px">'+e(x.text)+'</p></div>'})+
   '</div></div></section>':'')+
 
-  ((S.reviews||[]).length?'<section id="reviews"><div class="wrap"><h2>고객 후기</h2><p class="sub">&nbsp;</p><div class="grid">'+
+  ((S.reviews||[]).length?'<section id="reviews"><div class="wrap"><h2>고객 후기</h2><p class="sub">이용하신 고객님들의 이야기입니다.</p><div class="grid">'+
     list(S.reviews,function(x){return '<div class="card"><div class="stars">'+"★".repeat(x.stars||5)+'</div><p style="margin:8px 0">'+e(x.text)+'</p><p class="meta">'+e(x.name)+' · '+e(x.area)+'</p></div>'})+
   '</div></div></section>':'')+
 
-  '<section id="faq" class="alt"><div class="wrap"><h2>자주 묻는 질문</h2><p class="sub">&nbsp;</p>'+
+  ((S.about)?'<section id="about"><div class="wrap"><div class="about-teaser"><div><h2>'+e(S.about.title)+'</h2><p class="at-lead">'+e(S.about.greeting.headline)+'<br><em>'+e(S.about.greeting.highlight)+'</em></p><p class="at-body">'+e((S.about.greeting.paragraphs||[])[2]||"")+'</p><p class="at-btns"><a class="btn" href="about/greeting/">인사말 더보기</a><a class="btn ghost" href="about/organization/">조직도</a></p></div></div></div></section>':'')+
+
+  postsHtml+
+
+  '<section id="faq" class="alt"><div class="wrap"><h2>자주 묻는 질문</h2><p class="sub">문의 전에 가장 많이 물어보시는 내용입니다.</p>'+
     list(S.faq,function(x){return '<details><summary>'+e(x.q)+'</summary><p>'+e(x.a)+'</p></details>'})+'</div></section>'+
 
-  '<section id="contact"><div class="wrap"><h2>문의하기</h2><p class="sub">남겨주시면 확인 후 바로 연락드립니다.</p>'+
-    ((S.areas||[]).length?'<div class="area">'+list(S.areas,function(a){return '<span>'+e(a)+'</span>'})+'</div>':'')+
+  '<section id="contact"><div class="wrap"><h2>문의하기</h2><p class="sub">남겨주시면 확인 후 바로 연락드립니다.</p><div class="cg">'+
+    '<div class="cg-form">'+((S.areas||[]).length?'<div class="area">'+list(S.areas,function(a){return '<span>'+e(a)+'</span>'})+'</div>':'')+
     '<form id="f"><select name="svc" aria-label="서비스">'+list(S.contactOptions,function(o){return '<option>'+e(o)+'</option>'})+'</select>'+
     '<input name="name" placeholder="성함" required><input name="phone" type="tel" placeholder="연락처" required>'+
     '<textarea name="msg" rows="4" placeholder="지역과 증상을 간단히 적어주세요"></textarea>'+
-    '<button class="btn" type="submit">문자로 문의 보내기</button><p class="note" id="note">휴대폰에서 버튼을 누르면 문자 앱이 열립니다. 문자 문의 번호 <b>'+e(S.smsDisplay||S.smsNumber)+'</b></p></form>'+
-    channelsHtml+
-  '</div></section></main>'+
+    '<button class="btn" type="submit">문자로 문의 보내기</button><p class="note" id="note">휴대폰에서 버튼을 누르면 문자 앱이 열립니다. 문자 문의 번호 <b>'+e(S.smsDisplay||S.smsNumber)+'</b></p></form></div>'+
+    '<aside class="cg-side"><div class="callcard"><small>전화 상담 (대표번호)</small><a class="callnum" href="'+e(tel)+'">☎ '+e(S.phone)+'</a><p>증상과 지역을 말씀해 주시면 바로 안내해 드립니다.</p></div>'+channelsHtml+'</aside></div>'+
+  '</div></div></section>'+dirHtml+'</main>'+
 
   '<footer><div class="wrap"><b>'+e(S.pageTitle)+'</b><br>대표 '+e(S.owner)+' · 전화 <a href="'+e(tel)+'">'+e(S.phone)+'</a>'+(S.company?'<br>사업자등록번호 '+e(S.company.bizNo)+' · 통신판매업신고번호 '+e(S.company.mailOrderNo)+'<br>'+e(S.company.address):'')+'<br>© '+new Date().getFullYear()+' All rights reserved.</div></footer>'+
   '<div class="fabs">'+(kkOk?kkBtn():'')+'<a class="btn fab" href="'+e(tel)+'">📞 전화상담</a></div>';
 
   $("#app").innerHTML=html;
 
-  var tabs=document.querySelectorAll("#about .tabs button");
-  tabs.forEach(function(b){b.addEventListener("click",function(){
-    tabs.forEach(function(x){x.setAttribute("aria-selected",x===b?"true":"false")});
-    $("#tab-g").hidden=b.dataset.tab!=="g";$("#tab-o").hidden=b.dataset.tab!=="o";
-  })});
-  document.querySelectorAll(".ptabs button").forEach(function(b){b.addEventListener("click",function(){
-    var sec=b.closest("section");
-    sec.querySelectorAll(".ptabs button").forEach(function(x){x.setAttribute("aria-selected",x===b?"true":"false")});
-    sec.querySelectorAll(".pp").forEach(function(p){p.hidden=p.id!=="pp-"+sec.id+"-"+b.dataset.p});
-  })});
   // ---------- 메인 슬라이드 ----------
   (function(){
     var root=$("#slider");if(!root)return;
@@ -419,125 +438,6 @@ footer{border-top:1px solid var(--line);padding:32px 0 calc(96px + env(safe-area
     start();
   })();
 
-  // ---------- 고객센터 게시판 (브라우저 저장소 기반) ----------
-  (function(){
-    var B=S.board,main=$("#board-main");if(!B||!main)return;
-    var mem={};
-    var store={get:function(k){try{var v=localStorage.getItem(k);return v==null?(k in mem?mem[k]:null):v}catch(x){return k in mem?mem[k]:null}},
-      set:function(k,v){mem[k]=v;try{localStorage.setItem(k,v)}catch(x){}}};
-    var st={tab:"inquiry",view:"list",page:1,sort:"new",q:"",field:"all",csort:"likes",id:null,unlocked:{},msg:"",err:""};
-    var cfg=function(id){return B.boards.filter(function(b){return b.id===id})[0]};
-    var load=function(id){var raw=store.get("hrc-board-"+id);if(raw){try{return JSON.parse(raw)}catch(x){}}
-      var seed=JSON.parse(JSON.stringify(cfg(id).seed||[]));save(id,seed);return seed};
-    var save=function(id,arr){store.set("hrc-board-"+id,JSON.stringify(arr))};
-    var pad=function(n){return ("0"+n).slice(-2)};
-    var today=function(){var d=new Date();return d.getFullYear()+"."+pad(d.getMonth()+1)+"."+pad(d.getDate())};
-    var now=function(){var d=new Date();return today()+" "+pad(d.getHours())+":"+pad(d.getMinutes())};
-    var mask=function(p){var d=String(p||"").replace(/[^0-9]/g,"");return d.length>=7?d.slice(0,3)+"****":""};
-    var find=function(arr,id){return arr.filter(function(p){return p.id===id})[0]};
-    var FIELDS={all:"전체",title:"제목",content:"내용",author:"작성자"};
-
-    function matches(p){
-      if(!st.q)return true;var q=st.q.toLowerCase(),t=(p.title||"").toLowerCase(),c=p.secret?"":(p.content||"").toLowerCase(),a=(p.author||"").toLowerCase();
-      return st.field==="title"?t.indexOf(q)>=0:st.field==="content"?c.indexOf(q)>=0:st.field==="author"?a.indexOf(q)>=0:(t.indexOf(q)>=0||c.indexOf(q)>=0||a.indexOf(q)>=0);
-    }
-    function pager(page,pages){
-      var g=Math.floor((page-1)/10),s=g*10+1,e2=Math.min(pages,s+9),h="";
-      if(g>0)h+='<button type="button" data-pg="1">처음</button><button type="button" data-pg="'+(s-1)+'">«</button>';
-      for(var i=s;i<=e2;i++)h+='<button type="button" data-pg="'+i+'"'+(i===page?' aria-current="true"':'')+'>'+i+'</button>';
-      if(e2<pages)h+='<button type="button" data-pg="'+(e2+1)+'">»</button><button type="button" data-pg="'+pages+'">마지막</button>';
-      return h;
-    }
-    function renderList(){
-      var cf=cfg(st.tab),all=load(st.tab).filter(matches);
-      var key={new:function(a,b){return a.date===b.date?b.id-a.id:(a.date<b.date?1:-1)},views:function(a,b){return b.views-a.views},likes:function(a,b){return (b.likes||0)-(a.likes||0)}}[st.sort];
-      var sorted=all.slice().sort(key),total=sorted.length,ps=B.pageSize||10,pages=Math.max(1,Math.ceil(total/ps));
-      if(st.page>pages)st.page=pages;
-      var rows=sorted.slice((st.page-1)*ps,st.page*ps);
-      var opts=function(o,cur){return Object.keys(o).map(function(k){return '<option value="'+k+'"'+(k===cur?" selected":"")+'>'+o[k]+'</option>'}).join("")};
-      main.innerHTML=(st.msg?'<p class="btoast">'+e(st.msg)+'</p>':'')+'<h3>'+e(cf.label)+'</h3><div class="btop"><span>전체 '+total+(st.q?' (검색: '+e(st.q)+')':'')+'</span><select id="bsort" aria-label="정렬">'+opts({new:"최신순",views:"조회순",likes:"추천순"},st.sort)+'</select></div>'+
-        '<table class="btbl"><thead><tr><th class="hm">번호</th><th>제목</th><th>작성자</th><th class="hm">작성일</th><th class="hm">추천</th><th class="hm">조회</th></tr></thead><tbody>'+
-        (rows.length?rows.map(function(p){return '<tr><td class="hm">'+p.id+'</td><td class="t"><a data-open="'+p.id+'">'+(p.secret?'🔒 ':'')+e(p.title)+'</a>'+(p.reply?'<span class="rc">(1)</span>':'')+((p.comments||[]).length?'<span class="rc">['+p.comments.length+']</span>':'')+'</td><td>'+e(p.author)+'</td><td class="hm">'+e(String(p.date).slice(0,10))+'</td><td class="hm">'+(p.likes||0)+'</td><td class="hm">'+p.views+'</td></tr>'}).join(""):'<tr><td colspan="6">'+(st.q?'검색 결과가 없습니다.':'등록된 글이 없습니다.')+'</td></tr>')+
-        '</tbody></table><div class="bpager">'+pager(st.page,pages)+'</div>'+
-        '<form class="bsearch" id="bsearch"><select id="bfield" aria-label="검색 항목">'+opts(FIELDS,st.field)+'</select><input id="bq" value="'+e(st.q)+'" placeholder="검색어" aria-label="검색어"><button type="submit" class="bbtn">검색</button>'+(st.q?'<button type="button" class="bbtn" data-act="reset">전체보기</button>':'')+'</form>'+
-        (cf.writable?'<div class="bright"><button type="button" class="bbtn pri" data-act="write">글쓰기</button></div>':'');
-      st.msg="";
-    }
-    function renderPw(){
-      main.innerHTML='<h3>'+e(cfg(st.tab).label)+'</h3><form class="bform" id="bpw"><p>🔒 비밀글입니다. 작성 시 입력한 비밀번호를 입력해 주세요.</p><label>비밀번호<input id="bpwin" type="password" autocomplete="off"></label>'+(st.err?'<p class="berr">'+e(st.err)+'</p>':'')+'<div><button type="submit" class="bbtn pri">확인</button><button type="button" class="bbtn" data-act="list">목록보기</button></div></form>';st.err="";
-    }
-    function commentsHtml(p){
-      var cs=(p.comments||[]).slice();
-      cs.sort(st.csort==="likes"?function(a,b){return (b.likes||0)-(a.likes||0)||b.id-a.id}:function(a,b){return b.id-a.id});
-      return '<div class="bcom"><div class="btop"><span>댓글 전체 <b style="color:var(--accent)">'+cs.length+'</b></span><select id="bcsort" aria-label="댓글 정렬"><option value="likes"'+(st.csort==="likes"?" selected":"")+'>추천순</option><option value="new"'+(st.csort==="new"?" selected":"")+'>최신순</option></select></div>'+
-        (cs.length?cs.map(function(c){return '<div class="bc"><div class="bcm"><b>'+e(c.author)+'</b> <span>'+e(c.date)+'</span><button type="button" class="bclike" data-clike="'+c.id+'">👍 '+(c.likes||0)+'</button></div><p>'+e(c.text)+'</p></div>'}).join(""):'<p class="meta" style="padding:10px 0">첫 댓글을 남겨 보세요.</p>')+
-        '<form class="bform bcf" id="bcom"><div class="bcrow"><input id="bc-name" required maxlength="20" placeholder="이름" aria-label="이름"></div><textarea id="bc-text" rows="3" required maxlength="500" placeholder="댓글을 입력하세요" aria-label="댓글"></textarea><div><button type="submit" class="bbtn pri">댓글 등록</button></div></form></div>';
-    }
-    function renderView(){
-      var arr=load(st.tab),p=find(arr,st.id);if(!p){st.view="list";return renderList()}
-      var mine=store.get("hrc-react-"+st.tab+"-"+p.id);
-      main.innerHTML=(st.msg?'<p class="btoast">'+e(st.msg)+'</p>':'')+'<div class="bview"><h3>'+e(cfg(st.tab).label)+'</h3><h4>'+(p.secret?'🔒 ':'')+e(p.title)+'</h4><div class="bmeta"><span>작성자 '+e(p.author)+'</span><span>작성일 '+e(p.date)+'</span><span>조회 '+p.views+'</span></div>'+
-        (p.phone?'<p class="meta">전화번호 : '+e(mask(p.phone))+'</p>':'')+'<div class="bbody">'+e(p.content)+(p.image?'<img src="'+e(p.image)+'" alt="첨부 사진">':'')+'</div>'+
-        (p.reply?'<div class="breply"><b>홈로취케어 답변</b><p style="margin-top:6px;max-width:none">'+e(p.reply)+'</p></div>':'')+
-        '<div class="bact"><span><button type="button" class="bbtn react" data-react="up"'+(mine?' disabled':'')+'>좋아요 '+(p.likes||0)+'</button><button type="button" class="bbtn react" data-react="down"'+(mine?' disabled':'')+'>싫어요 '+(p.dislikes||0)+'</button></span><button type="button" class="bbtn" data-act="print">인쇄</button></div>'+
-        commentsHtml(p)+
-        '<div style="margin-top:14px"><button type="button" class="bbtn" data-act="list">목록보기</button>'+(p.pw&&cfg(st.tab).writable?'<button type="button" class="bbtn" data-act="del">삭제</button>':'')+'</div><form class="bform" id="bdel" hidden style="margin-top:12px"><label>비밀번호 확인<input id="bdelpw" type="password" autocomplete="off"></label><div><button type="submit" class="bbtn pri">삭제하기</button></div><p class="berr" id="bdelerr"></p></form></div>';st.msg="";
-    }
-    function renderWrite(){
-      var cf=cfg(st.tab);
-      main.innerHTML='<h3>'+e(cf.label)+' 글쓰기</h3><form class="bform" id="bwrite"><label>이름<input id="bw-name" required maxlength="20"></label><label>비밀번호 (삭제·비밀글 열람용, 4자 이상)<input id="bw-pw" type="password" required minlength="4" maxlength="30" autocomplete="new-password"></label><label>연락처<input id="bw-phone" type="tel" maxlength="20" placeholder="010-0000-0000"></label><label>제목<input id="bw-title" required maxlength="80"></label><label>내용<textarea id="bw-content" rows="8" required maxlength="3000"></textarea></label><label>사진 첨부 (선택)<input id="bw-img" type="file" accept="image/*"></label><label style="display:flex;gap:8px;align-items:center;color:var(--fg)"><input id="bw-secret" type="checkbox" style="width:auto"'+(cf.secretDefault?' checked':'')+'> 비밀글로 등록</label><p class="berr" id="bw-err"></p><div><button type="submit" class="bbtn pri">등록</button><button type="button" class="bbtn" data-act="list">취소</button></div></form>';
-    }
-    function render(){({list:renderList,view:renderView,write:renderWrite}[st.view]||renderList)()}
-    function open(id){
-      var arr=load(st.tab),p=find(arr,id);if(!p)return;st.id=id;
-      if(p.secret&&!st.unlocked[st.tab+id]){st.view="pw";renderPw();return}
-      p.views++;save(st.tab,arr);st.view="view";renderView();
-    }
-    function shrink(file,cb){
-      var fr=new FileReader();fr.onload=function(){var im=new Image();im.onload=function(){var m=800,s=Math.min(1,m/Math.max(im.width,im.height)),cv=document.createElement("canvas");cv.width=Math.round(im.width*s);cv.height=Math.round(im.height*s);cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);cb(cv.toDataURL("image/jpeg",.7))};im.onerror=function(){cb("")};im.src=fr.result};fr.onerror=function(){cb("")};fr.readAsDataURL(file);
-    }
-    main.addEventListener("click",function(ev){
-      var t=ev.target.closest("[data-open],[data-pg],[data-act],[data-react],[data-clike]");if(!t)return;
-      if(t.dataset.open){open(+t.dataset.open);return}
-      if(t.dataset.pg){st.page=+t.dataset.pg;renderList();return}
-      if(t.dataset.react){var arr=load(st.tab),p=find(arr,st.id);if(t.dataset.react==="up")p.likes=(p.likes||0)+1;else p.dislikes=(p.dislikes||0)+1;save(st.tab,arr);store.set("hrc-react-"+st.tab+"-"+p.id,"1");renderView();return}
-      if(t.dataset.clike){var arr2=load(st.tab),p2=find(arr2,st.id),c=(p2.comments||[]).filter(function(x){return x.id===+t.dataset.clike})[0];
-        if(c&&!store.get("hrc-clike-"+st.tab+"-"+p2.id+"-"+c.id)){c.likes=(c.likes||0)+1;save(st.tab,arr2);store.set("hrc-clike-"+st.tab+"-"+p2.id+"-"+c.id,"1");renderView()}return}
-      var a=t.dataset.act;
-      if(a==="list"){st.view="list";renderList()}
-      else if(a==="write"){st.view="write";renderWrite()}
-      else if(a==="reset"){st.q="";st.field="all";st.page=1;renderList()}
-      else if(a==="print"){try{window.print()}catch(x){}}
-      else if(a==="del"){var f=$("#bdel");f.hidden=!f.hidden;if(!f.hidden)$("#bdelpw").focus()}
-    });
-    main.addEventListener("change",function(ev){
-      if(ev.target.id==="bsort"){st.sort=ev.target.value;st.page=1;renderList()}
-      else if(ev.target.id==="bcsort"){st.csort=ev.target.value;renderView()}
-    });
-    main.addEventListener("submit",function(ev){
-      ev.preventDefault();var f=ev.target.id;
-      if(f==="bsearch"){st.field=$("#bfield").value;st.q=$("#bq").value.trim();st.page=1;renderList()}
-      else if(f==="bpw"){var arr=load(st.tab),p=find(arr,st.id);
-        if($("#bpwin").value===p.pw){st.unlocked[st.tab+st.id]=true;open(st.id)}else{st.err="비밀번호가 일치하지 않습니다.";renderPw()}}
-      else if(f==="bcom"){var arr3=load(st.tab),p3=find(arr3,st.id);p3.comments=p3.comments||[];
-        p3.comments.push({id:p3.comments.reduce(function(m,x){return Math.max(m,x.id)},0)+1,author:$("#bc-name").value.trim(),text:$("#bc-text").value.trim(),date:now(),likes:0});
-        save(st.tab,arr3);st.msg="댓글이 등록되었습니다.";renderView()}
-      else if(f==="bdel"){var arr4=load(st.tab),p4=find(arr4,st.id);
-        if($("#bdelpw").value===p4.pw){save(st.tab,arr4.filter(function(x){return x.id!==p4.id}));st.view="list";st.msg="글이 삭제되었습니다.";renderList()}else{$("#bdelerr").textContent="비밀번호가 일치하지 않습니다."}}
-      else if(f==="bwrite"){
-        var go=function(img){var arr5=load(st.tab),id=arr5.reduce(function(m,x){return Math.max(m,x.id)},0)+1;
-          arr5.push({id:id,title:$("#bw-title").value.trim(),author:$("#bw-name").value.trim(),date:now(),views:0,likes:0,dislikes:0,secret:$("#bw-secret").checked,pw:$("#bw-pw").value,phone:$("#bw-phone").value.trim(),content:$("#bw-content").value.trim(),image:img||"",reply:null,comments:[]});
-          save(st.tab,arr5);st.view="list";st.page=1;st.sort="new";st.q="";st.msg="글이 등록되었습니다.";renderList()};
-        var file=$("#bw-img").files[0];if(file)shrink(file,go);else go("");
-      }
-    });
-    $("#btabs").addEventListener("click",function(ev){
-      var b=ev.target.closest("button[data-b]");if(!b)return;
-      st.tab=b.dataset.b;st.view="list";st.page=1;st.sort="new";st.q="";st.field="all";
-      document.querySelectorAll("#btabs button").forEach(function(x){x.setAttribute("aria-selected",x===b?"true":"false")});renderList();
-    });
-    renderList();
-  })();
 
   $("#f").addEventListener("submit",function(ev){
     ev.preventDefault();
