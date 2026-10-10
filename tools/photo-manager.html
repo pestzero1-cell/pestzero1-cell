@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>사진 관리 도구 (사장님 전용)</title>
+<style>
+:root{--bg:#fff;--fg:#1c2b25;--muted:#5d6b64;--card:#f3f8f5;--line:#dfe8e3;--brand:#12408f;--accent:#e5531d;--ok:#1f8a5b;--on:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#101815;--fg:#e8f0ec;--muted:#9bb0a6;--card:#17231e;--line:#27382f;--brand:#6ea0ff;--accent:#ff7a45;--ok:#4ee08b;--on:#08162f}}
+*{box-sizing:border-box;margin:0}
+body{font-family:-apple-system,"Pretendard","Noto Sans KR",sans-serif;background:var(--bg);color:var(--fg);line-height:1.6;padding:0 16px 120px;word-break:keep-all;overflow-wrap:anywhere}
+.wrap{max-width:1100px;margin:0 auto}
+h1{font-size:1.5rem;margin:24px 0 6px}
+.lead{color:var(--muted);margin-bottom:16px}
+.notice{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:14px 0;font-size:.92rem}
+.notice b{color:var(--accent)}
+ol.steps{padding-left:20px;margin:8px 0;font-size:.92rem}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 0;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.bar .cnt{font-weight:700}
+button,.btn{font:inherit;cursor:pointer;border:0;border-radius:8px;padding:9px 16px;background:var(--brand);color:var(--on);font-weight:700}
+button.ghost{background:transparent;color:var(--brand);border:1.5px solid var(--brand)}
+button:disabled{opacity:.45;cursor:not-allowed}
+h2{font-size:1.15rem;margin:28px 0 10px;color:var(--brand);padding-bottom:6px;border-bottom:1px solid var(--line)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.slot{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--bg);display:flex;flex-direction:column}
+.slot.changed{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok) inset}
+.thumb{aspect-ratio:4/3;background:var(--card);display:grid;place-items:center;overflow:hidden;position:relative}
+.thumb img{max-width:100%;max-height:100%;object-fit:contain}
+.thumb .tag{position:absolute;left:8px;top:8px;background:var(--ok);color:#fff;font-size:.72rem;font-weight:700;border-radius:999px;padding:2px 10px}
+.info{padding:10px 12px;display:grid;gap:4px;font-size:.82rem;flex:1}
+.info code{font-size:.78rem;background:var(--card);padding:1px 6px;border-radius:4px;word-break:break-all}
+.info .use{color:var(--muted)}
+.acts{display:flex;gap:8px;padding:0 12px 12px;flex-wrap:wrap}
+.acts label{flex:1}
+.acts input[type=file]{display:none}
+.acts .pick{display:block;text-align:center;background:var(--brand);color:var(--on);border-radius:8px;padding:8px 10px;font-weight:700;font-size:.88rem;cursor:pointer}
+.acts .pick:focus-within{outline:2px solid var(--accent)}
+.acts button{padding:8px 10px;font-size:.85rem}
+.msg{font-size:.78rem;color:var(--ok)}
+.msg.err{color:var(--accent)}
+.empty{color:var(--muted);padding:20px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>사진 관리 도구 <small style="font-size:.6em;color:var(--muted)">(사장님 전용)</small></h1>
+  <p class="lead">홈페이지에 쓰이는 사진을 한곳에서 확인하고 새 사진으로 바꿉니다.</p>
+
+  <div class="notice">
+    <b>이 도구는 사장님 컴퓨터에서만 쓰는 도구입니다.</b> 사진은 서버로 보내지지 않고 이 컴퓨터 안에서만 처리됩니다.
+    홈페이지에는 비밀번호 화면을 넣지 않았습니다. 서버 없이 만든 비밀번호는 누구나 우회할 수 있어 안전하지 않기 때문입니다.
+    사이트에 실제로 반영하려면 GitHub에 로그인한 사장님만 파일을 올릴 수 있습니다.
+  </div>
+
+  <ol class="steps">
+    <li>바꿀 사진 칸에서 <b>새 사진 선택</b>을 누르고 사진을 고릅니다. (자동으로 크기를 줄이고 용량을 낮춥니다)</li>
+    <li>바뀐 사진은 초록 테두리로 표시됩니다. 여러 장을 바꿔도 됩니다.</li>
+    <li>위쪽 <b>바뀐 사진 ZIP 받기</b>를 누르면 <code>images/</code> 폴더 구조 그대로 압축 파일이 내려받아집니다.</li>
+    <li>압축을 풀어 나온 <code>images</code> 폴더를 GitHub 저장소의 <code>images</code> 폴더에 같은 이름으로 올리면 끝입니다. (GitHub 웹에서 Add file → Upload files)</li>
+  </ol>
+
+  <div class="bar">
+    <span class="cnt" id="cnt">불러오는 중…</span>
+    <button id="zip" disabled>바뀐 사진 ZIP 받기</button>
+    <button id="reset" class="ghost" disabled>모두 되돌리기</button>
+    <span class="msg" id="zipmsg"></span>
+  </div>
+
+  <div id="list"></div>
+</div>
+
+<script src="../content.js"></script>
+<script>
+(function(){
+  var S=window.SITE||{};
+  var GROUP={slider:"메인 슬라이드",hero:"첫 화면",services:"서비스 카드",about:"회사소개",price:"서비스단가표",system:"서비스시스템",info:"소독/해충정보",drain:"하수구막힘 뚫음",gallery:"시공 사례",reviews:"후기",logo:"로고",ogImage:"링크 공유 대표 이미지"};
+  var IMG=/^images\/[^\s"']+\.(jpe?g|png|webp|svg)$/i;
+  var slots={};   // path -> {path, uses:[labels], group}
+  function walk(v,path,top){
+    if(typeof v==="string"){ if(IMG.test(v)){ var s=slots[v]||(slots[v]={path:v,uses:[],group:GROUP[top]||top}); s.uses.push(path); } return; }
+    if(Array.isArray(v)){ v.forEach(function(x,i){walk(x,path+"["+(i+1)+"]",top)}); return; }
+    if(v&&typeof v==="object"){ Object.keys(v).forEach(function(k){ walk(v[k],path?path+"."+k:k,top||k) }); }
+  }
+  Object.keys(S).forEach(function(k){ if(k==="bot")return; walk(S[k],k,k); });
+  var list=Object.keys(slots).map(function(k){return slots[k]});
+  var changed={};   // path -> {blob,url,name,before,after}
+  var $=function(id){return document.getElementById(id)};
+  var kb=function(n){return n>1048576?(n/1048576).toFixed(1)+"MB":Math.max(1,Math.round(n/1024))+"KB"};
+  var esc=function(t){return String(t).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
+
+  function render(){
+    var by={};list.forEach(function(s){(by[s.group]=by[s.group]||[]).push(s)});
+    var html="";
+    Object.keys(by).forEach(function(g){
+      html+='<h2>'+esc(g)+' <small style="color:var(--muted);font-weight:400">('+by[g].length+')</small></h2><div class="grid">'+by[g].map(function(s){
+        var c=changed[s.path];
+        var src=c?c.url:"../"+s.path;
+        var uses=s.uses.slice(0,2).join(" · ")+(s.uses.length>2?" 외 "+(s.uses.length-2)+"곳":"");
+        return '<div class="slot'+(c?" changed":"")+'" data-p="'+esc(s.path)+'"><div class="thumb">'+(c?'<span class="tag">바뀜</span>':'')+'<img src="'+esc(src)+'" alt="" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{textContent:\'파일 없음\',style:\'color:var(--accent)\'}))"></div>'+
+        '<div class="info"><code>'+esc(s.path)+'</code><span class="use">사용: '+esc(uses)+'</span>'+(c?'<span class="msg">'+kb(c.before)+' → '+kb(c.after)+' ('+c.dim+')</span>':'')+'<span class="msg err" data-err></span></div>'+
+        '<div class="acts"><label class="pick" tabindex="0">'+(c?'다른 사진으로':'새 사진 선택')+'<input type="file" accept="image/*" data-pick></label>'+(c?'<button class="ghost" data-undo>되돌리기</button>':'')+'</div></div>';
+      }).join("")+'</div>';
+    });
+    $("list").innerHTML=html||'<p class="empty">content.js 에서 사진을 찾지 못했습니다. 이 파일이 사이트 폴더의 tools/ 안에 있는지 확인하세요.</p>';
+    var n=Object.keys(changed).length;
+    $("cnt").textContent="사진 "+list.length+"장 중 "+n+"장 바뀜";
+    $("zip").disabled=!n;$("reset").disabled=!n;
+  }
+
+  function maxSide(path){ return /logo/i.test(path)?800:1600; }
+  function process(file,path){
+    return new Promise(function(res,rej){
+      if(!/^image\//.test(file.type))return rej(new Error("사진 파일이 아닙니다."));
+      if(/\.svg$/i.test(path))return rej(new Error("SVG 파일은 교체를 지원하지 않습니다. 파일을 직접 바꿔 주세요."));
+      var url=URL.createObjectURL(file),im=new Image();
+      im.onload=function(){
+        var m=maxSide(path),sc=Math.min(1,m/Math.max(im.naturalWidth,im.naturalHeight));
+        var w=Math.round(im.naturalWidth*sc),h=Math.round(im.naturalHeight*sc);
+        var cv=document.createElement("canvas");cv.width=w;cv.height=h;var ctx=cv.getContext("2d");
+        var png=/\.png$/i.test(path);
+        if(!png){ctx.fillStyle="#fff";ctx.fillRect(0,0,w,h)}
+        ctx.drawImage(im,0,0,w,h);URL.revokeObjectURL(url);
+        cv.toBlob(function(b){ b?res({blob:b,w:w,h:h}):rej(new Error("변환에 실패했습니다.")) },png?"image/png":/\.webp$/i.test(path)?"image/webp":"image/jpeg",.86);
+      };
+      im.onerror=function(){URL.revokeObjectURL(url);rej(new Error("사진을 읽지 못했습니다. 다른 파일로 시도해 주세요."))};
+      im.src=url;
+    });
+  }
+
+  $("list").addEventListener("change",function(ev){
+    var inp=ev.target.closest("[data-pick]");if(!inp||!inp.files[0])return;
+    var slot=inp.closest(".slot"),path=slot.dataset.p,file=inp.files[0];
+    process(file,path).then(function(r){
+      if(changed[path])URL.revokeObjectURL(changed[path].url);
+      changed[path]={blob:r.blob,url:URL.createObjectURL(r.blob),before:file.size,after:r.blob.size,dim:r.w+"×"+r.h};
+      render();
+    }).catch(function(e){ var el=slot.querySelector("[data-err]");if(el)el.textContent=e.message });
+  });
+  $("list").addEventListener("click",function(ev){
+    var u=ev.target.closest("[data-undo]");if(!u)return;
+    var p=u.closest(".slot").dataset.p;URL.revokeObjectURL(changed[p].url);delete changed[p];render();
+  });
+  $("list").addEventListener("keydown",function(ev){ if((ev.key==="Enter"||ev.key===" ")&&ev.target.matches("label.pick")){ev.preventDefault();ev.target.querySelector("input").click()} });
+  $("reset").addEventListener("click",function(){Object.keys(changed).forEach(function(p){URL.revokeObjectURL(changed[p].url)});changed={};render()});
+
+  // ---- 최소 ZIP 생성기 (압축 없이 저장) ----
+  var T=(function(){var t=[];for(var n=0;n<256;n++){var c=n;for(var k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+  function crc(u8){var c=0xFFFFFFFF;for(var i=0;i<u8.length;i++)c=T[(c^u8[i])&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0}
+  function u16(n){return[n&255,(n>>>8)&255]}function u32(n){return[n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255]}
+  function makeZip(files){
+    var enc=new TextEncoder(),parts=[],central=[],offset=0;
+    files.forEach(function(f){
+      var name=enc.encode(f.name),crc32=crc(f.data),size=f.data.length;
+      var lh=[0x50,0x4b,3,4].concat(u16(20),u16(0x0800),u16(0),u16(0),u16(0x21),u32(crc32),u32(size),u32(size),u16(name.length),u16(0));
+      parts.push(new Uint8Array(lh),name,f.data);
+      central.push({name:name,crc:crc32,size:size,off:offset});
+      offset+=lh.length+name.length+size;
+    });
+    var cdStart=offset,cdSize=0;
+    central.forEach(function(c){
+      var h=[0x50,0x4b,1,2].concat(u16(20),u16(20),u16(0x0800),u16(0),u16(0),u16(0x21),u32(c.crc),u32(c.size),u32(c.size),u16(c.name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(c.off));
+      parts.push(new Uint8Array(h),c.name);cdSize+=h.length+c.name.length;
+    });
+    parts.push(new Uint8Array([0x50,0x4b,5,6].concat(u16(0),u16(0),u16(central.length),u16(central.length),u32(cdSize),u32(cdStart),u16(0))));
+    return new Blob(parts,{type:"application/zip"});
+  }
+  $("zip").addEventListener("click",function(){
+    var keys=Object.keys(changed);if(!keys.length)return;
+    Promise.all(keys.map(function(p){return changed[p].blob.arrayBuffer().then(function(b){return{name:p,data:new Uint8Array(b)}})})).then(function(files){
+      var blob=makeZip(files),a=document.createElement("a");
+      a.href=URL.createObjectURL(blob);a.download="homepage-photos.zip";document.body.appendChild(a);a.click();a.remove();
+      $("zipmsg").textContent=files.length+"장을 homepage-photos.zip 으로 내려받았습니다. 압축을 풀어 images 폴더를 GitHub에 올려 주세요.";
+    });
+  });
+  render();
+})();
+</script>
+</body>
+</html>

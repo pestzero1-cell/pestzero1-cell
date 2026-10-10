@@ -508,7 +508,7 @@ def main():
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n%s</urlset>\n' % "".join(
         "<url><loc>%s/%s</loc><lastmod>%s</lastmod><priority>%s</priority></url>\n" % (SITE_URL, u, TODAY, pr) for u, pr in urls)
     (ROOT / "sitemap.xml").write_text(sm, encoding="utf-8")
-    (ROOT / "robots.txt").write_text("User-agent: *\nAllow: /\n\nSitemap: %s/sitemap.xml\n" % SITE_URL, encoding="utf-8")
+    (ROOT / "robots.txt").write_text("User-agent: *\nAllow: /\nDisallow: /tools/\n\nSitemap: %s/sitemap.xml\n" % SITE_URL, encoding="utf-8")
     print("완료: 페이지 %d개, 글 %d개, sitemap.xml · robots.txt · posts/rss.xml 생성" % (len(urls), len(posts)))
 
 
