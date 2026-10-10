@@ -29,7 +29,7 @@ window.SITE = {
     { label: "하수구막힘 뚫음", href: "#drain" },
     { label: "하수구 냄새차단", href: "#services" },
     { label: "현장갤러리", href: "#gallery" },
-    { label: "고객센터", href: "#contact" }
+    { label: "고객센터", href: "#support" }
   ],
 
   hero: {
@@ -816,6 +816,287 @@ window.SITE = {
         { heading: "필로티 3층 세탁실 얼음", image: "images/ice-pilotis3.jpg" },
         { heading: "연구소 사무실 얼음 막힘", image: "images/ice-lab.jpg" }
       ] }
+    ]
+  },
+
+  // 고객센터 게시판. seed 는 처음 보이는 예시 글입니다. 예시 비밀글 비밀번호: 1234
+  // 새 글은 지금은 방문자 브라우저에만 저장됩니다. (서버 연결 전 단계)
+  board: {
+    title: "고객센터",
+    pageSize: 10,
+    boards: [
+      { id: "notice", label: "공지사항", writable: false, seed: [
+      {
+        "id": 2,
+        "title": "[공지] 설 연휴 휴무 안내(예시)",
+        "author": "관리자",
+        "date": "2026.01.20",
+        "views": 35,
+        "likes": 0,
+        "secret": false,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "설 연휴 기간에도 긴급출동은 고객센터 1661-6179로 문의해 주세요.",
+        "image": "",
+        "reply": null
+      },
+      {
+        "id": 1,
+        "title": "[공지] 홈로취케어 홈페이지 리뉴얼 오픈(예시)",
+        "author": "관리자",
+        "date": "2026.01.02",
+        "views": 120,
+        "likes": 0,
+        "secret": false,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "홈페이지를 새롭게 단장했습니다. 많은 이용 부탁드립니다.",
+        "image": "",
+        "reply": null
+      }
+    ] },
+      { id: "review", label: "1:1문의 및 이용후기", writable: true, secretDefault: false, seed: [
+      {
+        "id": 3,
+        "title": "깔끔하게 해결해 주셨어요(예시)",
+        "author": "최○○",
+        "date": "2026.03.10",
+        "views": 18,
+        "likes": 0,
+        "secret": false,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "하수구 냄새가 사라졌어요. 설명도 자세히 해주셔서 믿음이 갑니다.",
+        "image": "",
+        "reply": "이용해 주셔서 감사합니다."
+      },
+      {
+        "id": 2,
+        "title": "바퀴벌레가 안 보여요(예시)",
+        "author": "정○○",
+        "date": "2026.02.14",
+        "views": 22,
+        "likes": 0,
+        "secret": false,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "방문 후 한 달째 한 마리도 못 봤습니다.",
+        "image": "",
+        "reply": null
+      },
+      {
+        "id": 1,
+        "title": "상가 정기방역 만족(예시)",
+        "author": "한○○",
+        "date": "2026.01.25",
+        "views": 15,
+        "likes": 0,
+        "secret": false,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "정기 방문이라 마음이 놓입니다.",
+        "image": "",
+        "reply": null
+      }
+    ] },
+      { id: "inquiry", label: "온라인문의", writable: true, secretDefault: true, seed: [
+      {
+        "id": 10,
+        "title": "좀벌레 때문에 문의드려요",
+        "author": "김○○",
+        "date": "2026.06.29",
+        "views": 3,
+        "likes": 0,
+        "secret": true,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "집 서랍장에서 좀벌레가 자주 나옵니다. 방제 가능한 날짜와 비용이 궁금합니다.",
+        "image": "",
+        "reply": "안녕하세요 홈로취케어입니다. 좀벌레 방제는 서비스단가표의 '좀벌레 방제' 항목을 참고해 주세요. 전화 주시면 일정 안내해 드리겠습니다."
+      },
+      {
+        "id": 9,
+        "title": "방역 문의드려요",
+        "author": "이○○",
+        "date": "2026.05.08",
+        "views": 3,
+        "likes": 0,
+        "secret": true,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "원룸 방역 비용이 궁금합니다.",
+        "image": "",
+        "reply": "원룸은 서비스단가표 기준으로 안내드렸습니다. 감사합니다."
+      },
+      {
+        "id": 8,
+        "title": "빈대퇴치 문의",
+        "author": "서○○",
+        "date": "2026.05.03",
+        "views": 2,
+        "likes": 0,
+        "secret": true,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "숙소에서 빈대 의심 흔적이 있습니다. 상담 부탁드립니다.",
+        "image": "",
+        "reply": "현장 확인 후 1차 방문 일정을 협의드렸습니다."
+      },
+      {
+        "id": 7,
+        "title": "홈페이지 온라인 문의 테스트(예시)",
+        "author": "관리자",
+        "date": "2025.12.24",
+        "views": 1108,
+        "likes": 0,
+        "secret": false,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "온라인 문의 게시판 테스트 글입니다. 문의는 1661-6179로도 가능합니다.",
+        "image": "",
+        "reply": null
+      },
+      {
+        "id": 6,
+        "title": "이메일 남겨둡니다",
+        "author": "고○○",
+        "date": "2025.11.20",
+        "views": 4,
+        "likes": 0,
+        "secret": true,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "연락 부탁드립니다.",
+        "image": "",
+        "reply": "확인 후 연락드렸습니다."
+      },
+      {
+        "id": 5,
+        "title": "빈대 의심 중이라 문의 드립니다.",
+        "author": "고○○",
+        "date": "2025.11.20",
+        "views": 4,
+        "likes": 0,
+        "secret": true,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "침대 주변에서 물린 자국이 있습니다.",
+        "image": "",
+        "reply": "현장 방문 일정을 안내드렸습니다."
+      },
+      {
+        "id": 4,
+        "title": "바퀴벌레 문의드립니다",
+        "author": "양○○",
+        "date": "2025.08.19",
+        "views": 4,
+        "likes": 0,
+        "secret": true,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "주방에서 바퀴벌레가 계속 나옵니다.",
+        "image": "",
+        "reply": null
+      },
+      {
+        "id": 3,
+        "title": "지난 금요일 소독 받았었는데요.",
+        "author": "김○○",
+        "date": "2025.08.17",
+        "views": 2,
+        "likes": 0,
+        "secret": true,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "소독 후 주의사항이 궁금합니다.",
+        "image": "",
+        "reply": null
+      },
+      {
+        "id": 2,
+        "title": "구서작업",
+        "author": "이○○",
+        "date": "2025.08.12",
+        "views": 4,
+        "likes": 0,
+        "secret": true,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "쥐 소리가 납니다. 구서작업 문의드립니다.",
+        "image": "",
+        "reply": null
+      },
+      {
+        "id": 1,
+        "title": "빈대 상담",
+        "author": "김○○",
+        "date": "2025.08.01",
+        "views": 4,
+        "likes": 0,
+        "secret": true,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "숙소 빈대 상담 부탁드립니다.",
+        "image": "",
+        "reply": null
+      },
+      {
+        "id": 11,
+        "title": "방역 일정 문의 1",
+        "author": "박○○",
+        "date": "2025.03.12",
+        "views": 11,
+        "likes": 0,
+        "secret": true,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "정기 방역 일정과 비용 문의드립니다.",
+        "image": "",
+        "reply": null
+      },
+      {
+        "id": 12,
+        "title": "방역 일정 문의 2",
+        "author": "박○○",
+        "date": "2025.04.13",
+        "views": 12,
+        "likes": 0,
+        "secret": true,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "정기 방역 일정과 비용 문의드립니다.",
+        "image": "",
+        "reply": null
+      },
+      {
+        "id": 13,
+        "title": "방역 일정 문의 3",
+        "author": "박○○",
+        "date": "2025.05.14",
+        "views": 13,
+        "likes": 0,
+        "secret": true,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "정기 방역 일정과 비용 문의드립니다.",
+        "image": "",
+        "reply": null
+      },
+      {
+        "id": 14,
+        "title": "방역 일정 문의 4",
+        "author": "박○○",
+        "date": "2025.06.15",
+        "views": 14,
+        "likes": 0,
+        "secret": true,
+        "pw": "1234",
+        "phone": "010-1234-5678",
+        "content": "정기 방역 일정과 비용 문의드립니다.",
+        "image": "",
+        "reply": null
+      }
+    ] }
     ]
   },
 
