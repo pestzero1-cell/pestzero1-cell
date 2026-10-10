@@ -13,6 +13,12 @@ window.SITE = {
   pageTitle: "홈로취케어",
   description: "소독·방역·하수구 막힘 뚫음·냄새차단 전문 홈로취케어. 출장비 0원, 미해결시 0원.",
 
+  // ---- 검색엔진 설정 (도메인이 정해지면 채우세요) ----
+  siteUrl: "",                     // 예: "https://www.homeroach.com"  (끝에 / 없이)
+  naverVerification: "",           // 네이버 서치어드바이저 소유확인 코드(content 값만)
+  googleVerification: "",          // 구글 서치콘솔 소유확인 코드(content 값만)
+  ogImage: "images/svc-pest.jpg",  // 링크 공유 시 보이는 대표 이미지
+
   owner: "오창환",
   // 푸터에 표시되는 사업자 정보 (주소 등은 실제 값으로 확인해 주세요)
   company: { bizNo: "113-91-16219", mailOrderNo: "2014-서울구로-1298", address: "08233 서울 구로구 개봉동 455-7" },
@@ -35,6 +41,7 @@ window.SITE = {
     { label: "하수구막힘 뚫음", href: "#drain" },
     { label: "하수구 냄새차단", href: "#services" },
     { label: "현장갤러리", href: "#gallery" },
+    { label: "현장일지", href: "posts/" },
     { label: "고객센터", href: "#support" }
   ],
 
@@ -106,7 +113,7 @@ window.SITE = {
     title: "서비스단가표",
     banner: { image: "images/banner-pest.jpg", small: "철저하고 완벽한 박멸시스템", title: "친환경 소독,", sub: "방역 & 해충을 완벽하게!" },
     items: [
-      { label: "바퀴벌레 퇴치", sections: [
+      { slug: "roach", label: "바퀴벌레 퇴치", sections: [
         { heading: "가정집 (아파트, 빌라, 연립, 단독주택, 다가구 등)",
           notes: [
             "전화상담신청-방문-유입로확인-서식처확인-독먹이-트랩(끈끈이)-잔류분무-차단 상담 (30일 최대한 발휘되는 기간)",
@@ -155,7 +162,7 @@ window.SITE = {
           ]
         }
       ] },
-      { label: "개미 퇴치", sections: [
+      { slug: "ant", label: "개미 퇴치", sections: [
         { heading: "가정집 (아파트, 빌라, 연립, 단독주택, 다가구 등)",
           notes: [
             "애집개미만 적용 기타개미(유령개미,곰개미,날개미,침개미등) 기타 해충으로 분류 됩니다. (기타 해충 단가표 참조)",
@@ -205,7 +212,7 @@ window.SITE = {
           ]
         }
       ] },
-      { label: "쥐 퇴치", sections: [
+      { slug: "rat", label: "쥐 퇴치", sections: [
         { heading: "가정집 (아파트, 빌라, 연립, 단독주택, 다가구 등)",
           notes: [
             "전화상담신청-방문-유입로확인-이동구간확인-시공-차단방법설명 15일간은 약효가 최대한 발휘되는 기간",
@@ -253,7 +260,7 @@ window.SITE = {
           ]
         }
       ] },
-      { label: "기타 해충/특수방역(먼지다듬이,응애,흰개미)", sections: [
+      { slug: "etc-pests", label: "기타 해충/특수방역(먼지다듬이,응애,흰개미)", sections: [
         { heading: "가정집/소규모 사업장 (아파트,빌라,연립,단독주택,다가구 등/음식점,사무실 및 기타사업장)",
           notes: ["쌀바구미.그리마.공벌레.집게벌레.나방파리.파리.곱등이.권련침벌.도롱이.유령개미.침개미.날개미.곰개미.하루살이등…."],
           table: {
@@ -290,7 +297,7 @@ window.SITE = {
           }
         }
       ] },
-      { label: "의무법정소독단가표", sections: [
+      { slug: "legal-disinfection", label: "의무법정소독단가표", sections: [
         { imageTop: "images/legal-process.jpg",
           heading: "의무법정소독단가표",
           table: {
@@ -327,7 +334,7 @@ window.SITE = {
           }
         }
       ] },
-      { label: "공간살균소독단가표", sections: [
+      { slug: "space-disinfection", label: "공간살균소독단가표", sections: [
         { heading: "감염병예방법 소독단가표",
           notes: ["각종 세균 및 소취작업에 살균소독제 코로나19 적용가능 메디카바 (1회성 단가표 사무실.식당.요양원.어린이집)"] },
         { heading: "코로나19 적용 메디카바(살균소독제.알콜)",
@@ -378,7 +385,7 @@ window.SITE = {
             ]
           } }
       ] },
-      { label: "좀벌레 방제/빈대방제", sections: [
+      { slug: "silverfish-bedbug", label: "좀벌레 방제/빈대방제", sections: [
         { heading: "좀벌레/ 방제[일반]",
           table: {
             caption: "좀벌레/ 방제[일반]",
@@ -421,7 +428,7 @@ window.SITE = {
           images: ["images/bedbug-1.jpg", "images/bedbug-2.jpg", "images/bedbug-3.jpg"]
         }
       ] },
-      { label: "하수구트랩단가표", sections: [
+      { slug: "drain-trap", label: "하수구트랩단가표", sections: [
         { heading: "하수구 트랩 (냄새 & 해충차단)",
           bulletsFirst: true,
           bullets: [
@@ -446,7 +453,7 @@ window.SITE = {
           images: ["images/trap-photos.jpg"]
         }
       ] },
-      { label: "포충기단가표", sections: [
+      { slug: "insect-zapper", label: "포충기단가표", sections: [
         { heading: "포충기",
           bulletsFirst: true,
           bullets: [
@@ -488,7 +495,7 @@ window.SITE = {
   system: {
     title: "서비스시스템",
     items: [
-      { label: "신청방법", sections: [
+      { slug: "apply", label: "신청방법", sections: [
         { heading: "진행순서",
           steps: [
             { icon: "monitor", text: "홈로취케어 홈페이지 상단에 위치한 **온라인문의 이용**" },
@@ -499,7 +506,7 @@ window.SITE = {
         { heading: "전화신청",
           contact: { label: "고객센터", phone: "1661-6179", image: "images/consult.jpg" } }
       ] },
-      { label: "진행순서", sections: [
+      { slug: "process", label: "진행순서", sections: [
         { heading: "진행순서",
           steps: [
             { icon: "monitor", text: "**온라인 및 전화상담**\n온라인 및 전화로 서비스에 대하여 상담" },
@@ -509,7 +516,7 @@ window.SITE = {
             { icon: "phone", text: "**A/S접수**\n안내해드린 퇴치기간 이후 해충재발 및 완전퇴치가 안되었을 경우 연관리형 고객 정기관리 방문" }
           ] }
       ] },
-      { label: "방제시스템", sections: [
+      { slug: "pest-control", label: "방제시스템", sections: [
         { heading: "바퀴벌레/개미퇴치",
           bullets: [
             "실내에서 서식하는 일반 바퀴벌레 종류 및 개미는 주로 독먹이 방식으로 시공하며 퇴치기간은 약 30일 정도 입니다.",
@@ -532,7 +539,7 @@ window.SITE = {
             "작업방법은 도포 및 훈증, 분무, 연무방식 등 적합한 방법을 선택해 작업하며 비래해충 등의 경우 장비를 임대하기도 합니다."
           ] }
       ] },
-      { label: "긴급서비스", sections: [
+      { slug: "emergency", label: "긴급서비스", sections: [
         { heading: "서비스시스템",
           bullets: [
             "서비스를 신청하시면 신청에서 방문까지 보통 1~3일이 소요 됩니다.",
@@ -543,7 +550,7 @@ window.SITE = {
         { heading: "전화신청",
           contact: { label: "고객센터", phone: "1661-6179", image: "images/consult.jpg" } }
       ] },
-      { label: "환불보장제도", sections: [
+      { slug: "refund", label: "환불보장제도", sections: [
         { heading: "환불보장제도",
           bullets: [
             "해충제거 서비스는 용역서비스로써, 서비스 이용 및 A/S에 있어서 상호간에 서로 믿음을 가지고 작업이 이루어져야 합니다.",
@@ -560,7 +567,7 @@ window.SITE = {
   info: {
     title: "소독/해충정보",
     items: [
-      { label: "바퀴벌레", sections: [
+      { slug: "cockroach", label: "바퀴벌레", sections: [
         { table: {
             head: ["생김새", "크기", "수명", "습성", "특징"],
             rows: [
@@ -613,7 +620,7 @@ window.SITE = {
             "알 주머니는 18~21개의 알이 들어있고 부화기간은 40~60일 정도 되며 유충기간은10~14개월이다. 탈피 과정은 9회~12회 정도 진행된다. 성충은 부화 후 일주일 이내에 교미를 하고 10일 후에 최초 난협을 산출한다. 암컷은 일생을 통해 20여개 내외의 난협을 산출하고 난협은 미국바퀴벌레와 동일하게 만들어지며 서식지부근이나 부스러기 틈에 알을 숨겨놓는다."
           ] }
       ] },
-      { label: "개미", sections: [
+      { slug: "ant", label: "개미", sections: [
         { table: {
             head: ["생김새", "크기", "활동시기 및 서식장소", "습성/생활"],
             rows: [
@@ -658,7 +665,7 @@ window.SITE = {
             "날개 맥은 짙은 색 이며 수컷은 검은색을 띄며 날 개미는 5~7월에 많이 나타나며 주로 나무의 뿌리, 기둥속에서 많이 서식하며 우리나라에서는 중부이남에 많이 분포되어 있다"
           ] }
       ] },
-      { label: "쥐", sections: [
+      { slug: "rat", label: "쥐", sections: [
         { table: {
             head: ["생김새", "크기", "활동시기 및 서식장소", "습성/생활"],
             rows: [
@@ -697,7 +704,7 @@ window.SITE = {
             "주서식장소는 주로 농작물을 재배하는 경작지, 황무지, 산 밑, 산중턱이나 산 정상에서도 발견되며, 굴을 S자형으로 1~2m파고 그속에 둥지를 만들고 산다. 월동용으로 식량을 저장하는 습성이 없어서 겨울에도 먹이를 찾아 활동한다. 전체 들쥐의 개체수 중 약80~90%를 차지한다."
           ] }
       ] },
-      { label: "먼지다듬이", sections: [
+      { slug: "book-louse", label: "먼지다듬이", sections: [
         { table: {
             head: ["생김새", "크기", "활동시기 및 서식장소", "습성/생활", "수명"],
             rows: [
@@ -707,7 +714,7 @@ window.SITE = {
             ]
           } }
       ] },
-      { label: "빈대", sections: [
+      { slug: "bedbug", label: "빈대", sections: [
         { table: {
             head: ["생김새", "크기", "활동시기 및 서식장소", "습성/생활"],
             rows: [
@@ -717,7 +724,7 @@ window.SITE = {
           },
           images: ["images/bedbug-1.jpg", "images/bedbug-2.jpg", "images/bedbug-3.jpg", "images/bb-history.jpg", "images/bb-covid.jpg", "images/bb-equip.jpg", "images/bb-flow.jpg", "images/bb-banner.jpg"] }
       ] },
-      { label: "기타해충", sections: [
+      { slug: "other-pests", label: "기타해충", sections: [
         { table: {
             head: ["생김새", "크기", "활동시기 및 서식장소", "습성/생활"],
             rows: [
@@ -778,7 +785,7 @@ window.SITE = {
             "그리마는 주로 여름과 가을 사이 사람의 집에 들어온다. 먹이를 구하거나 겨울을 나기 위해서 집에 침입하는 것으로 추측된다."
           ] }
       ] },
-      { label: "방향소취제" }
+      { slug: "aroma", label: "방향소취제" }
     ]
   },
 
@@ -786,7 +793,7 @@ window.SITE = {
   drain: {
     title: "하수구막힘 뚫음",
     items: [
-      { label: "하수구 막힘", sections: [
+      { slug: "clogged-drain", label: "하수구 막힘", sections: [
         { heading: "하수구 막힘",
           bullets: [
             "싱크대 물을 조금씩 쓰면 괜찮은데 배관을 뚫어도 다시 막힌다면? 헬로하수구에서 근본적인 해결을 해보세요.",
@@ -805,7 +812,7 @@ window.SITE = {
             "커피숍 배수구 막힘(제빙기, 커피머신기, 싱크대 호스 배수구 커피가루, 유지방 막힘)"
           ] }
       ] },
-      { label: "아파트빌라시공사례", sections: [
+      { slug: "apartment-cases", label: "아파트빌라시공사례", sections: [
         { intro: "365일 상황 발생시 빠른 출동 서비스로 현장 불편함을 최소화 해 드립니다." },
         { heading: "베란다 세탁실 배수구 막힘", image: "images/case-veranda.jpg" },
         { heading: "화장실 배수구 막힘", image: "images/case-toilet.jpg" },
@@ -815,7 +822,7 @@ window.SITE = {
         { heading: "아파트, 빌라 욕조 배수구 막힘", image: "images/case-bath.jpg" },
         { heading: "세면대 벽배관 배수구 막힘", image: "images/case-basin.jpg" }
       ] },
-      { label: "겨울철 하수구 해빙", sections: [
+      { slug: "winter-thaw", label: "겨울철 하수구 해빙", sections: [
         { heading: "겨울철 배수구 얼었을때 해빙 (2층 필로티 구조 세탁실, 베란다, 화장실, 싱크대연결 배관)",
           bullets: [
             "지구 온난화 현상이 앞으로 겨울의 한파가 점점 길어져 동파에 대비 및 한파로 하수구 역류",
@@ -823,7 +830,7 @@ window.SITE = {
             "가장 취약한 곳이 아파트, 빌라 필로트 구조(주차장 라인 기둥)입니다."
           ] }
       ] },
-      { label: "2층필로티 세탁실 베란다 화장실 언배관 시공사례", sections: [
+      { slug: "pilotis-freeze-cases", label: "2층필로티 세탁실 베란다 화장실 언배관 시공사례", sections: [
         { intro: "365일 상황 발생시 빠른 출동 서비스로 현장 불편함을 최소화 해 드립니다." },
         { heading: "세탁실 얼음으로 막힘 역류", image: "images/ice-laundry.jpg" },
         { heading: "3층 베란다 얼음 해빙", image: "images/ice-veranda3.jpg" },
