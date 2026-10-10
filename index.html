@@ -40,13 +40,14 @@ header{position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px s
 .tiles div:nth-child(4),.tiles div:nth-child(5){grid-column:span 3;aspect-ratio:3/2}
 .tiles img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .tiles span{position:relative;width:100%;padding:6px 8px;background:rgba(0,0,0,.55);color:#fff;font-size:.82rem;font-weight:700}
-.about{display:grid;gap:24px;grid-template-columns:1fr}
-@media(min-width:800px){.about{grid-template-columns:260px 1fr;gap:40px}}
+.about{display:grid;gap:24px;grid-template-columns:minmax(0,1fr)}
+.about>*{min-width:0}
+@media(min-width:800px){.about{grid-template-columns:260px minmax(0,1fr);gap:40px}}
 .about-side h2{background:var(--brand);color:var(--on);padding:28px 22px;margin:0;border-radius:4px 4px 0 0}
-.tabs{display:flex;flex-wrap:wrap;border:1px solid var(--line);border-top:0}
-.tabs button{flex:1 1 auto;text-align:left;padding:13px 18px;background:transparent;color:var(--fg);border-bottom:1px solid var(--line)}
-@media(min-width:800px){.tabs{flex-direction:column}}
-.tabs button[aria-selected=true]{background:var(--card);color:var(--brand);font-weight:700}
+.tabs,.ptabs{display:flex;flex-wrap:wrap;border:1px solid var(--line);border-top:0}
+.tabs button,.ptabs button{flex:1 1 auto;text-align:left;padding:13px 18px;background:transparent;color:var(--fg);border-bottom:1px solid var(--line)}
+@media(min-width:800px){.tabs,.ptabs{flex-direction:column}}
+.tabs button[aria-selected=true],.ptabs button[aria-selected=true]{background:var(--card);color:var(--brand);font-weight:700}
 .about-main h3{font-size:1.6rem;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:22px}
 .about-main .lead{font-size:clamp(1.3rem,3.4vw,1.8rem);line-height:1.4;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:22px}
 .about-main .lead em{font-style:normal;color:var(--brand)}
@@ -59,6 +60,24 @@ header{position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px s
 .team h4{text-align:center;padding:10px;background:var(--card);border-top:3px solid var(--brand)}
 .team:nth-child(even) h4{border-top-color:var(--accent)}
 .team li{list-style:none;text-align:center;padding:12px 6px;color:var(--muted);font-size:.92rem}
+.pbanner{background:linear-gradient(100deg,var(--brand-d),var(--brand));color:var(--on);padding:36px 0}
+.pbanner small{opacity:.85;font-size:.95rem}
+.pbanner b{display:block;font-size:clamp(1.6rem,5vw,2.4rem);line-height:1.2;margin-top:4px}
+.pbanner span{display:block;font-size:clamp(1.3rem,4vw,1.9rem)}
+.about-main h4.ph{font-size:1.2rem;color:var(--brand);margin:28px 0 10px}
+.about-main h4.ph:first-of-type{margin-top:0}
+.red{color:#c8321e;font-size:.9rem;margin-bottom:6px;max-width:none}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .red{color:#ff8a70}}
+:root[data-theme=dark] .red{color:#ff8a70}
+.tbl{overflow-x:auto;margin:14px 0}
+.tbl table{border-collapse:collapse;width:100%;min-width:560px;font-size:.9rem;border-top:2px solid var(--muted)}
+.tbl th{background:var(--card);font-weight:600}
+.tbl th,.tbl td{border:1px solid var(--line);padding:9px 10px;text-align:center}
+.tbl td:first-child{white-space:nowrap}
+.bl{padding-left:18px;color:var(--muted);font-size:.92rem;margin:12px 0}
+.bl li{margin-bottom:4px}
+.safe{font-size:1.2rem;font-weight:800;margin:20px 0 0;max-width:none}
+.soon{padding:40px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
 .btn.cta{background:var(--accent);color:#fff}
 .btn{display:inline-block;padding:13px 26px;border-radius:999px;background:var(--brand);color:var(--on);font-weight:700;margin:4px}
 .btn:hover{background:var(--brand-d)}
@@ -116,6 +135,16 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
   var tel="tel:"+String(S.phone||"").replace(/[^0-9+]/g,"");
   var sample=S.sampleMode?'<div class="sample">⚠ 예시 내용입니다 — content.js 에서 실제 내용으로 바꿔주세요</div>':"";
   var h=S.hero||{};
+  var cell=function(c){return typeof c==="object"?'<td'+(c.rs?' rowspan="'+c.rs+'"':'')+'>'+e(c.t).replace(/\n/g,"<br>")+'</td>':'<td>'+e(c).replace(/\n/g,"<br>")+'</td>'};
+  var tbl=function(t){return t?'<div class="tbl"><table><thead><tr>'+list(t.head,function(x){return '<th>'+e(x)+'</th>'})+'</tr></thead><tbody>'+list(t.rows,function(r){return '<tr>'+list(r,cell)+'</tr>'})+'</tbody></table></div>':''};
+  var psec=function(s){return '<h4 class="ph">'+e(s.heading)+'</h4>'+list(s.notes,function(n){return '<p class="red">※ '+e(n)+'</p>'})+tbl(s.table)+(s.afterNote?'<p class="red">※ '+e(s.afterNote)+'</p>':'')+(s.bullets?'<ul class="bl">'+list(s.bullets,function(b){return '<li>'+e(b)+'</li>'})+'</ul>':'')+(s.footer?'<p class="safe">◆ '+e(s.footer)+'</p>':'')};
+  var P=S.price;
+  var priceHtml=P?'<section id="price" style="padding:0"><div class="pbanner"><div class="wrap"><small>'+e(P.banner.small)+'</small><b>'+e(P.banner.title)+'</b><span>'+e(P.banner.sub)+'</span></div></div>'+
+    '<div class="wrap about" style="padding-block:40px"><aside class="about-side"><h2>'+e(P.title)+'</h2><div class="ptabs" role="tablist">'+
+    list(P.items,function(it,i){return '<button type="button" role="tab" data-p="'+i+'" aria-selected="'+(i===0)+'">'+e(it.label)+'</button>'})+'</div></aside><div class="about-main">'+
+    list(P.items,function(it,i){return '<div class="pp" id="pp-'+i+'"'+(i?' hidden':'')+'><h3>'+e(it.label)+'</h3>'+((it.sections||[]).length?list(it.sections,psec):'<p class="soon">단가표 준비 중입니다. 전화로 문의해 주세요.</p>')+'</div>'})+
+    '</div></div></section>':'';
+
 
   var tiles=(h.tiles||[]).map(function(t){return '<div>'+(t.image?'<img loading="lazy" src="'+e(t.image)+'" alt="'+e(t.label)+'">':'')+'<span>'+e(t.label)+'</span></div>'}).join("");
 
@@ -137,6 +166,8 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
   ((S.about)?'<section id="about"><div class="wrap about"><aside class="about-side"><h2>'+e(S.about.title)+'</h2><div class="tabs" role="tablist"><button type="button" role="tab" data-tab="g" aria-selected="true">'+e(S.about.greeting.title)+'</button><button type="button" role="tab" data-tab="o" aria-selected="false">'+e(S.about.org.title)+'</button></div></aside>'+
     '<div class="about-main"><div id="tab-g"><h3>'+e(S.about.greeting.title)+'</h3><p class="lead">'+e(S.about.greeting.headline)+'<br><em>'+e(S.about.greeting.highlight)+'</em></p>'+list(S.about.greeting.paragraphs,function(p){return '<p>'+e(p)+'</p>'})+'</div>'+
     '<div id="tab-o" hidden><h3>'+e(S.about.org.title)+'</h3><p class="slogan">'+e(S.about.org.slogan)+'</p><div class="ceo">'+e(S.about.org.ceo)+'</div><div class="teams">'+list(S.about.org.teams,function(t){return '<div class="team"><h4>'+e(t.name)+'</h4><ul style="padding:0">'+list(t.members,function(m){return '<li>'+e(m)+'</li>'})+'</ul></div>'})+'</div></div></div></div></section>':'')+
+
+  priceHtml+
 
   '<section id="why" class="alt"><div class="wrap"><h2>왜 저희일까요</h2><p class="sub">작은 업체라서 가능한 방식입니다.</p><div class="why">'+
     list(S.why,function(x){return '<div><span style="font-size:1.6rem">'+e(x.icon)+'</span><b>'+e(x.title)+'</b><span>'+e(x.text)+'</span></div>'})+'</div></div></section>'+
@@ -173,10 +204,15 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
   document.title=S.pageTitle||document.title;
   var md=$('meta[name=description]');if(md)md.setAttribute("content",S.description||"");
 
-  var tabs=document.querySelectorAll(".tabs button");
+  var tabs=document.querySelectorAll("#about .tabs button");
   tabs.forEach(function(b){b.addEventListener("click",function(){
     tabs.forEach(function(x){x.setAttribute("aria-selected",x===b?"true":"false")});
     $("#tab-g").hidden=b.dataset.tab!=="g";$("#tab-o").hidden=b.dataset.tab!=="o";
+  })});
+  var pt=document.querySelectorAll(".ptabs button");
+  pt.forEach(function(b){b.addEventListener("click",function(){
+    pt.forEach(function(x){x.setAttribute("aria-selected",x===b?"true":"false")});
+    document.querySelectorAll(".pp").forEach(function(p){p.hidden=p.id!=="pp-"+b.dataset.p});
   })});
   $("#f").addEventListener("submit",function(ev){
     ev.preventDefault();
