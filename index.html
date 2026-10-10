@@ -157,12 +157,23 @@ header{position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px s
 .sl-dots button[aria-current=true]{background:#fff;width:26px;border-radius:6px}
 .sl-ctl{position:absolute;right:12px;bottom:6px;z-index:3;background:rgba(0,0,0,.35);color:#fff;border-radius:4px;padding:2px 8px;font-size:.78rem}
 @media(prefers-reduced-motion:reduce){.slide{transition:none}}
-.card.svc{padding:0;overflow:hidden}.card.svc>:not(.svc-img):not(.svc-link){margin-inline:24px}.card.svc ul{margin-bottom:24px;padding-left:42px}.card.svc .tag{margin-top:16px;align-self:flex-start}.svc-img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
-.svc-link{position:relative;display:block;cursor:pointer}
-.svc-link:hover .svc-img{filter:brightness(.92)}
-.svc-badge{display:flex;align-items:center;justify-content:center;gap:8px;background:#03c75a;color:#fff;font-size:.95rem;font-weight:700;padding:10px 14px}
-.svc-badge b{background:#fff;color:#03c75a;border-radius:3px;width:20px;height:20px;display:inline-grid;place-items:center;font-size:.78rem}
-.svc-link:hover .svc-badge{background:#02a64b}
+.card.svc{padding:0;overflow:hidden;display:flex;flex-direction:column;background:var(--bg);border:1px solid var(--line);border-radius:16px;transition:box-shadow .2s,transform .2s}
+.card.svc:hover{box-shadow:0 10px 28px rgba(18,64,143,.12);transform:translateY(-2px)}
+@media(prefers-reduced-motion:reduce){.card.svc{transition:none}.card.svc:hover{transform:none}}
+.svc-media{display:block;position:relative;flex:none;box-sizing:border-box;background:#eef3f9;aspect-ratio:16/10;width:100%;overflow:hidden}
+.svc-img{position:absolute;inset:16px;width:calc(100% - 32px);height:calc(100% - 32px);object-fit:contain;border-radius:8px}
+.svc-body{padding:20px 22px 22px;display:flex;flex-direction:column;gap:14px;flex:1}
+.svc-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.svc-head h3{margin:0;font-size:1.25rem}
+.svc-list{list-style:none;padding:0;margin:0;display:grid;gap:8px;color:var(--muted);font-size:.95rem}
+.svc-list li{position:relative;padding-left:22px}
+.svc-list li::before{content:"";position:absolute;left:2px;top:.5em;width:10px;height:6px;border-left:2px solid var(--brand);border-bottom:2px solid var(--brand);transform:rotate(-45deg)}
+.svc-blog{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:8px;padding:8px 16px 8px 8px;border:1.5px solid #03c75a;border-radius:999px;color:#03a24a;font-weight:700;font-size:.9rem}
+.svc-blog b{background:#03c75a;color:#fff;border-radius:50%;width:24px;height:24px;display:grid;place-items:center;font-size:.8rem}
+.svc-blog:hover{background:#03c75a;color:#fff}
+.svc-blog:hover b{background:#fff;color:#03c75a}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .svc-blog{color:#4ee08b}:root:not([data-theme=light]) .svc-blog:hover{color:#fff}}
+:root[data-theme=dark] .svc-blog{color:#4ee08b}:root[data-theme=dark] .svc-blog:hover{color:#fff}
 .logo-img{display:block;height:52px;width:auto;background:#fff;border-radius:4px}
 @media(max-width:480px){.logo-img{height:44px}}
 .soon{padding:40px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
@@ -263,7 +274,7 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
     '<div class="tiles">'+tiles+'</div></div></div>'+
 
   '<section id="services"><div class="wrap"><h2>서비스</h2><p class="sub">필요한 분야만 골라 맡기세요.</p><div class="grid">'+
-    list(S.services,function(x){var bl=x.blog&&/^https?:\/\//.test(x.blog)?x.blog:"";var im=x.image?'<img class="svc-img" loading="lazy" src="'+e(x.image)+'" alt="'+e(x.name)+'">':'<div class="ico">'+e(x.icon)+'</div>';return '<div class="card svc">'+(bl?'<a class="svc-link" href="'+e(bl)+'" target="_blank" rel="noopener noreferrer" aria-label="'+e(x.name)+' 네이버 블로그 새 창으로 열기">'+im+'<span class="svc-badge"><b>N</b> 네이버 블로그 바로가기 (클릭하면 새 창으로 열립니다) ↗</span></a>':im)+'<span class="tag">'+e(x.tag)+'</span><h3>'+e(x.name)+'</h3><ul>'+list(x.items,function(i){return '<li>'+e(i)+'</li>'})+'</ul>'+'</div>'})+
+    list(S.services,function(x){var bl=x.blog&&/^https?:\/\//.test(x.blog)?x.blog:"";var im=x.image?'<img class="svc-img" loading="lazy" src="'+e(x.image)+'" alt="'+e(x.name)+'">':'<div class="ico">'+e(x.icon)+'</div>';return '<article class="card svc">'+(bl?'<a class="svc-media" href="'+e(bl)+'" target="_blank" rel="noopener noreferrer" aria-label="'+e(x.name)+' 네이버 블로그 새 창으로 열기">'+im+'</a>':'<div class="svc-media">'+im+'</div>')+'<div class="svc-body"><div class="svc-head"><h3>'+e(x.name)+'</h3><span class="tag">'+e(x.tag)+'</span></div><ul class="svc-list">'+list(x.items,function(i){return '<li>'+e(i)+'</li>'})+'</ul>'+(bl?'<a class="svc-blog" href="'+e(bl)+'" target="_blank" rel="noopener noreferrer"><b>N</b>네이버 블로그 바로가기<span aria-hidden="true">↗</span></a>':'')+'</div></article>';return '<div class="card svc">'+(bl?'<a class="svc-link" href="'+e(bl)+'" target="_blank" rel="noopener noreferrer" aria-label="'+e(x.name)+' 네이버 블로그 새 창으로 열기">'+im+'<span class="svc-badge"><b>N</b> 네이버 블로그 바로가기 (클릭하면 새 창으로 열립니다) ↗</span></a>':im)+'<span class="tag">'+e(x.tag)+'</span><h3>'+e(x.name)+'</h3><ul>'+list(x.items,function(i){return '<li>'+e(i)+'</li>'})+'</ul>'+'</div>'})+
   '</div></div></section>'+
 
   ((S.about)?'<section id="about"><div class="wrap about"><aside class="about-side"><h2>'+e(S.about.title)+'</h2><div class="tabs" role="tablist"><button type="button" role="tab" data-tab="g" aria-selected="true">'+e(S.about.greeting.title)+'</button><button type="button" role="tab" data-tab="o" aria-selected="false">'+e(S.about.org.title)+'</button></div></aside>'+
