@@ -211,6 +211,14 @@ def header_footer(depth, current_key=None):
     return top, foot
 
 
+def kakao_fab():
+    """카카오톡 채널 주소가 있을 때만 떠 있는 버튼을 만듭니다."""
+    u = S.get("kakaoUrl") or ""
+    if not re.match(r"^https?://", u):
+        return ""
+    return '<a class="kk kkfab" href="%s" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#191600" d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.8 5.3 4.6 6.7l-1 3.6c-.1.3.2.5.5.4l4.2-2.8c.6.1 1.1.1 1.7.1 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg>%s</a>' % (e(u), e(S.get("kakaoLabel", "카카오톡 상담")))
+
+
 def crumbs(items, depth):
     return '<nav class="crumbs" aria-label="현재 위치">%s</nav>' % " › ".join(
         '<a href="%s">%s</a>' % (rel(depth) + h, e(t)) if h else "<span>%s</span>" % e(t) for t, h in items)
@@ -244,11 +252,12 @@ def build_section_page(key, sec_title, d, items, idx):
 </div>
 </main>
 %s
+%s
 <a class="btn fab" href="tel:%s">📞 %s</a>
 </body>
 </html>
 """ % (crumbs([(BRAND, "index.html"), (sec_title, None), (label, None)], depth), e(sec_title), e(sec_title), side, e(label), body, foot,
-       e(re.sub(r"[^0-9]", "", S["phone"])), e(S["phone"]))
+       kakao_fab(), e(re.sub(r"[^0-9]", "", S["phone"])), e(S["phone"]))
     out = ROOT / d / it["slug"]
     out.mkdir(parents=True, exist_ok=True)
     (out / "index.html").write_text(page, encoding="utf-8")
@@ -346,7 +355,7 @@ def build_post(i, p):
 <main><div class="wrap">%s</div>
 <article class="wrap post"><h1>%s</h1>%s<p class="pmeta"><time datetime="%s">%s</time> %s</p>
 %s<div class="pbody">%s</div>
-<aside class="pcta"><b>%s 상담</b><p>증상과 지역을 알려 주시면 빠르게 안내해 드립니다.</p><a class="btn" href="tel:%s">☎ %s</a> %s</aside>
+<aside class="pcta"><b>%s 상담</b><p>증상과 지역을 알려 주시면 빠르게 안내해 드립니다.</p><a class="btn" href="tel:%s">☎ %s</a> %s%s</aside>
 <nav class="pn" aria-label="이전 다음 글">%s</nav>
 <p><a class="bbtn" href="../">← 현장일지 목록</a></p></article></main>
 %s
@@ -354,7 +363,7 @@ def build_post(i, p):
 </html>
 """ % (crumbs([(BRAND, "index.html"), ("현장일지", "posts/"), (p["title"], None)], depth), e(p["title"]), sample, e(p["date"]), e(p["date"].replace("-", ".")), tags,
        ('<img class="phero" src="%s" alt="%s">' % (e(img_src(p["image"], depth)), e(p["title"]))) if p["image"] else "", body,
-       e(BRAND), e(re.sub(r"[^0-9]", "", S["phone"])), e(S["phone"]), blogs, pn, foot)
+       e(BRAND), e(re.sub(r"[^0-9]", "", S["phone"])), e(S["phone"]), kakao_fab().replace("kkfab", ""), blogs, pn, foot)
     out = ROOT / "posts" / p["slug"]
     out.mkdir(parents=True, exist_ok=True)
     (out / "index.html").write_text(page, encoding="utf-8")
@@ -403,6 +412,7 @@ def build_css():
     css = re.search(r"<style>(.*?)</style>", src, re.S).group(1)
     extra = """
 /* ---- 정적 페이지 전용 ---- */
+.kkfab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:20;box-shadow:0 6px 18px rgba(0,0,0,.25)}
 .crumbs{font-size:.85rem;color:var(--muted);padding:14px 0 0}.crumbs a:hover{color:var(--brand);text-decoration:underline}
 .ptabs.side{display:flex;flex-wrap:wrap}.ptabs.side a{flex:1 1 auto;padding:13px 18px;border-bottom:1px solid var(--line);color:var(--fg)}
 .ptabs.side a[aria-current]{background:var(--card);color:var(--brand);font-weight:700}

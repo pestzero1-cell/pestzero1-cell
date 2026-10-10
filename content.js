@@ -30,7 +30,10 @@ window.SITE = {
     { label: "헬로하수구 블로그", url: "https://blog.naver.com/hellodrain_number1" }
   ],
   blogUrl: "",
-  kakaoUrl: "",                    // 카카오톡 채널 주소. 비워두면 버튼 숨김
+  // 카카오톡 채널 1:1 채팅 주소 (카카오톡 채널 관리자센터 > 홍보하기 > 채팅 URL, 예: https://pf.kakao.com/_xxxxxx/chat)
+  // 비워두면 실제 버튼은 숨겨지고, 예시 모드(sampleMode)에서만 "주소 입력 필요" 버튼이 보입니다.
+  kakaoUrl: "",
+  kakaoLabel: "카카오톡 상담",
 
   // 상단 메뉴: label=표시 이름, href=이동할 곳(#섹션 또는 주소)
   menu: [

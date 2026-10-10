@@ -191,6 +191,13 @@ header{position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px s
 .dirgrid h3{font-size:1rem;color:var(--brand);margin-bottom:8px}.dirgrid ul{list-style:none;padding:0;display:grid;gap:6px;font-size:.92rem}
 .dirgrid a:hover{color:var(--brand);text-decoration:underline}
 .jcard{display:block;overflow:hidden;padding:0}.jcard img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}.jcard h3,.jcard p{margin-inline:18px}.jcard h3{margin-top:14px}.jcard .meta{margin-bottom:6px}.jcard p:last-child{margin-bottom:18px}
+.kk{display:inline-flex;align-items:center;gap:8px;background:#fee500;color:#191600;font-weight:700;border-radius:999px;padding:12px 22px}
+.kk:hover{filter:brightness(.95)}
+.kk svg{width:20px;height:20px;flex:none}
+.kk.off{opacity:.75;border:2px dashed #191600;cursor:help}
+.fabs{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:20;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.fabs .fab{position:static;margin:0}
+.fabs .kk{box-shadow:0 6px 18px rgba(0,0,0,.25);margin:0}
 .soon{padding:40px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
 .btn.cta{background:var(--accent);color:#fff}
 .btn{display:inline-block;padding:13px 26px;border-radius:999px;background:var(--brand);color:var(--on);font-weight:700;margin:4px}
@@ -252,6 +259,10 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
   var tel="tel:"+String(S.phone||"").replace(/[^0-9+]/g,"");
   var sample=S.sampleMode?'<div class="sample">⚠ 예시 내용입니다 — content.js 에서 실제 내용으로 바꿔주세요</div>':"";
   var h=S.hero||{};
+  var KK_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#191600" d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.8 5.3 4.6 6.7l-1 3.6c-.1.3.2.5.5.4l4.2-2.8c.6.1 1.1.1 1.7.1 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg>';
+  var kkOk=/^https?:\/\//.test(S.kakaoUrl||"");
+  var kkBtn=function(extra){return kkOk?'<a class="kk '+(extra||"")+'" href="'+e(S.kakaoUrl)+'" target="_blank" rel="noopener noreferrer">'+KK_ICON+e(S.kakaoLabel||"카카오톡 상담")+'</a>':(S.sampleMode?'<span class="kk off '+(extra||"")+'" title="content.js 의 kakaoUrl 에 카카오톡 채널 주소를 넣으면 연결됩니다">'+KK_ICON+'카카오톡 상담 (주소 입력 필요)</span>':'')};
+
   var P=window.POSTS||[];
   var dirSecs=[["about","회사소개"],["price","서비스단가표"],["system","서비스시스템"],["info","소독/해충정보"],["drain","하수구막힘 뚫음"]];
   var dirHtml='<section id="directory" class="alt"><div class="wrap"><h2>전체 메뉴 바로가기</h2><p class="sub">궁금한 항목을 바로 확인하세요.</p><div class="dirgrid">'+
@@ -333,12 +344,12 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
     '<textarea name="msg" rows="4" placeholder="지역과 증상을 간단히 적어주세요"></textarea>'+
     '<button class="btn" type="submit">문자로 문의 보내기</button><p class="note">버튼을 누르면 휴대폰 문자 앱이 열립니다.</p></form>'+
     '<p style="margin-top:16px">'+
-      (S.kakaoUrl?'<a class="btn ghost" href="'+e(S.kakaoUrl)+'" target="_blank" rel="noopener">카카오톡 상담</a>':'')+
+      kkBtn()+' '+
       list(S.blogs,function(b){return /^https?:\/\//.test(b.url)?'<a class="btn ghost" href="'+e(b.url)+'" target="_blank" rel="noopener noreferrer">'+e(b.label)+' ↗</a>':''})+(S.blogUrl?'<a class="btn ghost" href="'+e(S.blogUrl)+'" target="_blank" rel="noopener">블로그 보기</a>':'')+'</p>'+
   '</div></section></main>'+
 
   '<footer><div class="wrap"><b>'+e(S.pageTitle)+'</b><br>대표 '+e(S.owner)+' · 전화 <a href="'+e(tel)+'">'+e(S.phone)+'</a>'+(S.company?'<br>사업자등록번호 '+e(S.company.bizNo)+' · 통신판매업신고번호 '+e(S.company.mailOrderNo)+'<br>'+e(S.company.address):'')+'<br>© '+new Date().getFullYear()+' All rights reserved.</div></footer>'+
-  '<a class="btn fab" href="'+e(tel)+'">📞 전화상담</a>';
+  '<div class="fabs">'+(kkOk?kkBtn():'')+'<a class="btn fab" href="'+e(tel)+'">📞 전화상담</a></div>';
 
   $("#app").innerHTML=html;
 
