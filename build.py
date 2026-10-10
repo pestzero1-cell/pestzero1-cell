@@ -380,30 +380,6 @@ def build_post(i, p):
     return path
 
 
-def blog_feed_html():
-    """블로그 최신글 카드 (정적 HTML — 검색엔진도 링크를 읽을 수 있음)"""
-    cfg = S.get("blogFeed") or {}
-    p = ROOT / "blog-feed.json"
-    if cfg.get("enabled") is False or not p.exists():
-        return ""
-    try:
-        data = json.loads(p.read_text(encoding="utf-8"))
-    except Exception:
-        return ""
-    items = [x for x in data.get("items", []) if re.match(r"^https://(m\.)?blog\.naver\.com/", x.get("link", ""))]
-    if not items:
-        return ""
-    cards = "".join(
-        '<a class="bf-card" href="%s" target="_blank" rel="noopener noreferrer"><span class="bf-top"><span class="bf-tag">%s</span><span class="bf-src"><b>N</b> %s</span></span><h3>%s</h3>%s<span class="bf-foot"><time>%s</time><span class="bf-go">블로그에서 읽기 ↗</span></span></a>' % (
-            e(x["link"]), e(x.get("tag") or "블로그"), e(x.get("sourceLabel", "")), e(x["title"]),
-            ('<p class="bf-ex">%s</p>' % e(x["excerpt"])) if x.get("excerpt") else "", e(x.get("date", "").replace("-", ".")))
-        for x in items)
-    btns = "".join('<a class="bf-btn" href="%s" target="_blank" rel="noopener noreferrer"><b>N</b> %s 전체 보기 ↗</a>' % (e(s["url"]), e(s["label"])) for s in cfg.get("sources", []))
-    note = '<p class="bf-note">예시 글입니다. 실제 블로그 글은 python3 fetch_blog.py 로 가져오면 자동으로 바뀝니다.</p>' if data.get("note") == "sample" else ""
-    return '<section class="bfeed" aria-label="%s"><h2 style="margin:26px 0 6px">%s</h2><p class="sub">%s</p><div class="bf-grid">%s</div>%s<p class="bf-btns">%s</p></section>' % (
-        e(cfg.get("title", "블로그 최신글")), e(cfg.get("title", "블로그 최신글")), e(cfg.get("subtitle", "")), cards, note, btns)
-
-
 def build_posts_index():
     depth = 1
     top, foot = header_footer(depth, "posts")
@@ -416,11 +392,11 @@ def build_posts_index():
     ld = {"@context": "https://schema.org", "@type": "Blog", "name": "%s 현장일지" % BRAND, "url": "%s/posts/" % SITE_URL}
     page = head("현장일지 | %s" % BRAND, desc, "posts/", depth, jsonld=ld) + "<body>\n" + top + """
 <main><div class="wrap">%s<h1 style="margin:10px 0 6px">현장일지</h1><p class="sub">현장에서 직접 해결한 사례와 방역·배관 정보를 기록합니다.</p>
-<div class="pgrid2">%s</div>%s</div></main>
+<div class="pgrid2">%s</div></div></main>
 %s
 </body>
 </html>
-""" % (crumbs([(BRAND, "index.html"), ("현장일지", None)], depth), cards, blog_feed_html(), foot)
+""" % (crumbs([(BRAND, "index.html"), ("현장일지", None)], depth), cards, foot)
     page = page.replace("</body>", bot_scripts(depth) + "\n</body>")
     (pdir).mkdir(exist_ok=True)
     (pdir / "index.html").write_text(page, encoding="utf-8")
