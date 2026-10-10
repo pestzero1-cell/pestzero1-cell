@@ -3,11 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>홈로취케어 · 헬로하수구 · 진원티피엘로지스</title>
-<meta name="description" content="방역·소독(홈로취케어), 배관·하수구(헬로하수구/해피하우스), 물류(진원티피엘로지스) — 현장에서 끝까지 책임지는 1인 전문 업체.">
-<meta property="og:title" content="홈로취케어 · 헬로하수구 · 진원티피엘로지스">
-<meta property="og:description" content="방역 · 배관 · 물류, 현장에서 끝까지 책임집니다.">
-<meta property="og:type" content="website">
+<title>홈페이지</title>
+<meta name="description" content="">
 <style>
 :root{--bg:#fff;--fg:#1c2b25;--muted:#5d6b64;--card:#f3f8f5;--line:#dfe8e3;--brand:#1f8a5b;--brand-d:#146c45;--accent:#f5a623}
 @media (prefers-color-scheme:dark){:root{--bg:#101815;--fg:#e8f0ec;--muted:#9bb0a6;--card:#17231e;--line:#27382f;--brand:#3fbf88;--brand-d:#2fa072}}
@@ -16,11 +13,13 @@ html{scroll-behavior:smooth}
 body{font-family:-apple-system,"Pretendard","Noto Sans KR",sans-serif;background:var(--bg);color:var(--fg);line-height:1.65}
 a{color:inherit;text-decoration:none}
 .wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+.sample{background:var(--accent);color:#3a2800;text-align:center;font-size:.85rem;padding:6px 12px;font-weight:700}
 header{position:sticky;top:0;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
 header .wrap{display:flex;align-items:center;justify-content:space-between;height:56px}
 .logo{font-weight:800;color:var(--brand)}
-nav a{margin-left:16px;font-size:.92rem;color:var(--muted)}
+nav a{margin-left:14px;font-size:.9rem;color:var(--muted)}
 nav a:hover{color:var(--brand)}
+@media(max-width:600px){nav a:nth-child(n+4){display:none}}
 .hero{padding:72px 0 56px;text-align:center;background:linear-gradient(180deg,var(--card),var(--bg))}
 .hero h1{font-size:clamp(1.8rem,5vw,2.9rem);line-height:1.3;font-weight:800}
 .hero h1 em{font-style:normal;color:var(--brand)}
@@ -29,156 +28,113 @@ nav a:hover{color:var(--brand)}
 .btn:hover{background:var(--brand-d)}
 .btn.ghost{background:transparent;color:var(--brand);border:2px solid var(--brand)}
 section{padding:56px 0}
+section.alt{background:var(--card)}
 h2{font-size:1.6rem;margin-bottom:8px}
 .sub{color:var(--muted);margin-bottom:28px}
 .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px}
+.alt .card{background:var(--bg)}
 .card .ico{font-size:2rem}
 .card h3{margin:8px 0 6px}
 .card ul{padding-left:18px;color:var(--muted);font-size:.95rem}
 .tag{display:inline-block;font-size:.75rem;background:var(--brand);color:#fff;border-radius:999px;padding:2px 10px}
+.why{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.why div{padding:20px;border-radius:16px;border:1px solid var(--line)}
+.why b{display:block;margin:6px 0 4px}
+.why span{color:var(--muted);font-size:.93rem}
 .steps{counter-reset:s;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
 .steps div{counter-increment:s;border-left:4px solid var(--accent);padding:6px 14px}
 .steps div::before{content:"0" counter(s);font-weight:800;color:var(--accent)}
 .steps b{display:block}
 .steps span{color:var(--muted);font-size:.92rem}
+.shot{aspect-ratio:4/3;border-radius:12px;background:linear-gradient(135deg,var(--line),var(--card));display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.85rem;overflow:hidden;margin-bottom:12px}
+.shot img{width:100%;height:100%;object-fit:cover}
+.meta{font-size:.82rem;color:var(--muted)}
+.stars{color:var(--accent);letter-spacing:2px}
+.area{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.area span{border:1px solid var(--brand);color:var(--brand);border-radius:999px;padding:4px 14px;font-size:.9rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:700}
+details p{margin-top:8px;color:var(--muted)}
 form{display:grid;gap:12px;max-width:520px}
 input,select,textarea{font:inherit;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg);width:100%}
 button{font:inherit;border:0;cursor:pointer}
 .note{font-size:.85rem;color:var(--muted)}
-details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:10px}
-summary{cursor:pointer;font-weight:700}
-details p{margin-top:8px;color:var(--muted)}
-.why{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-.why div{padding:20px;border-radius:16px;border:1px solid var(--line)}
-.why b{display:block;margin:6px 0 4px}
-.why span{color:var(--muted);font-size:.93rem}
-.area{display:flex;flex-wrap:wrap;gap:8px}
-.area span{border:1px solid var(--brand);color:var(--brand);border-radius:999px;padding:4px 14px;font-size:.9rem}
 footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-size:.88rem}
 .fab{position:fixed;right:16px;bottom:16px;z-index:20;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <a class="logo" href="#top">PESTZERO</a>
-    <nav><a href="#services">서비스</a><a href="#why">강점</a><a href="#faq">FAQ</a><a href="#process">진행순서</a><a href="#contact">문의</a></nav>
-  </div>
-</header>
-
-<main id="top">
-  <div class="hero">
-    <div class="wrap">
-      <h1>해충도 막힌 배관도<br><em>한 번에, 끝까지</em> 해결합니다</h1>
-      <p>방역·소독부터 하수구·배관, 물류까지. 사장이 직접 방문하고 직접 책임지는 현장 전문 업체입니다.</p>
-      <a class="btn" href="#contact">무료 상담 신청</a>
-      <a class="btn ghost" href="#services">서비스 보기</a>
-    </div>
-  </div>
-
-  <section id="services">
-    <div class="wrap">
-      <h2>서비스</h2>
-      <p class="sub">필요한 분야만 골라 맡기세요.</p>
-      <div class="grid">
-        <div class="card">
-          <div class="ico">🐾</div><span class="tag">방역</span>
-          <h3>홈로취케어</h3>
-          <ul><li>바퀴벌레·개미·모기 등 해충 방제</li><li>가정·상가·사무실 정기 방역</li><li>배수구 해충 유입 차단 관리</li></ul>
-        </div>
-        <div class="card">
-          <div class="ico">🔧</div><span class="tag">배관</span>
-          <h3>헬로하수구 · 해피하우스</h3>
-          <ul><li>하수구·배수구 막힘 뚫음</li><li>배관 누수·역류 원인 점검</li><li>주방·욕실·베란다 배관 정비</li></ul>
-        </div>
-        <div class="card">
-          <div class="ico">🚚</div><span class="tag">물류</span>
-          <h3>진원티피엘로지스</h3>
-          <ul><li>화물 운송·배송 대행</li><li>소량 · 정기 물류 상담</li><li>맞춤 견적 제공</li></ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="why">
-    <div class="wrap">
-      <h2>왜 저희일까요</h2>
-      <p class="sub">작은 업체라서 가능한 방식입니다.</p>
-      <div class="why">
-        <div><span style="font-size:1.6rem">👤</span><b>사장이 직접 방문</b><span>상담부터 마무리까지 같은 사람이 책임집니다.</span></div>
-        <div><span style="font-size:1.6rem">💬</span><b>작업 전 설명</b><span>원인과 작업 범위, 비용을 먼저 말씀드립니다.</span></div>
-        <div><span style="font-size:1.6rem">🔁</span><b>원인부터 차단</b><span>겉만 치우지 않고 재발 경로를 함께 잡습니다.</span></div>
-        <div><span style="font-size:1.6rem">📞</span><b>사후 상담</b><span>작업 후 문제가 생기면 다시 연락 주세요.</span></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="process" style="background:var(--card)">
-    <div class="wrap">
-      <h2>진행 순서</h2>
-      <p class="sub">전화 한 통이면 시작됩니다.</p>
-      <div class="steps">
-        <div><b>상담</b><span>증상·위치 확인 후 대략 견적 안내</span></div>
-        <div><b>방문 점검</b><span>현장 원인 파악, 작업 범위 확정</span></div>
-        <div><b>시공·작업</b><span>사전 설명 후 안전하게 진행</span></div>
-        <div><b>사후 관리</b><span>재발 시 상담, 정기 관리 제안</span></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="faq">
-    <div class="wrap">
-      <h2>자주 묻는 질문</h2>
-      <p class="sub">&nbsp;</p>
-      <details><summary>비용은 어떻게 정해지나요?</summary><p>현장 상태와 작업 범위에 따라 다릅니다. 사진이나 증상을 보내주시면 대략적인 견적을 먼저 안내해 드립니다.</p></details>
-      <details><summary>방역 후 집에 있어도 되나요?</summary><p>사용하는 약제와 공간에 따라 안내가 다릅니다. 작업 전에 환기 시간과 주의사항을 알려드립니다.</p></details>
-      <details><summary>하수구 냄새와 벌레가 같이 올라오는데요?</summary><p>배수구 트랩 상태와 배관 막힘이 원인인 경우가 많아, 배관 점검과 방역을 함께 진행하면 효과적입니다.</p></details>
-      <details><summary>급하게 오실 수 있나요?</summary><p>일정이 되는 대로 빠르게 방문합니다. 전화로 상황을 말씀해 주세요.</p></details>
-    </div>
-  </section>
-
-  <section id="contact">
-    <div class="wrap">
-      <h2>문의하기</h2>
-      <p class="sub">남겨주시면 확인 후 바로 연락드립니다.</p>
-      <div class="area" style="margin-bottom:20px"><!-- TODO: 실제 서비스 지역으로 교체 --><span>서비스 지역 입력 1</span><span>서비스 지역 입력 2</span></div>
-      <form id="f">
-        <select name="svc" aria-label="서비스">
-          <option>방역 (홈로취케어)</option>
-          <option>배관·하수구 (헬로하수구/해피하우스)</option>
-          <option>물류 (진원티피엘로지스)</option>
-        </select>
-        <input name="name" placeholder="성함" required>
-        <input name="phone" type="tel" placeholder="연락처" required>
-        <textarea name="msg" rows="4" placeholder="지역과 증상을 간단히 적어주세요"></textarea>
-        <button class="btn" type="submit">문자로 문의 보내기</button>
-        <p class="note">버튼을 누르면 휴대폰 문자 앱이 열립니다.</p>
-      </form>
-    </div>
-  </section>
-</main>
-
-<footer>
-  <div class="wrap">
-    <b>홈로취케어 · 헬로하수구 · 해피하우스 · 진원티피엘로지스</b><br>
-    대표 오창환 · 전화 <a href="tel:01000000000">010-0000-0000</a><br>
-    © <span id="y"></span> All rights reserved.
-  </div>
-</footer>
-
-<a class="btn fab" href="tel:01000000000">📞 전화상담</a>
-
+<div id="app"></div>
+<noscript>자바스크립트를 켜주세요.</noscript>
+<script src="content.js"></script>
 <script>
-// TODO: 실제 번호로 교체 (tel:01000000000, SMS_NUMBER, 푸터 표기)
-var SMS_NUMBER="01000000000";
-document.getElementById("y").textContent=new Date().getFullYear();
-document.getElementById("f").addEventListener("submit",function(e){
-  e.preventDefault();
-  var d=new FormData(e.target);
-  var body="["+d.get("svc")+"]\n성함: "+d.get("name")+"\n연락처: "+d.get("phone")+"\n"+(d.get("msg")||"");
-  location.href="sms:"+SMS_NUMBER+"?body="+encodeURIComponent(body);
-});
+(function(){
+  var S=window.SITE||{};
+  var $=function(s){return document.querySelector(s)};
+  // 모든 문자열을 이스케이프해서 삽입 (content.js 에 특수문자가 있어도 안전)
+  var e=function(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
+  var list=function(a,fn){return (a||[]).map(fn).join("")};
+  var tel="tel:"+String(S.phone||"").replace(/[^0-9+]/g,"");
+  var sample=S.sampleMode?'<div class="sample">⚠ 예시 내용입니다 — content.js 에서 실제 내용으로 바꿔주세요</div>':"";
+  var h=S.hero||{};
+
+  var nav=[["#services","서비스"],["#why","강점"],["#gallery","시공사례"],["#reviews","후기"],["#faq","FAQ"],["#contact","문의"]]
+    .filter(function(n){var k={"#gallery":"gallery","#reviews":"reviews"}[n[0]];return !k||(S[k]||[]).length});
+
+  var html=sample+
+  '<header><div class="wrap"><a class="logo" href="#top">'+e(S.brand)+'</a><nav>'+
+    nav.map(function(n){return '<a href="'+n[0]+'">'+n[1]+'</a>'}).join("")+'</nav></div></header>'+
+  '<main id="top"><div class="hero"><div class="wrap"><h1>'+e(h.title)+'<br><em>'+e(h.highlight)+'</em> '+e(h.titleEnd)+'</h1>'+
+    '<p>'+e(h.text)+'</p><a class="btn" href="#contact">'+e(h.button1)+'</a><a class="btn ghost" href="#services">'+e(h.button2)+'</a></div></div>'+
+
+  '<section id="services"><div class="wrap"><h2>서비스</h2><p class="sub">필요한 분야만 골라 맡기세요.</p><div class="grid">'+
+    list(S.services,function(x){return '<div class="card"><div class="ico">'+e(x.icon)+'</div><span class="tag">'+e(x.tag)+'</span><h3>'+e(x.name)+'</h3><ul>'+list(x.items,function(i){return '<li>'+e(i)+'</li>'})+'</ul></div>'})+
+  '</div></div></section>'+
+
+  '<section id="why" class="alt"><div class="wrap"><h2>왜 저희일까요</h2><p class="sub">작은 업체라서 가능한 방식입니다.</p><div class="why">'+
+    list(S.why,function(x){return '<div><span style="font-size:1.6rem">'+e(x.icon)+'</span><b>'+e(x.title)+'</b><span>'+e(x.text)+'</span></div>'})+'</div></div></section>'+
+
+  '<section id="process"><div class="wrap"><h2>진행 순서</h2><p class="sub">전화 한 통이면 시작됩니다.</p><div class="steps">'+
+    list(S.steps,function(x){return '<div><b>'+e(x.title)+'</b><span>'+e(x.text)+'</span></div>'})+'</div></div></section>'+
+
+  ((S.gallery||[]).length?'<section id="gallery" class="alt"><div class="wrap"><h2>시공 사례</h2><p class="sub">실제 현장 기록입니다.</p><div class="grid">'+
+    list(S.gallery,function(x){return '<div class="card"><div class="shot">'+(x.image?'<img loading="lazy" src="'+e(x.image)+'" alt="'+e(x.title)+'">':'사진 자리')+'</div><span class="tag">'+e(x.tag)+'</span><h3>'+e(x.title)+'</h3><p class="meta">'+e(x.area)+'</p><p style="color:var(--muted);font-size:.93rem;margin-top:6px">'+e(x.text)+'</p></div>'})+
+  '</div></div></section>':'')+
+
+  ((S.reviews||[]).length?'<section id="reviews"><div class="wrap"><h2>고객 후기</h2><p class="sub">&nbsp;</p><div class="grid">'+
+    list(S.reviews,function(x){return '<div class="card"><div class="stars">'+"★".repeat(x.stars||5)+'</div><p style="margin:8px 0">'+e(x.text)+'</p><p class="meta">'+e(x.name)+' · '+e(x.area)+'</p></div>'})+
+  '</div></div></section>':'')+
+
+  '<section id="faq" class="alt"><div class="wrap"><h2>자주 묻는 질문</h2><p class="sub">&nbsp;</p>'+
+    list(S.faq,function(x){return '<details><summary>'+e(x.q)+'</summary><p>'+e(x.a)+'</p></details>'})+'</div></section>'+
+
+  '<section id="contact"><div class="wrap"><h2>문의하기</h2><p class="sub">남겨주시면 확인 후 바로 연락드립니다.</p>'+
+    ((S.areas||[]).length?'<div class="area">'+list(S.areas,function(a){return '<span>'+e(a)+'</span>'})+'</div>':'')+
+    '<form id="f"><select name="svc" aria-label="서비스">'+list(S.contactOptions,function(o){return '<option>'+e(o)+'</option>'})+'</select>'+
+    '<input name="name" placeholder="성함" required><input name="phone" type="tel" placeholder="연락처" required>'+
+    '<textarea name="msg" rows="4" placeholder="지역과 증상을 간단히 적어주세요"></textarea>'+
+    '<button class="btn" type="submit">문자로 문의 보내기</button><p class="note">버튼을 누르면 휴대폰 문자 앱이 열립니다.</p></form>'+
+    '<p style="margin-top:16px">'+
+      (S.kakaoUrl?'<a class="btn ghost" href="'+e(S.kakaoUrl)+'" target="_blank" rel="noopener">카카오톡 상담</a>':'')+
+      (S.blogUrl?'<a class="btn ghost" href="'+e(S.blogUrl)+'" target="_blank" rel="noopener">블로그 보기</a>':'')+'</p>'+
+  '</div></section></main>'+
+
+  '<footer><div class="wrap"><b>'+e(S.pageTitle)+'</b><br>대표 '+e(S.owner)+' · 전화 <a href="'+e(tel)+'">'+e(S.phone)+'</a><br>© '+new Date().getFullYear()+' All rights reserved.</div></footer>'+
+  '<a class="btn fab" href="'+e(tel)+'">📞 전화상담</a>';
+
+  $("#app").innerHTML=html;
+  document.title=S.pageTitle||document.title;
+  $('meta[name=description]').setAttribute("content",S.description||"");
+
+  $("#f").addEventListener("submit",function(ev){
+    ev.preventDefault();
+    var d=new FormData(ev.target);
+    var body="["+d.get("svc")+"]\n성함: "+d.get("name")+"\n연락처: "+d.get("phone")+"\n"+(d.get("msg")||"");
+    location.href="sms:"+S.smsNumber+"?body="+encodeURIComponent(body);
+  });
+})();
 </script>
 </body>
 </html>
