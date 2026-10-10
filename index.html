@@ -170,6 +170,7 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
     '</div></div></section>':''};
   var priceHtml=pageHtml("price",S.price,"단가표 준비 중입니다. 전화로 문의해 주세요.");
   var infoHtml=pageHtml("info",S.info,"내용 준비 중입니다. 전화로 문의해 주세요.");
+  var drainHtml=pageHtml("drain",S.drain,"내용 준비 중입니다. 전화로 문의해 주세요.");
   var systemHtml=pageHtml("system",S.system,"내용 준비 중입니다. 전화로 문의해 주세요.");
 
 
@@ -194,7 +195,7 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
     '<div class="about-main"><div id="tab-g"><h3>'+e(S.about.greeting.title)+'</h3><p class="lead">'+e(S.about.greeting.headline)+'<br><em>'+e(S.about.greeting.highlight)+'</em></p>'+list(S.about.greeting.paragraphs,function(p){return '<p>'+e(p)+'</p>'})+'</div>'+
     '<div id="tab-o" hidden><h3>'+e(S.about.org.title)+'</h3><p class="slogan">'+e(S.about.org.slogan)+'</p><div class="ceo">'+e(S.about.org.ceo)+'</div><div class="teams">'+list(S.about.org.teams,function(t){return '<div class="team"><h4>'+e(t.name)+'</h4><ul style="padding:0">'+list(t.members,function(m){return '<li>'+e(m)+'</li>'})+'</ul></div>'})+'</div></div></div></div></section>':'')+
 
-  priceHtml+systemHtml+infoHtml+
+  priceHtml+systemHtml+infoHtml+drainHtml+
 
   '<section id="why" class="alt"><div class="wrap"><h2>왜 저희일까요</h2><p class="sub">작은 업체라서 가능한 방식입니다.</p><div class="why">'+
     list(S.why,function(x){return '<div><span style="font-size:1.6rem">'+e(x.icon)+'</span><b>'+e(x.title)+'</b><span>'+e(x.text)+'</span></div>'})+'</div></div></section>'+

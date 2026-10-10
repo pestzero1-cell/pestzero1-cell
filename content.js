@@ -26,7 +26,7 @@ window.SITE = {
     { label: "서비스단가표", href: "#price" },
     { label: "서비스시스템", href: "#system" },
     { label: "소독/해충정보", href: "#info" },
-    { label: "하수구막힘 뚫음", href: "#services" },
+    { label: "하수구막힘 뚫음", href: "#drain" },
     { label: "하수구 냄새차단", href: "#services" },
     { label: "현장갤러리", href: "#gallery" },
     { label: "고객센터", href: "#contact" }
@@ -762,6 +762,44 @@ window.SITE = {
           ] }
       ] },
       { label: "방향소취제" }
+    ]
+  },
+
+  // 하수구막힘 뚫음: 왼쪽 메뉴 4개. 시공사례 사진은 images/case-*.jpg
+  drain: {
+    title: "하수구막힘 뚫음",
+    items: [
+      { label: "하수구 막힘", sections: [
+        { heading: "하수구 막힘",
+          bullets: [
+            "싱크대 물을 조금씩 쓰면 괜찮은데 배관을 뚫어도 다시 막힌다면? 헬로하수구에서 근본적인 해결을 해보세요.",
+            "싱크대, 화장실, 욕실, 아파트, 오피스텔, 상가 하수구 막힘",
+            "시멘트, 머리카락, 기름덩어리, 석회, 각종 이물질 제거 하수구 청소"
+          ] },
+        { heading: "평상시 하수구 막힘 원인 (싱크대, 욕조, 세면대, 샤워실, 베란다, 양변기, 주방개수대)",
+          bullets: [
+            "물을 사용하는 모든 장소라면 하수구로 빠져나가는 길뿐입니다.",
+            "싱크대 오랜시간 사용하다보면 구배(기울기로) 인한 하수구 내부에 기름덩어리 막힘",
+            "화장실 욕조 머리카락, 백시멘트로 하수구 막힘 발생",
+            "화장실 세면대 벽하수구 머리카락으로 주로 하수구 막힘 발생",
+            "화장실 바닥 하수구 막힘 백시멘트, 머리카락, 각종 욕실용품",
+            "양변기 공동배관 막힘 (물티슈, 트랩, 칫솔, 비누, 화장품뚜껑, 주사기등 각종 이물질로 막힘",
+            "식당, 오피스텔, 전원주택 긴트렌치 하수구, 유수분리기 공동배관 기름덩어리 막힘",
+            "커피숍 배수구 막힘(제빙기, 커피머신기, 싱크대 호스 배수구 커피가루, 유지방 막힘)"
+          ] }
+      ] },
+      { label: "아파트빌라시공사례", sections: [
+        { intro: "365일 상황 발생시 빠른 출동 서비스로 현장 불편함을 최소화 해 드립니다." },
+        { heading: "베란다 세탁실 배수구 막힘", image: "images/case-veranda.jpg" },
+        { heading: "화장실 배수구 막힘", image: "images/case-toilet.jpg" },
+        { heading: "샤워실 긴트렌치 배수구막힘", image: "images/case-shower.jpg" },
+        { heading: "남자 소변기 막힘", image: "images/case-urinal.jpg" },
+        { heading: "공동배관 오수관 막힘", image: "images/case-pipe.jpg" },
+        { heading: "아파트, 빌라 욕조 배수구 막힘", image: "images/case-bath.jpg" },
+        { heading: "세면대 벽배관 배수구 막힘", image: "images/case-basin.jpg" }
+      ] },
+      { label: "겨울철 하수구 해빙" },
+      { label: "2층필로티 세탁실 베란다 화장실 언배관 시공사례" }
     ]
   },
 
