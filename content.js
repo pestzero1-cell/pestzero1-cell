@@ -1116,9 +1116,9 @@ window.SITE = {
   },
 
   services: [
-    { icon: "🐾", tag: "방역", name: "홈로취케어", image: "images/service-pest.svg",
+    { icon: "🐾", tag: "방역", name: "홈로취케어", image: "images/svc-pest.jpg",
       items: ["바퀴벌레·개미·모기 등 해충 방제", "가정·상가·사무실 정기 방역", "배수구 해충 유입 차단 관리"] },
-    { icon: "🔧", tag: "배관", name: "헬로하수구", image: "images/service-pipe.svg",
+    { icon: "🔧", tag: "배관", name: "헬로하수구", image: "images/svc-pipe.jpg",
       items: ["하수구·배수구 막힘 뚫음", "배관 누수·역류 원인 점검", "주방·욕실·베란다 배관 정비"] }
   ],
 
