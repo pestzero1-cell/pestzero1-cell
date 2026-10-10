@@ -22,7 +22,7 @@ window.SITE = {
   menu: [
     { label: "회사소개", href: "#about" },
     { label: "서비스단가표", href: "#price" },
-    { label: "서비스시스템", href: "#process" },
+    { label: "서비스시스템", href: "#system" },
     { label: "소독/해충정보", href: "#faq" },
     { label: "하수구막힘 뚫음", href: "#services" },
     { label: "하수구 냄새차단", href: "#services" },
@@ -461,6 +461,29 @@ window.SITE = {
           images: ["images/zapper-brochure.jpg"]
         }
       ] }
+    ]
+  },
+
+  // 서비스시스템: 왼쪽 메뉴 항목. sections 가 없으면 "준비 중"으로 표시됩니다.
+  // steps 의 text 에서 **굵게** 로 강조, contact.image 에 사진 경로를 넣으면 사진이 표시됩니다.
+  system: {
+    title: "서비스시스템",
+    items: [
+      { label: "신청방법", sections: [
+        { heading: "진행순서",
+          steps: [
+            { icon: "monitor", text: "홈로취케어 홈페이지 상단에 위치한 **온라인문의 이용**" },
+            { icon: "click", text: "홈로취케어 사이트에 접속하여 온라인상으로 **즉시 신청 가능**" },
+            { icon: "note", text: "**상담시간 외에 서비스를 신청 하시는** 고객분들을 위한 서비스" },
+            { icon: "phone", text: "희망일자 / 시간 남겨주시면 **전화로 일정확인 후 접수처리**" }
+          ] },
+        { heading: "전화신청",
+          contact: { label: "고객센터", phone: "1661-6179", image: "" } }
+      ] },
+      { label: "진행순서" },
+      { label: "방제시스템" },
+      { label: "긴급서비스" },
+      { label: "환불보장제도" }
     ]
   },
 
