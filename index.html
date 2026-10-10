@@ -80,7 +80,7 @@ header{position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px s
 .pimg{display:block;max-width:100%;height:auto;margin:18px 0 8px}
 .pgrid{display:grid;gap:12px;margin:18px 0;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
 .pgrid img{width:100%;height:auto;border:1px solid var(--line);border-radius:8px}
-.sysSteps{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin:20px 0 32px;text-align:center}
+.sysSteps{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));margin:20px 0 32px;text-align:center}
 .sysSteps b{display:block;font-size:1.3rem;margin-bottom:10px}
 .sysSteps svg{color:var(--muted);opacity:.7}
 .sysSteps p{font-size:.88rem;color:var(--muted);margin:10px 0 0;max-width:none}
@@ -151,7 +151,7 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
   var cell=function(c,b){var o=typeof c==="object",t=e(o?c.t:c).replace(/\n/g,"<br>");return '<td'+(o&&c.rs?' rowspan="'+c.rs+'"':'')+(o&&c.cs?' colspan="'+c.cs+'"':'')+((b||(o&&c.b))?' style="font-weight:700"':'')+'>'+t+'</td>'};
   var tbl=function(t){return t?'<div class="tbl"><table><thead>'+(t.caption?'<tr><th colspan="'+t.head.length+'">'+e(t.caption)+'</th></tr>':'')+'<tr>'+list(t.head,function(x){return '<th>'+e(x)+'</th>'})+'</tr></thead><tbody>'+list(t.rows,function(r){return '<tr>'+list(r,function(c,i){return cell(c,t.boldCols&&t.boldCols.indexOf(i)>=0)})+'</tr>'})+'</tbody></table></div>':''};
   var psec=function(s){return (s.imageTop?'<img class="pimg" loading="lazy" src="'+e(s.imageTop)+'" alt="">':'')+'<h4 class="ph">'+e(s.heading)+'</h4>'+(s.lead?'<p class="safe" style="margin:8px 0 14px">◆ '+e(s.lead)+'</p>':'')+list(s.notes,function(n){return '<p class="red">※ '+e(n)+'</p>'})+(s.bulletsFirst?(s.bullets?'<ul class="bl">'+list(s.bullets,function(b){return '<li>'+e(b)+'</li>'})+'</ul>':''):'')+tbl(s.table)+(s.afterNote?'<p class="red">※ '+e(s.afterNote)+'</p>':'')+(s.bulletsFirst?'':(s.bullets?'<ul class="bl">'+list(s.bullets,function(b){return '<li>'+e(b)+'</li>'})+'</ul>':''))+(s.images?'<div class="pgrid">'+list(s.images,function(x){return '<img loading="lazy" src="'+e(x)+'" alt="">'})+'</div>':'')+(s.image?'<img class="pimg" loading="lazy" src="'+e(s.image)+'" alt="">':'')+(s.footer?'<p class="safe">◆ '+e(s.footer)+'</p>':'')};
-  var fmt=function(t){return e(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>")};
+  var fmt=function(t){return e(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\n/g,"<br>")};
   var ICONS={
     monitor:'<svg viewBox="0 0 64 64" width="72" height="72" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><rect x="8" y="10" width="48" height="34" rx="4"/><path d="M22 54h20M32 44v10"/></svg>',
     click:'<svg viewBox="0 0 64 64" width="72" height="72" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="10" width="44" height="32" rx="4"/><path d="M18 52h20M28 42v10M40 28l14 8-6 2 5 8-4 2-5-8-4 4z"/></svg>',

@@ -480,7 +480,16 @@ window.SITE = {
         { heading: "전화신청",
           contact: { label: "고객센터", phone: "1661-6179", image: "" } }
       ] },
-      { label: "진행순서" },
+      { label: "진행순서", sections: [
+        { heading: "진행순서",
+          steps: [
+            { icon: "monitor", text: "**온라인 및 전화상담**\n온라인 및 전화로 서비스에 대하여 상담" },
+            { icon: "click", text: "**서비스신청**\n전화 1661-6179\n또는 온라인 서비스 신청" },
+            { icon: "note", text: "**방문서비스**\n1.현장점검\n2.약재설치\n3.계약서작성\n4.결재,설명" },
+            { icon: "phone", text: "**일정협의**\n스케쥴러가 고객님께 전화로 정확한 일정협의" },
+            { icon: "phone", text: "**A/S접수**\n안내해드린 퇴치기간 이후 해충재발 및 완전퇴치가 안되었을 경우 연관리형 고객 정기관리 방문" }
+          ] }
+      ] },
       { label: "방제시스템" },
       { label: "긴급서비스" },
       { label: "환불보장제도" }
