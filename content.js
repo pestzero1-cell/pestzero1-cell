@@ -45,11 +45,11 @@ window.SITE = {
     button2: "홈로취케어 소개 바로가기",
     // 첫 화면 오른쪽 사진 타일. image 에 사진 경로를 넣으면 사진이 표시됩니다.
     tiles: [
-      { label: "세탁실 막힘", image: "" },
-      { label: "양변기 막힘", image: "" },
-      { label: "소변기 막힘", image: "" },
-      { label: "배수구 해빙", image: "" },
-      { label: "건물공동배관막힘", image: "" }
+      { label: "세탁실 막힘", image: "images/tile-laundry.jpg" },
+      { label: "양변기 막힘", image: "images/tile-toilet.jpg" },
+      { label: "소변기 막힘", image: "images/tile-urinal.jpg" },
+      { label: "배수구 해빙", image: "images/tile-drain.jpg" },
+      { label: "건물공동배관막힘", image: "images/tile-pipe.jpg" }
     ]
   },
 
@@ -85,7 +85,7 @@ window.SITE = {
   // 표의 셀: 글자 그대로 쓰거나, 세로 병합은 { t: "글자", rs: 2 } 로 씁니다. 줄바꿈은 \n
   price: {
     title: "서비스단가표",
-    banner: { small: "철저하고 완벽한 박멸시스템", title: "친환경 소독,", sub: "방역 & 해충을 완벽하게!" },
+    banner: { image: "images/banner-pest.jpg", small: "철저하고 완벽한 박멸시스템", title: "친환경 소독,", sub: "방역 & 해충을 완벽하게!" },
     items: [
       { label: "바퀴벌레 퇴치", sections: [
         { heading: "가정집 (아파트, 빌라, 연립, 단독주택, 다가구 등)",
@@ -115,6 +115,7 @@ window.SITE = {
             "다른 해충의 제거를 추가 하는 경우에는 계약 금액의 50%가 추가됩니다.",
             "6개월보장형과 1년보장형은 초기방문 외 A/S접수로 출동 가능하며, 정기관리형은 연 4회(초회포함) 정기적으로 방문드려 점검 및 퇴치 해드리는 서비스입니다. 아이들 반려동물 걱정하지 마세요. 안전하고 깨끗하게 작업해드립니다."
           ],
+          image: "images/roach-process.jpg",
           footer: "안전하고 쾌적한 공간, 사람을 중요시합니다."
         },
         { heading: "소규모 사업장/영업장 (음식점, 사무실 및 기타 사업장)",
@@ -169,9 +170,9 @@ window.SITE = {
 
   // 시공 사례: image 에 사진 경로(images/case1.jpg 등)를 넣으면 사진이 표시됩니다. 비우면 예시 이미지.
   gallery: [
-    { image: "", title: "주방 배수구 막힘 해결", area: "예시 지역", tag: "배관", text: "기름때로 막힌 배수구를 고압 세척으로 뚫고 트랩을 점검했습니다." },
-    { image: "", title: "원룸 바퀴벌레 방제", area: "예시 지역", tag: "방역", text: "유입 경로를 확인하고 겔·분무 방제 후 재발 방지 안내를 드렸습니다." },
-    { image: "", title: "상가 정기 방역 계약", area: "예시 지역", tag: "방역", text: "월 1회 정기 방문으로 해충 발생을 관리 중입니다." }
+    { image: "images/case1.jpg", title: "건설현장 연막 소독", area: "예시 지역", tag: "방역", text: "현장 숙소 주변을 연막 소독해 해충 발생 환경을 정리했습니다." },
+    { image: "images/case2.jpg", title: "바퀴벌레 서식처 확인·방제", area: "예시 지역", tag: "방역", text: "유입 경로와 서식처를 확인하고 겔·분무 방제 후 재발 방지 안내를 드렸습니다." },
+    { image: "images/case3.jpg", title: "주방 싱크대 배관 작업", area: "예시 지역", tag: "배관", text: "주방 배수 상태를 점검하고 막힘 원인을 제거했습니다." }
   ],
 
   reviews: [

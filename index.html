@@ -77,6 +77,7 @@ header{position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px s
 .bl{padding-left:18px;color:var(--muted);font-size:.92rem;margin:12px 0}
 .bl li{margin-bottom:4px}
 .safe{font-size:1.2rem;font-weight:800;margin:20px 0 0;max-width:none}
+.pimg{display:block;max-width:100%;height:auto;margin:18px 0 8px}
 .soon{padding:40px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
 .btn.cta{background:var(--accent);color:#fff}
 .btn{display:inline-block;padding:13px 26px;border-radius:999px;background:var(--brand);color:var(--on);font-weight:700;margin:4px}
@@ -137,9 +138,9 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
   var h=S.hero||{};
   var cell=function(c){return typeof c==="object"?'<td'+(c.rs?' rowspan="'+c.rs+'"':'')+'>'+e(c.t).replace(/\n/g,"<br>")+'</td>':'<td>'+e(c).replace(/\n/g,"<br>")+'</td>'};
   var tbl=function(t){return t?'<div class="tbl"><table><thead><tr>'+list(t.head,function(x){return '<th>'+e(x)+'</th>'})+'</tr></thead><tbody>'+list(t.rows,function(r){return '<tr>'+list(r,cell)+'</tr>'})+'</tbody></table></div>':''};
-  var psec=function(s){return '<h4 class="ph">'+e(s.heading)+'</h4>'+list(s.notes,function(n){return '<p class="red">※ '+e(n)+'</p>'})+tbl(s.table)+(s.afterNote?'<p class="red">※ '+e(s.afterNote)+'</p>':'')+(s.bullets?'<ul class="bl">'+list(s.bullets,function(b){return '<li>'+e(b)+'</li>'})+'</ul>':'')+(s.footer?'<p class="safe">◆ '+e(s.footer)+'</p>':'')};
+  var psec=function(s){return '<h4 class="ph">'+e(s.heading)+'</h4>'+list(s.notes,function(n){return '<p class="red">※ '+e(n)+'</p>'})+tbl(s.table)+(s.afterNote?'<p class="red">※ '+e(s.afterNote)+'</p>':'')+(s.bullets?'<ul class="bl">'+list(s.bullets,function(b){return '<li>'+e(b)+'</li>'})+'</ul>':'')+(s.image?'<img class="pimg" loading="lazy" src="'+e(s.image)+'" alt="">':'')+(s.footer?'<p class="safe">◆ '+e(s.footer)+'</p>':'')};
   var P=S.price;
-  var priceHtml=P?'<section id="price" style="padding:0"><div class="pbanner"><div class="wrap"><small>'+e(P.banner.small)+'</small><b>'+e(P.banner.title)+'</b><span>'+e(P.banner.sub)+'</span></div></div>'+
+  var priceHtml=P?'<section id="price" style="padding:0"><div class="pbanner"'+(P.banner.image?' style="background-image:linear-gradient(100deg,rgba(12,47,110,.95) 35%,rgba(12,47,110,.2)),url(\''+e(P.banner.image)+'\');background-size:cover;background-position:right center"':'')+'><div class="wrap"><small>'+e(P.banner.small)+'</small><b>'+e(P.banner.title)+'</b><span>'+e(P.banner.sub)+'</span></div></div>'+
     '<div class="wrap about" style="padding-block:40px"><aside class="about-side"><h2>'+e(P.title)+'</h2><div class="ptabs" role="tablist">'+
     list(P.items,function(it,i){return '<button type="button" role="tab" data-p="'+i+'" aria-selected="'+(i===0)+'">'+e(it.label)+'</button>'})+'</div></aside><div class="about-main">'+
     list(P.items,function(it,i){return '<div class="pp" id="pp-'+i+'"'+(i?' hidden':'')+'><h3>'+e(it.label)+'</h3>'+((it.sections||[]).length?list(it.sections,psec):'<p class="soon">단가표 준비 중입니다. 전화로 문의해 주세요.</p>')+'</div>'})+
