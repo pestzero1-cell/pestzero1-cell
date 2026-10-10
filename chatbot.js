@@ -38,7 +38,7 @@
     '.hb-form{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line,#dfe8e3);background:var(--bg,#fff)}' +
     '.hb-form input{flex:1;min-width:0;border:1px solid var(--line,#dfe8e3);border-radius:999px;padding:10px 14px;font:inherit;font-size:.92rem;background:var(--bg,#fff);color:var(--fg,#1c2b25)}' +
     '.hb-form button{border:0;border-radius:999px;background:var(--accent,#e5531d);color:#fff;font:700 .9rem/1 inherit;font-family:inherit;padding:0 16px;cursor:pointer}' +
-    '.hb-expert{margin-top:10px;border:2px solid var(--accent,#e5531d);border-radius:12px;padding:10px 12px;background:var(--bg,#fff)}.hb-expert b{color:var(--accent,#e5531d);display:block;margin-bottom:4px}.hb-expert .hb-bigcall{display:block;text-align:center;background:var(--accent,#e5531d);color:#fff;border-radius:999px;padding:11px 14px;margin-top:8px;font-weight:800;font-size:1rem;text-decoration:none}.hb-expert .hb-bigcall:hover{filter:brightness(.92)}.hb-expert .hb-sub{display:block;text-align:center;margin-top:6px;font-size:.78rem;color:var(--muted,#5d6b64)}.hb-note{font-size:.72rem;color:var(--muted,#5d6b64);text-align:center;padding:0 12px 8px;background:var(--bg,#fff)}' +
+    '.hb-expert{margin-top:10px;border:2px solid var(--accent,#e5531d);border-radius:12px;padding:10px 12px;background:var(--bg,#fff)}.hb-expert b{color:var(--accent,#e5531d);display:block;margin-bottom:4px}.hb-expert .hb-bigcall{display:block;text-align:center;background:var(--accent,#e5531d);color:#fff;border-radius:999px;padding:11px 14px;margin-top:8px;font-weight:800;font-size:1rem;text-decoration:none}.hb-expert .hb-bigcall:hover{filter:brightness(.92)}.hb-expert .hb-sub{display:block;text-align:center;margin-top:6px;font-size:.78rem;color:var(--muted,#5d6b64)}.hb-disc{margin-top:9px;padding:8px 10px;border-left:3px solid var(--accent,#e5531d);background:var(--card,#f3f8f5);border-radius:0 8px 8px 0;font-size:.78rem;line-height:1.5;color:var(--muted,#5d6b64)}.hb-note{font-size:.72rem;color:var(--muted,#5d6b64);text-align:center;padding:0 12px 8px;background:var(--bg,#fff)}' +
     '.hb-typing{display:inline-flex;gap:4px;align-items:center;padding:12px 14px}.hb-typing i{width:6px;height:6px;border-radius:50%;background:var(--muted,#5d6b64);animation:hbb 1s infinite}.hb-typing i:nth-child(2){animation-delay:.15s}.hb-typing i:nth-child(3){animation-delay:.3s}' +
     '@keyframes hbb{0%,60%,100%{opacity:.25;transform:none}30%{opacity:1;transform:translateY(-3px)}}' +
     '@media(prefers-reduced-motion:reduce){.hb-typing i{animation:none}}' +
@@ -125,7 +125,7 @@
       raw += "\n" + e.tail;
     }
     state.step = "idle";
-    botSay(rich(raw) + linkHtml([{ label: svc.label + " 단가표", href: "price/" + (svc.label === "바퀴벌레" ? "roach" : svc.label === "개미" ? "ant" : "rat") + "/" }], true), function () { setChips(["다른 견적", "신청 방법", "출장비"]); });
+    botSay(rich(raw) + (B.disclaimer ? '<div class="hb-disc">' + esc(B.disclaimer) + "</div>" : "") + linkHtml([{ label: svc.label + " 단가표", href: "price/" + (svc.label === "바퀴벌레" ? "roach" : svc.label === "개미" ? "ant" : "rat") + "/" }], true), function () { setChips(["다른 견적", "신청 방법", "출장비"]); });
   }
 
   // ---------------- 키워드 매칭 ----------------
@@ -157,14 +157,15 @@
       var sv = B.estimate.services.filter(function (s) { return q.indexOf(norm(s.label)) >= 0; })[0];
       if (sv) { askSize(sv); return; }
       var ex = findIntent(text);
-      if (ex && ex.expert) { state.step = "idle"; handleIntent(ex); return; }
+      if (ex && (ex.expert || ex.id !== "pests")) { state.step = "idle"; handleIntent(ex); return; }
       if (/다른|하수구|배관|기타/.test(text)) { state.step = "idle"; handleIntent(findIntent(text) || B.intents.filter(function (i) { return i.id === "drain"; })[0]); return; }
       botSay(rich("목록에서 골라 주시거나 바퀴벌레 / 개미 / 쥐 중 하나를 입력해 주세요."), function () { setChips(B.estimate.services.map(function (s) { return s.label; }).concat(["다른 해충·하수구"])); }, 250);
       return;
     }
     if (state.step === "size") {
       var ex2 = findIntent(text);
-      if (ex2 && ex2.expert) { state.step = "idle"; handleIntent(ex2); return; }
+      var hasSize = /\d/.test(text) || /원룸/.test(text);
+      if (ex2 && (ex2.expert || !hasSize)) { state.step = "idle"; handleIntent(ex2); return; }
       answerSize(text); return;
     }
     if (/견적|얼마|가격|비용|금액|요금|단가/.test(text) && !findIntent(text)) { startEstimate(); return; }
@@ -181,6 +182,10 @@
       '<a class="hb-bigcall" href="' + esc(TEL) + '">☎ 전문가 상담 연결 ' + esc(PHONE) + '</a><span class="hb-sub">모바일에서 누르면 바로 전화가 연결돼요</span>' +
       (KAKAO ? '<div class="hb-links"><a class="kk" href="' + esc(KAKAO) + '" target="_blank" rel="noopener noreferrer">카카오톡으로 사진 보내기</a></div>' : "") + "</div>";
   }
+  function discHtml(it) {
+    var show = it && it.disclaimer !== false && (it.disclaimer === true || /\d{1,3},\d{3}원/.test(it.answer || ""));
+    return show && B.disclaimer ? '<div class="hb-disc">' + esc(B.disclaimer) + "</div>" : "";
+  }
   function pestChips() { return (B.pests || []).map(function (p) { return p.label; }); }
   function handleIntent(it) {
     if (it.id === "pests" && B.pests) {
@@ -191,7 +196,7 @@
       botSay(rich(it.answer) + linkHtml(it.links, false) + expertBox(), function () { setChips(B.chips.filter(function (c) { return norm(c) !== norm(it.label); }).slice(0, 5)); });
       return;
     }
-    botSay(rich(it.answer) + linkHtml(it.links, it.id === "apply" || it.id === "urgent" || it.id === "area" || it.id === "drain" || it.id === "bedbug" || it.id === "smell" || it.id === "hello"), function () {
+    botSay(rich(it.answer) + discHtml(it) + linkHtml(it.links, it.id === "apply" || it.id === "urgent" || it.id === "area" || it.id === "drain" || it.id === "bedbug" || it.id === "smell" || it.id === "hello"), function () {
       setChips(B.chips.filter(function (c) { return norm(c) !== norm(it.label); }).slice(0, 5));
     });
   }
