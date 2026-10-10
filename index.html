@@ -90,6 +90,9 @@ header{position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px s
 .contact-card>div:first-child{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;padding:20px}
 .bigtel{display:block;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 28px;font-size:1.5rem;color:var(--brand);font-weight:700}
 .cc-img{background:linear-gradient(135deg,var(--line),var(--card)) center/cover}
+.cellimg{max-width:64px;height:auto;max-height:70px}
+.introbox{background:var(--card);border:1px solid var(--line);padding:14px 16px;margin:0 0 18px;max-width:none}
+.tbl td{vertical-align:middle}
 .soon{padding:40px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
 .btn.cta{background:var(--accent);color:#fff}
 .btn{display:inline-block;padding:13px 26px;border-radius:999px;background:var(--brand);color:var(--on);font-weight:700;margin:4px}
@@ -148,9 +151,9 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
   var tel="tel:"+String(S.phone||"").replace(/[^0-9+]/g,"");
   var sample=S.sampleMode?'<div class="sample">⚠ 예시 내용입니다 — content.js 에서 실제 내용으로 바꿔주세요</div>':"";
   var h=S.hero||{};
-  var cell=function(c,b){var o=typeof c==="object",t=e(o?c.t:c).replace(/\n/g,"<br>");return '<td'+(o&&c.rs?' rowspan="'+c.rs+'"':'')+(o&&c.cs?' colspan="'+c.cs+'"':'')+((b||(o&&c.b))?' style="font-weight:700"':'')+'>'+t+'</td>'};
+  var cell=function(c,b){if(c&&c.img)return '<td style="text-align:center"><img class="cellimg" loading="lazy" src="'+e(c.img)+'" alt="'+e(c.t)+'"><br><span style="font-size:.85rem;color:var(--muted)">'+e(c.t)+'</span></td>';var o=typeof c==="object",t=e(o?c.t:c).replace(/\n/g,"<br>");return '<td'+(o&&c.rs?' rowspan="'+c.rs+'"':'')+(o&&c.cs?' colspan="'+c.cs+'"':'')+((b||(o&&c.b))?' style="font-weight:700"':'')+'>'+t+'</td>'};
   var tbl=function(t){return t?'<div class="tbl"><table><thead>'+(t.caption?'<tr><th colspan="'+t.head.length+'">'+e(t.caption)+'</th></tr>':'')+'<tr>'+list(t.head,function(x){return '<th>'+e(x)+'</th>'})+'</tr></thead><tbody>'+list(t.rows,function(r){return '<tr>'+list(r,function(c,i){return cell(c,t.boldCols&&t.boldCols.indexOf(i)>=0)})+'</tr>'})+'</tbody></table></div>':''};
-  var psec=function(s){return (s.imageTop?'<img class="pimg" loading="lazy" src="'+e(s.imageTop)+'" alt="">':'')+'<h4 class="ph">'+e(s.heading)+'</h4>'+(s.lead?'<p class="safe" style="margin:8px 0 14px">◆ '+e(s.lead)+'</p>':'')+list(s.notes,function(n){return '<p class="red">※ '+e(n)+'</p>'})+(s.bulletsFirst?(s.bullets?'<ul class="bl">'+list(s.bullets,function(b){return '<li>'+e(b)+'</li>'})+'</ul>':''):'')+tbl(s.table)+(s.afterNote?'<p class="red">※ '+e(s.afterNote)+'</p>':'')+(s.bulletsFirst?'':(s.bullets?'<ul class="bl">'+list(s.bullets,function(b){return '<li>'+e(b)+'</li>'})+'</ul>':''))+(s.images?'<div class="pgrid">'+list(s.images,function(x){return '<img loading="lazy" src="'+e(x)+'" alt="">'})+'</div>':'')+(s.image?'<img class="pimg" loading="lazy" src="'+e(s.image)+'" alt="">':'')+(s.footer?'<p class="safe">◆ '+e(s.footer)+'</p>':'')};
+  var psec=function(s){return (s.imageTop?'<img class="pimg" loading="lazy" src="'+e(s.imageTop)+'" alt="">':'')+(s.heading?'<h4 class="ph">'+e(s.heading)+'</h4>':'')+(s.intro?'<p class="introbox">'+e(s.intro).replace(/\n/g,'<br>')+'</p>':'')+(s.lead?'<p class="safe" style="margin:8px 0 14px">◆ '+e(s.lead)+'</p>':'')+list(s.notes,function(n){return '<p class="red">※ '+e(n)+'</p>'})+(s.bulletsFirst?(s.bullets?'<ul class="bl">'+list(s.bullets,function(b){return '<li>'+e(b)+'</li>'})+'</ul>':''):'')+tbl(s.table)+(s.afterNote?'<p class="red">※ '+e(s.afterNote)+'</p>':'')+(s.bulletsFirst?'':(s.bullets?'<ul class="bl">'+list(s.bullets,function(b){return '<li>'+e(b)+'</li>'})+'</ul>':''))+(s.images?'<div class="pgrid">'+list(s.images,function(x){return '<img loading="lazy" src="'+e(x)+'" alt="">'})+'</div>':'')+(s.image?'<img class="pimg" loading="lazy" src="'+e(s.image)+'" alt="">':'')+(s.footer?'<p class="safe">◆ '+e(s.footer)+'</p>':'')};
   var fmt=function(t){return e(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\n/g,"<br>")};
   var ICONS={
     monitor:'<svg viewBox="0 0 64 64" width="72" height="72" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><rect x="8" y="10" width="48" height="34" rx="4"/><path d="M22 54h20M32 44v10"/></svg>',
@@ -166,6 +169,7 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
     list(P.items,function(it,i){return '<div class="pp" id="pp-'+id+'-'+i+'"'+(i?' hidden':'')+'><h3>'+e(it.label)+'</h3>'+((it.sections||[]).length?list(it.sections,function(s){return psec(s)+stepsHtml(s)+contactHtml(s)}):'<p class="soon">'+soon+'</p>')+'</div>'})+
     '</div></div></section>':''};
   var priceHtml=pageHtml("price",S.price,"단가표 준비 중입니다. 전화로 문의해 주세요.");
+  var infoHtml=pageHtml("info",S.info,"내용 준비 중입니다. 전화로 문의해 주세요.");
   var systemHtml=pageHtml("system",S.system,"내용 준비 중입니다. 전화로 문의해 주세요.");
 
 
@@ -190,7 +194,7 @@ footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-s
     '<div class="about-main"><div id="tab-g"><h3>'+e(S.about.greeting.title)+'</h3><p class="lead">'+e(S.about.greeting.headline)+'<br><em>'+e(S.about.greeting.highlight)+'</em></p>'+list(S.about.greeting.paragraphs,function(p){return '<p>'+e(p)+'</p>'})+'</div>'+
     '<div id="tab-o" hidden><h3>'+e(S.about.org.title)+'</h3><p class="slogan">'+e(S.about.org.slogan)+'</p><div class="ceo">'+e(S.about.org.ceo)+'</div><div class="teams">'+list(S.about.org.teams,function(t){return '<div class="team"><h4>'+e(t.name)+'</h4><ul style="padding:0">'+list(t.members,function(m){return '<li>'+e(m)+'</li>'})+'</ul></div>'})+'</div></div></div></div></section>':'')+
 
-  priceHtml+systemHtml+
+  priceHtml+systemHtml+infoHtml+
 
   '<section id="why" class="alt"><div class="wrap"><h2>왜 저희일까요</h2><p class="sub">작은 업체라서 가능한 방식입니다.</p><div class="why">'+
     list(S.why,function(x){return '<div><span style="font-size:1.6rem">'+e(x.icon)+'</span><b>'+e(x.title)+'</b><span>'+e(x.text)+'</span></div>'})+'</div></div></section>'+
