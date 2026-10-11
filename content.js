@@ -91,13 +91,13 @@ window.SITE = {
     ],
     button1: "무료 상담 신청",
     button2: "홈로취케어 소개 바로가기",
-    // 첫 화면 오른쪽 사진 타일. image 에 사진 경로를 넣으면 사진이 표시됩니다.
+    // 첫 화면 사진 타일(문구는 label). 내 사진을 쓰려면 images/ 폴더에 사진을 올리고 image 경로만 바꾸거나, 같은 파일명(ti-*.jpg)으로 덮어쓰세요. 가로세로 비슷한 사진이 잘 어울립니다.
     tiles: [
-      { label: "세탁실 막힘", image: "images/tile-laundry.jpg" },
-      { label: "양변기 막힘", image: "images/tile-toilet.jpg" },
-      { label: "소변기 막힘", image: "images/tile-urinal.jpg" },
-      { label: "배수구 해빙", image: "images/tile-drain.jpg" },
-      { label: "건물공동배관막힘", image: "images/tile-pipe.jpg" }
+      { label: "세탁실 막힘", image: "images/ti-laundry.jpg" },
+      { label: "양변기 막힘", image: "images/ti-toilet.jpg" },
+      { label: "소변기 막힘", image: "images/ti-urinal.jpg" },
+      { label: "배수구 해빙", image: "images/ti-thaw.jpg" },
+      { label: "건물공동배관막힘", image: "images/ti-pipe.jpg" }
     ]
   },
 
