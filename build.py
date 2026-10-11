@@ -480,6 +480,11 @@ def build_css():
 .pgrid2{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));padding-block:20px 56px}
 .pcard a{display:block;border:1px solid var(--line);border-radius:12px;overflow:hidden;height:100%;background:var(--bg)}.pcard a:hover{box-shadow:0 8px 24px rgba(18,64,143,.12)}
 .pcard img,.pnoimg{width:100%;aspect-ratio:16/9;object-fit:cover;display:grid;place-items:center;background:var(--card);color:var(--muted)}
+.gfilter{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}.gfilter button{border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:999px;padding:7px 16px;font-weight:700;cursor:pointer}.gfilter button.on{background:var(--brand);color:var(--on);border-color:var(--brand)}
+.ggrid{padding-block:14px 8px}.gcard[hidden]{display:none}.gcard .gt{font-size:1.1rem;margin:8px 0 2px}
+.smell{padding-bottom:56px}.sm-b{margin:26px 0}.sm-b h2{font-size:1.25rem;color:var(--brand);margin:0 0 10px}.sm-b ul{margin:0;padding-left:1.2em;line-height:1.9}
+.sm-steps{list-style:none;counter-reset:s;margin:0;padding:0;display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.sm-steps li{counter-increment:s;background:var(--card);border-left:4px solid var(--accent);border-radius:10px;padding:12px 14px}.sm-steps li::before{content:"0" counter(s);font-weight:800;color:var(--accent);display:block}.sm-steps b{display:block}.sm-steps span{color:var(--muted);font-size:.92rem}
 .pcard h2{font-size:1.1rem;margin:12px 16px 4px;line-height:1.35}.pcard p{margin:0 16px 8px;color:var(--muted);font-size:.92rem}.pcard .pmeta{margin:0 16px 14px}
 """
     (ROOT / "assets").mkdir(exist_ok=True)
@@ -517,6 +522,76 @@ def inject_home():
     p.write_text(h, encoding="utf-8")
 
 
+def build_gallery():
+    """현장갤러리 전용 페이지: content.js 의 gallery 항목을 사진 카드로 보여주고 분류(태그)별로 거를 수 있게 합니다."""
+    items = S.get("gallery") or []
+    if not items:
+        return None
+    depth = 1
+    top, foot = header_footer(depth, "gallery")
+    tags = []
+    for g in items:
+        if g.get("tag") and g["tag"] not in tags:
+            tags.append(g["tag"])
+    chips = ""
+    if len(tags) > 1:
+        chips = '<div class="gfilter" role="group" aria-label="분류">' + '<button type="button" class="on" data-t="">전체</button>' + "".join('<button type="button" data-t="%s">%s</button>' % (e(t), e(t)) for t in tags) + "</div>"
+    cards = "".join(
+        '<div class="card gcard" data-t="%s"><div class="shot">%s</div><span class="tag">%s</span><h2 class="gt">%s</h2><p class="meta">%s</p><p>%s</p></div>' % (
+            e(g.get("tag", "")), ('<img loading="lazy" src="%s" alt="%s">' % (e(img_src(g["image"], depth)), e(g.get("title", "")))) if g.get("image") else "사진 자리",
+            e(g.get("tag", "")), e(g.get("title", "")), e(g.get("area", "")), e(g.get("text", ""))) for g in items)
+    desc = "홈로취케어·헬로하수구 현장갤러리. 방역과 하수구·배관 시공 현장 기록을 사진으로 확인하세요."
+    page = head("현장갤러리 | %s" % BRAND, desc, "gallery/", depth) + "<body>\n" + top + """
+<main><div class="wrap">%s<h1 style="margin:10px 0 6px">현장갤러리</h1><p class="sub">방역과 하수구·배관 현장 기록입니다. 사진을 누르면 크게 볼 수 있습니다.</p>%s
+<div class="grid ggrid">%s</div>
+<div class="pcta"><p><b>우리 집도 같은 증상이신가요?</b></p><p>증상과 지역을 말씀해 주시면 바로 안내해 드립니다.</p><a class="btn" href="tel:%s">📞 전화상담 %s</a> <a class="btn ghost" href="../posts/">현장일지 보기</a></div></div></main>
+%s
+<script>(function(){var w=document.querySelector('.gfilter');if(!w)return;w.addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b)return;w.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b)});var t=b.getAttribute('data-t');document.querySelectorAll('.gcard').forEach(function(c){c.hidden=!!t&&c.getAttribute('data-t')!==t})})})();</script>
+</body>
+</html>
+""" % (crumbs([(BRAND, "index.html"), ("현장갤러리", None)], depth), chips, cards, e(re.sub(r"[^0-9]", "", S["phone"])), e(S["phone"]), foot)
+    page = page.replace("</body>", bot_scripts(depth) + "\n</body>")
+    out = ROOT / "gallery"
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "index.html").write_text(page, encoding="utf-8")
+    return "gallery/"
+
+
+def build_smell():
+    """하수구 냄새차단 전용 페이지. 트랩 장점은 단가표(drain-trap) 문구를 그대로 가져옵니다."""
+    sm = S.get("smell")
+    if not sm:
+        return None
+    depth = 1
+    top, foot = header_footer(depth, "smell")
+    trap = []
+    for key, sec_title, d, its in SECTIONS:
+        for it in its:
+            if it["slug"] == "drain-trap":
+                for sec in it.get("sections", []):
+                    trap = sec.get("bullets") or trap
+    ul = lambda xs: "<ul>" + "".join("<li>%s</li>" % e(x) for x in xs) + "</ul>"
+    steps = "".join('<li><b>%s</b><span>%s</span></li>' % (e(s["title"]), e(s["text"])) for s in sm.get("steps", []))
+    desc = sm.get("description") or "하수구 냄새와 벌레 유입을 하수구 트랩 설치로 함께 차단합니다."
+    page = head("하수구 냄새차단 | %s" % BRAND, desc, "smell/", depth) + "<body>\n" + top + """
+<main><div class="wrap smell">%s<h1 style="margin:10px 0 6px">%s</h1><p class="sub">%s</p>
+<section class="sm-b"><h2>이런 증상이 있으신가요?</h2>%s</section>
+<section class="sm-b"><h2>원인은 보통 이렇습니다</h2>%s</section>
+<section class="sm-b"><h2>홈로취케어의 해결 방법</h2>%s%s</section>
+<section class="sm-b"><h2>진행은 이렇게 됩니다</h2><ol class="sm-steps">%s</ol></section>
+<div class="pcta"><p><b>냄새·벌레, 한 번에 해결해 보세요</b></p><p>설치 위치와 비용은 현장 상황에 따라 달라질 수 있어 전화로 먼저 안내해 드립니다.</p>
+<a class="btn" href="tel:%s">📞 전화상담 %s</a> <a class="btn ghost" href="../price/drain-trap/">하수구트랩 단가표</a> <a class="btn ghost" href="../drain/clogged-drain/">하수구 막힘 보기</a></div></div></main>
+%s
+</body>
+</html>
+""" % (crumbs([(BRAND, "index.html"), ("하수구 냄새차단", None)], depth), e(sm.get("title", "하수구 냄새차단")), e(sm.get("sub", "")), ul(sm.get("symptoms", [])), ul(sm.get("causes", [])), ul(trap) if trap else "", ('<p class="meta">자세한 설치 위치별 단가는 <a href="../price/drain-trap/">하수구트랩 단가표</a>에서 확인하세요.</p>'), steps, e(re.sub(r"[^0-9]", "", S["phone"])), e(S["phone"]), foot)
+    page = page.replace("</body>", bot_scripts(depth) + "\n</body>")
+    out = ROOT / "smell"
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "index.html").write_text(page, encoding="utf-8")
+    return "smell/"
+
+
 # ---------------------------------------------------------------- 실행
 def main():
     inject_home()
@@ -528,6 +603,10 @@ def main():
             urls.append((path, "0.8"))
     build_posts_index()
     build_support()
+    for fn in (build_gallery, build_smell):
+        pth = fn()
+        if pth:
+            urls.append((pth, "0.8"))
     urls.append(("posts/", "0.7"))
     for i, p in enumerate(posts):
         urls.append((build_post(i, p), "0.6"))

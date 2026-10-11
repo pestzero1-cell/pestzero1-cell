@@ -43,8 +43,8 @@ window.SITE = {
     { label: "서비스시스템", href: "system/apply/" },
     { label: "소독/해충정보", href: "info/cockroach/" },
     { label: "하수구막힘 뚫음", href: "drain/clogged-drain/" },
-    { label: "하수구 냄새차단", href: "price/drain-trap/" },
-    { label: "현장갤러리", href: "#gallery" },
+    { label: "하수구 냄새차단", href: "smell/" },
+    { label: "현장갤러리", href: "gallery/" },
     { label: "현장일지", href: "posts/" },
     { label: "고객센터", href: "support/" }
   ],
@@ -1294,6 +1294,29 @@ window.SITE = {
     { icon: "🔁", image: "images/why-cause.jpg", title: "원인부터 차단", text: "겉만 치우지 않고 재발 경로를 함께 잡습니다." },
     { icon: "📞", image: "images/why-after.jpg", title: "사후 상담", text: "작업 후 문제가 생기면 다시 연락 주세요." }
   ],
+
+  // 하수구 냄새차단 전용 페이지(smell/). 트랩 장점·설치 안내는 서비스단가표 > 하수구트랩 문구를 그대로 가져옵니다.
+  smell: {
+    title: "하수구 냄새차단",
+    sub: "냄새와 벌레는 같은 통로로 올라옵니다. 하수구 트랩으로 함께 막아드립니다.",
+    description: "싱크대·욕실·세탁실 하수구 냄새와 벌레 유입을 하수구 트랩 설치로 함께 차단합니다. 홈로취케어.",
+    symptoms: [
+      "싱크대, 욕실, 세탁실 배수구에서 냄새가 올라와요",
+      "배수구에서 바퀴벌레, 나방, 파리, 집게벌레가 나와요",
+      "냄새와 벌레가 같이 올라와요"
+    ],
+    causes: [
+      "배수구 트랩 상태가 좋지 않아 냄새와 해충이 그대로 올라오는 경우",
+      "배관이 막히거나 오염되어 냄새가 생기는 경우",
+      "배관 점검 후에야 정확한 원인을 알 수 있어 현장 확인이 필요합니다."
+    ],
+    steps: [
+      { title: "상담", text: "냄새·벌레 증상과 위치를 확인합니다." },
+      { title: "현장 점검", text: "트랩 상태와 배관 막힘 여부를 점검합니다." },
+      { title: "트랩 설치", text: "위치에 맞는 하수구 트랩을 설치합니다." },
+      { title: "사후 관리", text: "문제가 있으면 A/S로 이어집니다." }
+    ]
+  },
 
   // 홈에 나오는 환불보장 요약 카드. 자세한 내용은 system/refund/ 페이지(서비스시스템 > 환불보장제도).
   guarantee: {

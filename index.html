@@ -409,7 +409,7 @@ footer{border-top:1px solid var(--line);padding:32px 0 calc(96px + env(safe-area
 
   ((S.gallery||[]).length?'<section id="gallery" class="alt"><div class="wrap"><h2>시공 사례</h2><p class="sub">실제 현장 기록입니다.</p><div class="grid">'+
     list(S.gallery,function(x){return '<div class="card"><div class="shot">'+(x.image?'<img loading="lazy" src="'+e(x.image)+'" alt="'+e(x.title)+'">':'사진 자리')+'</div><span class="tag">'+e(x.tag)+'</span><h3>'+e(x.title)+'</h3><p class="meta">'+e(x.area)+'</p><p style="color:var(--muted);font-size:.93rem;margin-top:6px">'+e(x.text)+'</p></div>'})+
-  '</div></div></section>':'')+
+  '</div><p style="margin-top:18px"><a class="btn ghost" href="gallery/">현장갤러리 전체 보기</a></p></div></section>':'')+
 
   ((S.reviews||[]).length?'<section id="reviews"><div class="wrap"><h2>고객 후기</h2><p class="sub">이용하신 고객님들의 이야기입니다.</p><div class="grid">'+
     list(S.reviews,function(x){return '<div class="card"><div class="stars">'+"★".repeat(x.stars||5)+'</div><p style="margin:8px 0">'+e(x.text)+'</p><p class="meta">'+e(x.name)+' · '+e(x.area)+'</p></div>'})+
