@@ -3,6 +3,7 @@
 (function(){
   var S=window.SITE||{},B=S.board,root=document.getElementById("board-root");
   if(!B||!root)return;
+  if(window.HRC_INQUIRY&&window.HRC_INQUIRY.enabled&&window.HRC_BOARD_SERVER){window.HRC_BOARD_SERVER();return}
   var $=function(s){return document.querySelector(s)};
   var e=function(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
   var list=function(a,fn){return (a||[]).map(fn).join("")};

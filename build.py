@@ -232,7 +232,7 @@ def bot_scripts(depth):
     zoom = '<script src="%szoom.js" defer></script><script src="%spwa.js" defer></script>' % (r, r)
     if not (S.get("bot") or {}).get("enabled", True) or not S.get("bot"):
         return zoom
-    return zoom + '<script>window.SITE_BASE="%s";</script><script src="%sassets/bot-data.js"></script><script src="%schatbot.js" defer></script><script src="%scallbar.js" defer></script>' % (r, r, r, r)
+    return zoom + '<script>window.SITE_BASE="%s";</script><script src="%sassets/bot-data.js"></script><script src="%schatbot.js" defer></script><script src="%scallbar.js" defer></script><script src="%soverlay.js" defer></script>' % (r, r, r, r, r)
 
 
 def crumbs(items, depth):
@@ -399,7 +399,7 @@ def build_support():
 <main><div class="wrap">%s<h1 style="margin:10px 0 0">고객센터</h1></div>
 <div id="board-root"></div><noscript><div class="wrap"><p>자바스크립트를 켜면 게시판을 볼 수 있습니다. 문의는 전화 %s 로 연락 주세요.</p></div></noscript></main>
 %s
-<script src="../content.js"></script><script src="../inquiry.js"></script><script src="../board.js"></script>
+<script src="../content.js"></script><script src="../inquiry.js"></script><script src="../overlay.js"></script><script src="../board-server.js"></script><script src="../board.js"></script>
 </body>
 </html>
 """ % (crumbs([(BRAND, "index.html"), ("고객센터", None)], depth), e(S["phone"]), foot)
@@ -443,7 +443,7 @@ def build_rss():
 
 
 def build_bot_data():
-    data = {"phone": S["phone"], "kakaoUrl": S.get("kakaoUrl", ""), "bot": S.get("bot")}
+    data = {"phone": S["phone"], "kakaoUrl": S.get("kakaoUrl", ""), "inquiryEndpoint": S.get("inquiryEndpoint", ""), "bot": S.get("bot")}
     (ROOT / "assets").mkdir(exist_ok=True)
     (ROOT / "assets" / "bot-data.js").write_text("// build.py 가 자동으로 만드는 파일입니다. 직접 고치지 마세요.\nwindow.SITE_BOT=%s;\n" % json.dumps(data, ensure_ascii=False), encoding="utf-8")
 
@@ -665,7 +665,7 @@ def main():
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n%s</urlset>\n' % "".join(
         "<url><loc>%s/%s</loc><lastmod>%s</lastmod><priority>%s</priority></url>\n" % (SITE_URL, u, TODAY, pr) for u, pr in urls)
     (ROOT / "sitemap.xml").write_text(sm, encoding="utf-8")
-    (ROOT / "robots.txt").write_text("User-agent: *\nAllow: /\nDisallow: /tools/\n\nSitemap: %s/sitemap.xml\n" % SITE_URL, encoding="utf-8")
+    (ROOT / "robots.txt").write_text("User-agent: *\nAllow: /\nDisallow: /tools/\nDisallow: /admin/\n\nSitemap: %s/sitemap.xml\n" % SITE_URL, encoding="utf-8")
     print("완료: 페이지 %d개, 글 %d개, sitemap.xml · robots.txt · posts/rss.xml 생성" % (len(urls), len(posts)))
 
 

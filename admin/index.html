@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>관리자 | 홈로취케어</title>
+<link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32.png">
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--fg:#1c2a3a;--muted:#667788;--line:#dbe3ee;--brand:#12408f;--accent:#e5531d;--ok:#1a8a4a;--warn:#c47a00;--bad:#c03030;color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1722;--card:#17212f;--fg:#e6edf5;--muted:#93a4b8;--line:#2a3a4e;--brand:#6ea2ff;--accent:#ff8a57;--ok:#4cc27e;--warn:#e8b04a;--bad:#ff7b7b;color-scheme:dark}}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;word-break:keep-all}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+header.top{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+header.top .wrap{display:flex;align-items:center;gap:10px;min-height:54px}
+header.top b{font-size:1rem;white-space:nowrap}header.top .sp{flex:1}header.top .btn{white-space:nowrap}@media(max-width:420px){header.top .btn.sm{padding:6px 9px;font-size:.82rem}}
+.btn{border:0;border-radius:10px;background:var(--brand);color:#fff;padding:10px 16px;font-weight:700;cursor:pointer;min-height:44px}
+.btn.ghost{background:transparent;color:var(--brand);border:1.5px solid var(--brand)}
+.btn.warn{background:var(--bad)}.btn.sm{min-height:36px;padding:6px 12px;font-size:.9rem}
+.btn[disabled]{opacity:.5;cursor:default}
+nav.tabs{display:flex;gap:6px;overflow-x:auto;padding:10px 0;-webkit-overflow-scrolling:touch}
+nav.tabs button{white-space:nowrap;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 16px;cursor:pointer;font-weight:700;min-height:42px}
+nav.tabs button[aria-selected=true]{background:var(--brand);color:#fff;border-color:var(--brand)}
+.badge{display:inline-block;min-width:20px;padding:0 6px;border-radius:999px;background:var(--accent);color:#fff;font-size:.78rem;text-align:center;margin-left:4px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+.row{display:grid;gap:10px}
+@media(min-width:700px){.row.c2{grid-template-columns:1fr 1fr}.row.c3{grid-template-columns:1fr 1fr 1fr}}
+label{display:block;font-size:.85rem;color:var(--muted);font-weight:700}
+input,select,textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;min-height:44px;margin-top:4px}
+textarea{min-height:84px;resize:vertical}
+.muted{color:var(--muted);font-size:.88rem}
+.msg{padding:10px 14px;border-radius:10px;margin:10px 0;font-weight:700}.msg.ok{background:rgba(26,138,74,.14);color:var(--ok)}.msg.err{background:rgba(192,48,48,.14);color:var(--bad)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.chips button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;cursor:pointer}.chips button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.st{display:inline-block;border-radius:999px;padding:2px 10px;font-size:.8rem;font-weight:700;color:#fff}.st.신규{background:var(--accent)}.st.상담중{background:var(--brand)}.st.완료{background:var(--ok)}.st.보류{background:var(--muted)}
+.inq-h{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}.inq-h b{font-size:1.05rem}
+.inq-m{white-space:pre-wrap;background:var(--bg);border-radius:10px;padding:10px 12px;margin:10px 0}
+.act{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.thumb{width:120px;height:90px;object-fit:cover;border-radius:10px;border:1px solid var(--line);background:var(--bg);display:block}
+.gi{display:grid;gap:12px;grid-template-columns:1fr}@media(min-width:700px){.gi{grid-template-columns:130px 1fr}}
+a{color:var(--brand)}
+#login{max-width:380px;margin:12vh auto;padding:0 16px}
+.sticky-save{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 30%);padding:18px 0 calc(12px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div id="login" hidden>
+  <div class="card">
+    <h1 style="margin:0 0 4px;font-size:1.3rem">관리자 로그인</h1>
+    <p class="muted" style="margin:0 0 12px">홈로취케어 홈페이지 관리</p>
+    <form id="lf"><label>비밀번호<input type="password" id="pw" autocomplete="current-password" required></label>
+    <div id="lmsg"></div><button class="btn" style="width:100%;margin-top:10px" type="submit">로그인</button></form>
+    <p class="muted" id="noapi" hidden style="margin-top:12px">서버가 아직 연결되지 않았습니다. <code>content.js</code> 의 <code>inquiryEndpoint</code> 에 주소를 넣어 주세요. (tools/inquiry-server/README.md)</p>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <header class="top"><div class="wrap"><b>홈로취케어 관리자</b><span class="sp"></span><a class="btn ghost sm" href="../index.html" target="_blank" rel="noopener">홈페이지 보기</a><button class="btn ghost sm" id="logout" type="button">로그아웃</button></div></header>
+  <main class="wrap">
+    <nav class="tabs" id="tabs" aria-label="관리 메뉴"></nav>
+    <div id="msg" role="status"></div>
+    <section id="view"></section>
+  </main>
+</div>
+
+<script src="../content.js"></script>
+<script>
+(function(){
+"use strict";
+var S=window.SITE||{},API=/^https:\/\//.test(S.inquiryEndpoint||"")||/^http:\/\/localhost[:/]/.test(S.inquiryEndpoint||"")?S.inquiryEndpoint:"";
+var $=function(s,r){return(r||document).querySelector(s)},$$=function(s,r){return[].slice.call((r||document).querySelectorAll(s))};
+var esc=function(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
+var token=null;try{token=sessionStorage.getItem("hrc_admin")}catch(e){}
+var state={tab:"inq",inq:[],filter:"전체",q:"",rev:[],pending:[],content:null,loaded:false};
+var STATUS=["신규","상담중","완료","보류"];
+
+function call(action,data){
+  var body=Object.assign({action:action,token:token},data||{});
+  return fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body)}).then(function(r){return r.json()}).then(function(j){
+    if(!j.ok&&j.error==="auth"){logoutUI("로그인 시간이 지났습니다. 다시 로그인해 주세요.");throw new Error("auth")}
+    return j});
+}
+function flash(t,kind){var m=$("#msg");m.innerHTML='<div class="msg '+(kind||"ok")+'">'+esc(t)+'</div>';clearTimeout(flash.t);flash.t=setTimeout(function(){m.innerHTML=""},kind==="err"?8000:3500)}
+function fail(){flash("서버와 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.","err")}
+
+/* ---------- 로그인 ---------- */
+function showLogin(msg){$("#app").hidden=true;$("#login").hidden=false;$("#noapi").hidden=!!API;$("#lmsg").innerHTML=msg?'<div class="msg err">'+esc(msg)+'</div>':"";$("#pw").value=""}
+function logoutUI(msg){token=null;try{sessionStorage.removeItem("hrc_admin")}catch(e){}state.loaded=false;showLogin(msg)}
+$("#lf").addEventListener("submit",function(ev){ev.preventDefault();if(!API)return;var b=ev.target.querySelector("button");b.disabled=true;
+  call("login",{password:$("#pw").value}).then(function(j){b.disabled=false;
+    if(j.ok){token=j.token;try{sessionStorage.setItem("hrc_admin",token)}catch(e){}start()}
+    else showLogin(j.error==="locked"?"비밀번호를 여러 번 틀려 10분간 잠겼습니다.":j.error==="no_password"?"서버에 관리자 비밀번호(ADMIN_PASSWORD)가 설정되지 않았습니다.":"비밀번호가 맞지 않습니다.")}).catch(function(){b.disabled=false;showLogin("서버와 연결하지 못했습니다.")})});
+$("#logout").addEventListener("click",function(){call("logout").catch(function(){});logoutUI("")});
+
+/* ---------- 시작 ---------- */
+function start(){$("#login").hidden=true;$("#app").hidden=false;
+  Promise.all([call("inq_list"),call("rev_pending"),call("content_get")]).then(function(r){
+    state.inq=r[0].items||[];state.pending=r[1].items||[];state.content=r[2].content||{};state.loaded=true;render()}).catch(function(e){if(e.message!=="auth")fail()})}
+
+var TABS=[["inq","📩 문의"],["rev","⭐ 후기"],["gal","🖼 현장갤러리"],["set","📢 공지·설정"],["sec","🔑 보안"]];
+function render(){
+  var nNew=state.inq.filter(function(x){return x.status==="신규"}).length;
+  $("#tabs").innerHTML=TABS.map(function(t){var b=t[0]==="inq"&&nNew?'<span class="badge">'+nNew+'</span>':t[0]==="rev"&&state.pending.length?'<span class="badge">'+state.pending.length+'</span>':"";
+    return '<button type="button" role="tab" data-t="'+t[0]+'" aria-selected="'+(state.tab===t[0])+'">'+t[1]+b+'</button>'}).join("");
+  var v=$("#view");({inq:vInq,rev:vRev,gal:vGal,set:vSet,sec:vSec})[state.tab](v)}
+$("#tabs").addEventListener("click",function(ev){var b=ev.target.closest("button[data-t]");if(!b)return;state.tab=b.dataset.t;render()});
+
+/* ---------- 문의 ---------- */
+function fmt(iso){var d=new Date(iso);return isNaN(d)?iso:d.getFullYear()+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+("0"+d.getDate()).slice(-2)+" "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2)}
+function vInq(v){
+  var cnt={};STATUS.forEach(function(s){cnt[s]=state.inq.filter(function(x){return x.status===s}).length});
+  var list=state.inq.filter(function(x){return(state.filter==="전체"||x.status===state.filter)&&(!state.q||(x.name+x.phone+x.msg+x.svc+x.memo).toLowerCase().indexOf(state.q.toLowerCase())>=0)});
+  v.innerHTML='<div class="card"><div class="row c2"><div><label>검색<input id="q" value="'+esc(state.q)+'" placeholder="이름·연락처·내용"></label></div><div style="display:flex;gap:8px;align-items:end"><button class="btn ghost" id="reload" type="button">새로고침</button><button class="btn ghost" id="csv" type="button">엑셀(CSV) 받기</button></div></div>'+
+    '<div class="chips">'+["전체"].concat(STATUS).map(function(s){return '<button type="button" data-f="'+s+'" class="'+(state.filter===s?"on":"")+'">'+s+(s==="전체"?" "+state.inq.length:" "+cnt[s])+'</button>'}).join("")+'</div></div>'+
+    (list.length?list.map(inqCard).join(""):'<div class="card muted">표시할 문의가 없습니다.</div>');
+  $("#q").addEventListener("input",function(e){state.q=e.target.value;var pos=e.target.selectionStart;vInq(v);var q=$("#q");q.focus();q.setSelectionRange(pos,pos)});
+  $("#reload").onclick=function(){call("inq_list").then(function(j){state.inq=j.items||[];render();flash("새로 불러왔습니다.")}).catch(function(e){if(e.message!=="auth")fail()})};
+  $("#csv").onclick=function(){var rows=[["접수시각","종류","서비스","성함","연락처","내용","상태","메모"]].concat(list.map(function(x){return[fmt(x.at),x.type,x.svc,x.name,x.phone,x.msg,x.status,x.memo]}));
+    var csv="﻿"+rows.map(function(r){return r.map(function(c){return '"'+String(c==null?"":c).replace(/"/g,'""')+'"'}).join(",")}).join("\r\n");
+    var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="문의목록.csv";a.click()};
+  $$("[data-f]",v).forEach(function(b){b.onclick=function(){state.filter=b.dataset.f;render()}});
+  $$("[data-save]",v).forEach(function(b){b.onclick=function(){var id=b.dataset.save,c=$('[data-id="'+id+'"]',v);var st=$("select",c).value,memo=$("textarea",c).value;b.disabled=true;
+    call("inq_update",{id:id,status:st,memo:memo}).then(function(j){b.disabled=false;if(j.ok){var it=state.inq.filter(function(x){return x.id===id})[0];it.status=st;it.memo=memo;flash("저장했습니다.");render()}else flash("저장하지 못했습니다.","err")}).catch(function(e){b.disabled=false;if(e.message!=="auth")fail()})}});
+  $$("[data-del]",v).forEach(function(b){b.onclick=function(){if(!confirm("이 문의를 삭제할까요? 되돌릴 수 없습니다."))return;call("inq_delete",{id:b.dataset.del}).then(function(j){if(j.ok){state.inq=state.inq.filter(function(x){return x.id!==b.dataset.del});render();flash("삭제했습니다.")}}).catch(function(e){if(e.message!=="auth")fail()})}});
+}
+function inqCard(x){var tel=String(x.phone||"").replace(/[^0-9+]/g,"");
+  return '<div class="card" data-id="'+esc(x.id)+'"><div class="inq-h"><span class="st '+esc(x.status)+'">'+esc(x.status)+'</span><b>'+esc(x.name||"(이름 없음)")+'</b>'+(tel?'<a href="tel:'+esc(tel)+'">☎ '+esc(x.phone)+'</a> <a href="sms:'+esc(tel)+'">문자</a>':'')+'<span class="muted">'+esc(x.svc||x.type)+' · '+esc(fmt(x.at))+'</span></div>'+
+    '<div class="inq-m">'+esc(x.msg||"(내용 없음)")+'</div>'+
+    '<div class="row c2"><label>상태<select>'+STATUS.map(function(s){return '<option'+(s===x.status?" selected":"")+'>'+s+'</option>'}).join("")+'</select></label><label>메모 (고객에게 보이지 않음)<textarea placeholder="통화 내용, 방문 일정 등">'+esc(x.memo)+'</textarea></label></div>'+
+    '<div class="act"><button class="btn sm" data-save="'+esc(x.id)+'" type="button">저장</button><button class="btn warn sm" data-del="'+esc(x.id)+'" type="button">삭제</button></div></div>'}
+
+/* ---------- 공통: 서버에 저장된 값이 없으면 현재 홈페이지 기본값으로 채워 보여줌 ---------- */
+function cur(key){var c=state.content;return c&&c[key]!=null?c[key]:(S[key]||[])}
+function saveContent(part,done){return call("content_set",{content:part}).then(function(j){if(j.ok){state.content=Object.assign(state.content||{},part);flash("홈페이지에 반영했습니다. (방문자 화면에는 잠시 후 적용됩니다)");done&&done()}else flash("저장하지 못했습니다.","err")}).catch(function(e){if(e.message!=="auth")fail()})}
+function seedNote(key){return state.content&&state.content[key]!=null?"":'<p class="muted">아직 저장한 적이 없어 현재 홈페이지 기본(예시) 내용이 표시됩니다. 수정 후 저장하면 이 내용이 홈페이지에 적용됩니다.</p>'}
+
+/* ---------- 후기 ---------- */
+function vRev(v){var rv=JSON.parse(JSON.stringify(cur("reviews")));state.rev=rv;
+  v.innerHTML='<h2 style="margin:8px 0">고객이 남긴 후기 (승인 대기)</h2>'+
+    (state.pending.length?state.pending.map(function(p){return '<div class="card" data-p="'+esc(p.id)+'"><div class="inq-h"><b>'+esc(p.name)+'</b><span>'+"★".repeat(Math.max(1,Math.min(5,+p.stars||5)))+'</span><span class="muted">'+esc(fmt(p.at))+(p.phone?' · '+esc(p.phone):'')+'</span></div><div class="inq-m">'+esc(p.text)+'</div><div class="row c2"><label>표시할 지역(선택)<input class="parea" placeholder="예: 구로구"></label></div><div class="act"><button class="btn sm" data-ok="'+esc(p.id)+'" type="button">승인하고 게시</button><button class="btn warn sm" data-no="'+esc(p.id)+'" type="button">거절</button></div></div>'}).join(""):'<div class="card muted">대기 중인 후기가 없습니다.</div>')+
+    '<h2 style="margin:18px 0 8px">홈페이지에 게시 중인 후기</h2>'+seedNote("reviews")+'<div id="rl"></div><div class="sticky-save"><button class="btn ghost" id="radd" type="button">+ 후기 직접 추가</button><button class="btn" id="rsave" type="button">홈페이지에 반영</button></div>';
+  var drawR=function(){$("#rl").innerHTML=state.rev.map(function(r,i){return '<div class="card" data-i="'+i+'"><div class="row c3"><label>이름<input data-k="name" value="'+esc(r.name)+'"></label><label>지역<input data-k="area" value="'+esc(r.area)+'"></label><label>별점<select data-k="stars">'+[5,4,3,2,1].map(function(n){return '<option value="'+n+'"'+(+r.stars===n?" selected":"")+'>'+"★".repeat(n)+'</option>'}).join("")+'</select></label></div><label style="margin-top:8px">후기 내용<textarea data-k="text">'+esc(r.text)+'</textarea></label><div class="act"><button class="btn ghost sm" data-up="'+i+'" type="button">↑</button><button class="btn ghost sm" data-dn="'+i+'" type="button">↓</button><button class="btn warn sm" data-rm="'+i+'" type="button">삭제</button></div></div>'}).join("")||'<div class="card muted">게시 중인 후기가 없습니다.</div>'};
+  var sync=function(){$$("#rl [data-i]").forEach(function(c){var r=state.rev[+c.dataset.i];$$("[data-k]",c).forEach(function(f){r[f.dataset.k]=f.dataset.k==="stars"?+f.value:f.value})})};
+  drawR();
+  $("#rl").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;sync();var d=b.dataset;
+    if(d.rm!=null){state.rev.splice(+d.rm,1)}else if(d.up!=null&&+d.up>0){var i=+d.up;state.rev.splice(i-1,0,state.rev.splice(i,1)[0])}else if(d.dn!=null&&+d.dn<state.rev.length-1){var j=+d.dn;state.rev.splice(j+1,0,state.rev.splice(j,1)[0])}drawR()});
+  $("#radd").onclick=function(){sync();state.rev.unshift({name:"",area:"",stars:5,text:""});drawR()};
+  $("#rsave").onclick=function(){sync();saveContent({reviews:state.rev.filter(function(r){return r.text.trim()})},function(){render()})};
+  $$("[data-ok],[data-no]",v).forEach(function(b){b.onclick=function(){var id=b.dataset.ok||b.dataset.no,ok=!!b.dataset.ok,area=ok?($(".parea",b.closest(".card")).value||""):"";
+    call("rev_decide",{id:id,approve:ok,area:area}).then(function(j){if(!j.ok)return flash("처리하지 못했습니다.","err");
+      state.pending=state.pending.filter(function(p){return p.id!==id});return call("content_get").then(function(c){state.content=c.content||{};render();flash(ok?"후기를 게시했습니다.":"후기를 거절했습니다.")})}).catch(function(e){if(e.message!=="auth")fail()})}});
+}
+
+/* ---------- 사진 업로드(브라우저에서 줄여서 보냄) ---------- */
+function shrink(file,max){return new Promise(function(res,rej){var im=new Image(),u=URL.createObjectURL(file);im.onload=function(){URL.revokeObjectURL(u);var s=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+  var out=function(b,m){if(!b)return rej(new Error("변환 실패"));var fr=new FileReader();fr.onload=function(){res({mime:m,b64:String(fr.result).split(",")[1]})};fr.readAsDataURL(b)};
+  c.toBlob(function(b){if(b&&b.type==="image/webp")out(b,"image/webp");else c.toBlob(function(b2){out(b2,"image/jpeg")},"image/jpeg",.85)},"image/webp",.82)};im.onerror=function(){rej(new Error("이미지를 읽을 수 없습니다."))};im.src=u})}
+
+/* ---------- 현장갤러리 ---------- */
+function vGal(v){var g=JSON.parse(JSON.stringify(cur("gallery")));state.gal=g;
+  v.innerHTML='<p class="muted" style="margin:8px 0">사진은 올리면 자동으로 줄여서 저장됩니다. 글자가 박힌 사진은 피해 주세요. 고객 얼굴·번호판·집 주소가 보이지 않는 사진만 올려 주세요.</p>'+seedNote("gallery")+'<div id="gl"></div><div class="sticky-save"><button class="btn ghost" id="gadd" type="button">+ 사례 추가</button><button class="btn" id="gsave" type="button">홈페이지에 반영</button></div>';
+  var src=function(p){return !p?"":/^(https?:|data:)/.test(p)?p:"../"+p};
+  var draw=function(){$("#gl").innerHTML=state.gal.map(function(x,i){return '<div class="card" data-i="'+i+'"><div class="gi"><div><img class="thumb" alt="" src="'+esc(src(x.image))+'"'+(x.image?'':' hidden')+'><label class="btn ghost sm" style="display:inline-block;margin-top:6px;text-align:center">사진 선택<input type="file" accept="image/*" data-up="'+i+'" hidden></label></div><div><div class="row c3"><label>제목<input data-k="title" value="'+esc(x.title)+'"></label><label>지역<input data-k="area" value="'+esc(x.area)+'"></label><label>분류<input data-k="tag" list="tags" value="'+esc(x.tag)+'"></label></div><label style="margin-top:8px">설명<textarea data-k="text">'+esc(x.text)+'</textarea></label></div></div><div class="act"><button class="btn ghost sm" data-mv="-1:'+i+'" type="button">↑</button><button class="btn ghost sm" data-mv="1:'+i+'" type="button">↓</button><button class="btn warn sm" data-rm="'+i+'" type="button">삭제</button></div></div>'}).join("")+'<datalist id="tags"><option>방역</option><option>배관</option><option>기타</option></datalist>'};
+  var sync=function(){$$("#gl [data-i]").forEach(function(c){var r=state.gal[+c.dataset.i];$$("[data-k]",c).forEach(function(f){r[f.dataset.k]=f.value})})};
+  draw();
+  $("#gl").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;sync();
+    if(b.dataset.rm!=null)state.gal.splice(+b.dataset.rm,1);else if(b.dataset.mv){var p=b.dataset.mv.split(":"),d=+p[0],i=+p[1],j=i+d;if(j<0||j>=state.gal.length)return;state.gal.splice(j,0,state.gal.splice(i,1)[0])}draw()});
+  $("#gl").addEventListener("change",function(e){var inp=e.target.closest("input[type=file]");if(!inp||!inp.files[0])return;sync();var i=+inp.dataset.up;flash("사진을 올리는 중입니다…");
+    shrink(inp.files[0],1280).then(function(o){return call("upload",{mime:o.mime,b64:o.b64})}).then(function(j){if(j.ok){state.gal[i].image=j.url;draw();flash("사진을 올렸습니다. 아래 '홈페이지에 반영'을 눌러야 적용됩니다.")}else flash(j.error==="size"?"사진이 너무 큽니다.":"사진을 올리지 못했습니다.","err")}).catch(function(err){if(err.message!=="auth")flash("사진을 올리지 못했습니다. "+(err.message||""),"err")})});
+  $("#gadd").onclick=function(){sync();state.gal.unshift({image:"",title:"",area:"",tag:"방역",text:""});draw()};
+  $("#gsave").onclick=function(){sync();saveContent({gallery:state.gal.filter(function(x){return x.title.trim()||x.image})},function(){render()})};
+}
+
+/* ---------- 공지·설정 ---------- */
+function vSet(v){var c=state.content||{},areas=(c.areas!=null?c.areas:S.areas||[]).join("\n"),ban=c.banner||{text:"",href:""},nt=JSON.parse(JSON.stringify(c.notices||[]));state.nt=nt;
+  v.innerHTML='<div class="card"><h2 style="margin:0 0 8px">상단 안내 띠</h2><p class="muted" style="margin:0 0 8px">홈페이지 맨 위에 한 줄로 보입니다. 휴무·이벤트 안내 등에 쓰세요. 비우면 표시되지 않습니다.</p><div class="row c2"><label>문구<input id="bt" maxlength="120" value="'+esc(ban.text)+'" placeholder="예: 추석 연휴 10/3~10/5 휴무 (긴급 전화는 가능)"></label><label>눌렀을 때 이동할 주소(선택)<input id="bh" value="'+esc(ban.href)+'" placeholder="https://… 또는 비움"></label></div></div>'+
+    '<div class="card"><h2 style="margin:0 0 8px">서비스 지역</h2>'+seedNote("areas")+'<label>한 줄에 한 지역<textarea id="ar" rows="6" placeholder="구로구&#10;금천구&#10;영등포구">'+esc(areas)+'</textarea></label></div>'+
+    '<div class="card"><h2 style="margin:0 0 8px">공지사항</h2><p class="muted" style="margin:0 0 8px">고객센터 “공지사항”에 보입니다.</p><div id="nl"></div><button class="btn ghost sm" id="nadd" type="button">+ 공지 추가</button></div>'+
+    '<div class="sticky-save"><button class="btn" id="ssave" type="button">홈페이지에 반영</button></div>';
+  var draw=function(){$("#nl").innerHTML=state.nt.map(function(n,i){return '<div class="card" data-i="'+i+'" style="margin:8px 0"><div class="row c2"><label>제목<input data-k="title" value="'+esc(n.title)+'"></label><label>날짜<input data-k="date" value="'+esc(n.date)+'" placeholder="2026.10.11"></label></div><label style="margin-top:8px">내용<textarea data-k="body">'+esc(n.body)+'</textarea></label><div class="act"><button class="btn warn sm" data-rm="'+i+'" type="button">삭제</button></div></div>'}).join("")};
+  var sync=function(){$$("#nl [data-i]").forEach(function(c){var r=state.nt[+c.dataset.i];$$("[data-k]",c).forEach(function(f){r[f.dataset.k]=f.value})})};
+  draw();
+  $("#nl").addEventListener("click",function(e){var b=e.target.closest("[data-rm]");if(!b)return;sync();state.nt.splice(+b.dataset.rm,1);draw()});
+  $("#nadd").onclick=function(){sync();var d=new Date();state.nt.unshift({title:"",date:d.getFullYear()+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+("0"+d.getDate()).slice(-2),body:""});draw()};
+  $("#ssave").onclick=function(){sync();var bt=$("#bt").value.trim(),bh=$("#bh").value.trim();
+    if(bh&&!/^(https?:\/\/|\/|[a-z0-9_.\-\/#]+)$/i.test(bh)||/^javascript:/i.test(bh))return flash("이동 주소를 확인해 주세요.","err");
+    saveContent({banner:bt?{text:bt,href:bh}:null,areas:$("#ar").value.split(/\n/).map(function(s){return s.trim()}).filter(Boolean),notices:state.nt.filter(function(n){return n.title.trim()})},function(){render()})};
+}
+
+/* ---------- 보안 ---------- */
+function vSec(v){v.innerHTML='<div class="card"><h2 style="margin:0 0 8px">비밀번호 변경</h2><form id="pf"><div class="row c2"><label>현재 비밀번호<input type="password" id="po" required autocomplete="current-password"></label><label>새 비밀번호 (8자 이상)<input type="password" id="pn" required minlength="8" autocomplete="new-password"></label></div><button class="btn" style="margin-top:12px" type="submit">변경</button></form></div>'+
+  '<div class="card muted">로그인은 6시간 유지되고, 비밀번호를 5번 틀리면 10분간 잠깁니다. 공용 컴퓨터에서는 사용 후 꼭 로그아웃하세요.</div>';
+  $("#pf").addEventListener("submit",function(ev){ev.preventDefault();call("password_change",{oldPassword:$("#po").value,newPassword:$("#pn").value}).then(function(j){if(j.ok){flash("비밀번호를 바꿨습니다.");ev.target.reset()}else flash(j.error==="bad_password"?"현재 비밀번호가 맞지 않습니다.":"새 비밀번호는 8자 이상이어야 합니다.","err")}).catch(function(e){if(e.message!=="auth")fail()})})}
+
+/* ---------- 진입 ---------- */
+if(!API)showLogin();else if(token)start();else showLogin();
+})();
+</script>
+</body>
+</html>
