@@ -240,6 +240,12 @@ h1,h2,h3,h4{text-wrap:balance}
 .callcard{background:var(--brand);color:var(--on);border-radius:16px;padding:22px 24px;display:grid;gap:6px}
 .callcard small{opacity:.85}.callcard p{opacity:.9;font-size:.9rem;max-width:none;margin:2px 0 0}
 .callnum{font-size:clamp(1.6rem,4vw,2.1rem);font-weight:800;color:var(--on)}
+.guar{background:var(--bg);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:16px;padding:22px 22px 20px;display:grid;gap:16px;box-shadow:0 8px 24px rgba(10,30,70,.07)}
+.guar-h{display:flex;align-items:center;gap:14px}.guar-h h2{margin:0}.guar-h .sub{margin:2px 0 0}
+.guar-ic{font-size:2rem;line-height:1}
+.guar-l{list-style:none;margin:0;padding:0;display:grid;gap:10px;grid-template-columns:1fr}
+.guar-l li{background:var(--card);border-radius:12px;padding:12px 14px}.guar-l b{display:block;color:var(--accent);margin-bottom:2px}.guar-l span{color:var(--muted);font-size:.93rem;word-break:keep-all}
+@media(min-width:760px){.guar{grid-template-columns:auto 1fr;align-items:start}.guar-h{grid-column:1/-1}.guar-l{grid-template-columns:repeat(3,1fr);grid-column:1/-1}.guar>.btn{justify-self:start;grid-column:1/-1}}
 .why{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}
 @media(min-width:900px){.why{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:18px!important}}
 .why-card{padding:0!important;overflow:hidden;background:var(--bg);border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;transition:box-shadow .2s,transform .2s}

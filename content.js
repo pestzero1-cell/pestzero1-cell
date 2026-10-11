@@ -1296,6 +1296,18 @@ window.SITE = {
     { icon: "📞", image: "images/why-after.jpg", title: "사후 상담", text: "작업 후 문제가 생기면 다시 연락 주세요." }
   ],
 
+  // 홈에 나오는 환불보장 요약 카드. 자세한 내용은 system/refund/ 페이지(서비스시스템 > 환불보장제도).
+  guarantee: {
+    title: "환불보장제도",
+    sub: "서비스 후에도 안심하고 맡기세요.",
+    points: [
+      { head: "미해결시 0원", text: "해충이 해결되지 않으면 비용을 받지 않습니다." },
+      { head: "A/S 접수", text: "퇴치기간 이후 재발하면 A/S를 접수해 드립니다." },
+      { head: "환불 절차 안내", text: "계약기간 내 퇴치가 안 되면 A/S와 환불 단계로 안내합니다." }
+    ],
+    button: { label: "환불보장제도 자세히 보기", href: "system/refund/" }
+  },
+
   steps: [
     { title: "상담", text: "증상·위치 확인 후 대략 견적 안내" },
     { title: "방문 점검", text: "현장 원인 파악, 작업 범위 확정" },

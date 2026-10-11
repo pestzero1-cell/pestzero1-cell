@@ -231,7 +231,7 @@ def bot_scripts(depth):
     zoom = '<script src="%szoom.js" defer></script>' % r
     if not (S.get("bot") or {}).get("enabled", True) or not S.get("bot"):
         return zoom
-    return zoom + '<script>window.SITE_BASE="%s";</script><script src="%sassets/bot-data.js"></script><script src="%schatbot.js" defer></script>' % (r, r, r)
+    return zoom + '<script>window.SITE_BASE="%s";</script><script src="%sassets/bot-data.js"></script><script src="%schatbot.js" defer></script><script src="%scallbar.js" defer></script>' % (r, r, r, r)
 
 
 def crumbs(items, depth):

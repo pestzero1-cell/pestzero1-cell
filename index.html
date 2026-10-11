@@ -261,6 +261,12 @@ h1,h2,h3,h4{text-wrap:balance}
 .callcard{background:var(--brand);color:var(--on);border-radius:16px;padding:22px 24px;display:grid;gap:6px}
 .callcard small{opacity:.85}.callcard p{opacity:.9;font-size:.9rem;max-width:none;margin:2px 0 0}
 .callnum{font-size:clamp(1.6rem,4vw,2.1rem);font-weight:800;color:var(--on)}
+.guar{background:var(--bg);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:16px;padding:22px 22px 20px;display:grid;gap:16px;box-shadow:0 8px 24px rgba(10,30,70,.07)}
+.guar-h{display:flex;align-items:center;gap:14px}.guar-h h2{margin:0}.guar-h .sub{margin:2px 0 0}
+.guar-ic{font-size:2rem;line-height:1}
+.guar-l{list-style:none;margin:0;padding:0;display:grid;gap:10px;grid-template-columns:1fr}
+.guar-l li{background:var(--card);border-radius:12px;padding:12px 14px}.guar-l b{display:block;color:var(--accent);margin-bottom:2px}.guar-l span{color:var(--muted);font-size:.93rem;word-break:keep-all}
+@media(min-width:760px){.guar{grid-template-columns:auto 1fr;align-items:start}.guar-h{grid-column:1/-1}.guar-l{grid-template-columns:repeat(3,1fr);grid-column:1/-1}.guar>.btn{justify-self:start;grid-column:1/-1}}
 .why{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}
 @media(min-width:900px){.why{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:18px!important}}
 .why-card{padding:0!important;overflow:hidden;background:var(--bg);border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;transition:box-shadow .2s,transform .2s}
@@ -325,6 +331,7 @@ footer{border-top:1px solid var(--line);padding:32px 0 calc(96px + env(safe-area
 <script src="posts-data.js"></script>
 <script src="chatbot.js" defer></script>
 <script src="zoom.js" defer></script>
+<script src="callbar.js" defer></script>
 <script>
 (function(){
   var S=window.SITE||{};
@@ -397,6 +404,7 @@ footer{border-top:1px solid var(--line);padding:32px 0 calc(96px + env(safe-area
 
   '<section id="why" class="alt"><div class="wrap"><h2>왜 저희일까요</h2><p class="sub">방역과 배관, 한 곳에서 끝까지 책임지고 해결합니다.</p><div class="why">'+
     list(S.why,function(x,i){return '<div class="why-card">'+(x.image?'<img class="why-img" loading="lazy" src="'+e(x.image)+'" alt="'+e(x.title)+'">':'<span class="why-ic">'+(WHY_IC[x.icon]||e(x.icon))+'</span>')+'<div class="why-body"><span class="why-no">POINT 0'+(i+1)+'</span><b>'+e(x.title)+'</b><span class="why-tx">'+e(x.text)+'</span></div></div>'})+'</div></div></section>'+
+  (S.guarantee?'<section id="guarantee"><div class="wrap"><div class="guar"><div class="guar-h"><span class="guar-ic" aria-hidden="true">🛡️</span><div><h2>'+e(S.guarantee.title)+'</h2><p class="sub">'+e(S.guarantee.sub||"")+'</p></div></div><ul class="guar-l">'+list(S.guarantee.points,function(p){return '<li><b>'+e(p.head)+'</b><span>'+e(p.text)+'</span></li>'})+'</ul>'+(S.guarantee.button?'<a class="btn ghost" href="'+e(S.guarantee.button.href)+'">'+e(S.guarantee.button.label)+' →</a>':'')+'</div></div></section>':'')+
 
 
   ((S.gallery||[]).length?'<section id="gallery" class="alt"><div class="wrap"><h2>시공 사례</h2><p class="sub">실제 현장 기록입니다.</p><div class="grid">'+
