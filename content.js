@@ -61,10 +61,10 @@ window.SITE = {
   slider: {
     interval: 5000,
     slides: [
-      { theme: "blue", kicker: "위기탈출 넘버원 촬영업체", title: "철저하고 완벽한 박멸시스템", sub: "친환경 소독, 방역 & 해충을 완벽하게!", text: "자연과 사람을 중시하며, 변화하는 환경속에서 연구 개발과 꾸준한 전문인재육성으로 고객님께 보다 진보된 방역기술과 서비스를 드리겠습니다.", button: { label: "홈로취케어 소개 바로가기", href: "#about" }, images: ["images/sl-home.webp"] },
-      { theme: "navy", kicker: "하수구 막힘 케어", title: "정확한 원인 분석, 한방에 해결", sub: "출장비 0원 / 미해결시 0원", text: "싱크대, 화장실, 욕조배수구 막힘부터 공동배관, 소변기, 양변기 막힘까지 해결해 드립니다.", button: { label: "하수구 시공사례 보기", href: "#drain" }, images: ["images/sl-drain.webp"] },
-      { theme: "warm", kicker: "독보적인 홈로취케어만의 기술", title: "빈대퇴치, 안전하게 지켜드립니다", sub: "방역 중 외출 NO, 생활 그대로 OK", text: "2014년부터 쌓아온 빈대퇴치 노하우와 단독제작 장비·천연약품으로 박멸합니다.", button: { label: "빈대 정보 보기", href: "#info" }, images: ["images/sl-bed.webp"] },
-      { theme: "blue", kicker: "투명한 가격 안내", title: "서비스 단가표를 확인하세요", sub: "바퀴벌레 · 개미 · 쥐 · 특수방역 · 소독", text: "평수별 단가와 보장 기간을 한눈에 확인하고 전화 한 통으로 상담받으세요.", button: { label: "서비스단가표 보기", href: "#price" }, images: ["images/sl-price.webp"] }
+      { theme: "blue", kicker: "위기탈출 넘버원 촬영업체", title: "철저하고 완벽한 박멸시스템", sub: "친환경 소독, 방역 & 해충을 완벽하게!", text: "자연과 사람을 중시하며, 변화하는 환경속에서 연구 개발과 꾸준한 전문인재육성으로 고객님께 보다 진보된 방역기술과 서비스를 드리겠습니다.", button: { label: "홈로취케어 소개 바로가기", href: "about/greeting/" }, images: ["images/sl-home.webp"] },
+      { theme: "navy", kicker: "하수구 막힘 케어", title: "정확한 원인 분석, 한방에 해결", sub: "출장비 0원 / 미해결시 0원", text: "싱크대, 화장실, 욕조배수구 막힘부터 공동배관, 소변기, 양변기 막힘까지 해결해 드립니다.", button: { label: "하수구 시공사례 보기", href: "drain/apartment-cases/" }, images: ["images/sl-drain.webp"] },
+      { theme: "warm", kicker: "독보적인 홈로취케어만의 기술", title: "빈대퇴치, 안전하게 지켜드립니다", sub: "방역 중 외출 NO, 생활 그대로 OK", text: "2014년부터 쌓아온 빈대퇴치 노하우와 단독제작 장비·천연약품으로 박멸합니다.", button: { label: "빈대 정보 보기", href: "info/bedbug/" }, images: ["images/sl-bed.webp"] },
+      { theme: "blue", kicker: "투명한 가격 안내", title: "서비스 단가표를 확인하세요", sub: "바퀴벌레 · 개미 · 쥐 · 특수방역 · 소독", text: "평수별 단가와 보장 기간을 한눈에 확인하고 전화 한 통으로 상담받으세요.", button: { label: "서비스단가표 보기", href: "price/roach/" }, images: ["images/sl-price.webp"] }
     ]
   },
 
