@@ -141,6 +141,7 @@ header{position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px s
 .sl-b{display:inline-block;background:var(--accent);color:#fff;font-weight:700;padding:11px 22px;border-radius:999px}
 .sl-img{display:grid;gap:8px;grid-template-columns:repeat(var(--n,3),1fr)}
 .sl-img img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;border:2px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1)}
+.sl-img[style*="--n:1"],.sl-img[style*="--n: 1"]{max-width:440px;margin-inline:auto;width:100%}.sl-img[style*="--n:1"] img,.sl-img[style*="--n: 1"] img{border:0;border-radius:18px;box-shadow:0 14px 34px rgba(0,0,0,.28)}
 .sl-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.35);color:#fff;font-size:1.4rem;line-height:1}
 .sl-arrow:hover{background:rgba(0,0,0,.6)}
 .sl-prev{left:10px}.sl-next{right:10px}
