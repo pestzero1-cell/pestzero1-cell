@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<!--CSP-->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<!--/CSP-->
+<title>관리자 체험 | 홈로취케어</title>
+<link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32.png">
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--fg:#1c2a3a;--muted:#667788;--line:#dbe3ee;--brand:#12408f;--accent:#e5531d;--ok:#1a8a4a;--warn:#c47a00;--bad:#c03030;color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1722;--card:#17212f;--fg:#e6edf5;--muted:#93a4b8;--line:#2a3a4e;--brand:#6ea2ff;--accent:#ff8a57;--ok:#4cc27e;--warn:#e8b04a;--bad:#ff7b7b;color-scheme:dark}}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;word-break:keep-all}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+header.top{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+header.top .wrap{display:flex;align-items:center;gap:10px;min-height:54px}
+header.top b{font-size:1rem;white-space:nowrap}header.top .sp{flex:1}header.top .btn{white-space:nowrap}@media(max-width:420px){header.top .btn.sm{padding:6px 9px;font-size:.82rem}}
+.btn{border:0;border-radius:10px;background:var(--brand);color:#fff;padding:10px 16px;font-weight:700;cursor:pointer;min-height:44px}
+.btn.ghost{background:transparent;color:var(--brand);border:1.5px solid var(--brand)}
+.btn.warn{background:var(--bad)}.btn.sm{min-height:36px;padding:6px 12px;font-size:.9rem}
+.btn[disabled]{opacity:.5;cursor:default}
+nav.tabs{display:flex;gap:6px;overflow-x:auto;padding:10px 0;-webkit-overflow-scrolling:touch}
+nav.tabs button{white-space:nowrap;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 16px;cursor:pointer;font-weight:700;min-height:42px}
+nav.tabs button[aria-selected=true]{background:var(--brand);color:#fff;border-color:var(--brand)}
+.badge{display:inline-block;min-width:20px;padding:0 6px;border-radius:999px;background:var(--accent);color:#fff;font-size:.78rem;text-align:center;margin-left:4px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+.row{display:grid;gap:10px}
+@media(min-width:700px){.row.c2{grid-template-columns:1fr 1fr}.row.c3{grid-template-columns:1fr 1fr 1fr}}
+label{display:block;font-size:.85rem;color:var(--muted);font-weight:700}
+input,select,textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;min-height:44px;margin-top:4px}
+textarea{min-height:84px;resize:vertical}
+.muted{color:var(--muted);font-size:.88rem}
+.msg{padding:10px 14px;border-radius:10px;margin:10px 0;font-weight:700}.msg.ok{background:rgba(26,138,74,.14);color:var(--ok)}.msg.err{background:rgba(192,48,48,.14);color:var(--bad)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.chips button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;cursor:pointer}.chips button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.st{display:inline-block;border-radius:999px;padding:2px 10px;font-size:.8rem;font-weight:700;color:#fff}.st.신규{background:var(--accent)}.st.상담중{background:var(--brand)}.st.완료{background:var(--ok)}.st.보류{background:var(--muted)}
+.inq-h{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}.inq-h b{font-size:1.05rem}
+.inq-m{white-space:pre-wrap;background:var(--bg);border-radius:10px;padding:10px 12px;margin:10px 0}
+.act{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.thumb{width:120px;height:90px;object-fit:cover;border-radius:10px;border:1px solid var(--line);background:var(--bg);display:block}
+.gi{display:grid;gap:12px;grid-template-columns:1fr}@media(min-width:700px){.gi{grid-template-columns:130px 1fr}}
+a{color:var(--brand)}
+#login{max-width:380px;margin:12vh auto;padding:0 16px}
+.sticky-save{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 30%);padding:18px 0 calc(12px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div id="login" hidden>
+  <div class="card">
+    <h1 style="margin:0 0 4px;font-size:1.3rem">관리자 로그인</h1>
+    <p class="muted" style="margin:0 0 12px">홈로취케어 홈페이지 관리</p>
+    <form id="lf"><label>비밀번호<input type="password" id="pw" autocomplete="current-password" required></label>
+    <div id="lmsg"></div><button class="btn" style="width:100%;margin-top:10px" type="submit">로그인</button></form>
+    <p class="muted" id="noapi" hidden style="margin-top:12px">서버가 아직 연결되지 않았습니다. <code>content.js</code> 의 <code>inquiryEndpoint</code> 에 주소를 넣어 주세요. (tools/inquiry-server/README.md)</p>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <header class="top"><div class="wrap"><b>홈로취케어 관리자</b><span class="sp"></span><a class="btn ghost sm" href="../index.html" target="_blank" rel="noopener">홈페이지 보기</a><button class="btn ghost sm" id="logout" type="button">로그아웃</button></div></header>
+  <main class="wrap">
+    <nav class="tabs" id="tabs" aria-label="관리 메뉴"></nav>
+    <div id="msg" role="status"></div>
+    <section id="view"></section>
+  </main>
+</div>
+
+<script src="../content.js"></script>
+<script src="demo-data.js"></script>
+<script src="demo-gas.js"></script>
+<script>
+(function(){
+"use strict";
+if(window.top!==window.self){document.documentElement.innerHTML="";return}
+var S=window.SITE||{},API=/^https:\/\//.test(S.inquiryEndpoint||"")||/^http:\/\/localhost[:/]/.test(S.inquiryEndpoint||"")?S.inquiryEndpoint:"";
+var $=function(s,r){return(r||document).querySelector(s)},$$=function(s,r){return[].slice.call((r||document).querySelectorAll(s))};
+var esc=function(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
+var token=null;try{token=sessionStorage.getItem("hrc_admin")}catch(e){}
+var state={tab:"inq",inq:[],filter:"전체",q:"",rev:[],pending:[],content:null,loaded:false};
+var STATUS=["신규","상담중","완료","보류"];
+
+function call(action,data){
+  var body=Object.assign({action:action,token:token},data||{});
+  return fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body)}).then(function(r){return r.json()}).then(function(j){
+    if(!j.ok&&j.error==="auth"){logoutUI("로그인 시간이 지났습니다. 다시 로그인해 주세요.");throw new Error("auth")}
+    return j});
+}
+function flash(t,kind){var m=$("#msg");m.innerHTML='<div class="msg '+(kind||"ok")+'">'+esc(t)+'</div>';clearTimeout(flash.t);flash.t=setTimeout(function(){m.innerHTML=""},kind==="err"?8000:3500)}
+function fail(){flash("서버와 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.","err")}
+
+/* ---------- 로그인 ---------- */
+function showLogin(msg){$("#app").hidden=true;$("#login").hidden=false;$("#noapi").hidden=!!API;$("#lmsg").innerHTML=msg?'<div class="msg err">'+esc(msg)+'</div>':"";$("#pw").value=""}
+function logoutUI(msg){token=null;try{sessionStorage.removeItem("hrc_admin")}catch(e){}state.loaded=false;showLogin(msg)}
+$("#lf").addEventListener("submit",function(ev){ev.preventDefault();if(!API)return;var b=ev.target.querySelector("button");b.disabled=true;
+  call("login",{password:$("#pw").value}).then(function(j){b.disabled=false;
+    if(j.ok){token=j.token;try{sessionStorage.setItem("hrc_admin",token)}catch(e){}start()}
+    else showLogin(j.error==="locked"?"비밀번호를 여러 번 틀려 10분간 잠겼습니다.":j.error==="no_password"?"서버에 관리자 비밀번호(ADMIN_PASSWORD)가 설정되지 않았습니다.":"비밀번호가 맞지 않습니다.")}).catch(function(){b.disabled=false;showLogin("서버와 연결하지 못했습니다.")})});
+$("#logout").addEventListener("click",function(){call("logout").catch(function(){});logoutUI("")});
+
+/* ---------- 자리를 비우면 자동 로그아웃(30분) ---------- */
+var idleT=null;function idle(){clearTimeout(idleT);idleT=setTimeout(function(){if(token){call("logout").catch(function(){});logoutUI("30분 동안 사용하지 않아 로그아웃되었습니다.")}},30*60*1000)}
+["click","keydown","touchstart"].forEach(function(ev){document.addEventListener(ev,function(){if(token)idle()},{passive:true})});
+
+/* ---------- 시작 ---------- */
+function start(){$("#login").hidden=true;$("#app").hidden=false;
+  Promise.all([call("inq_list"),call("rev_pending"),call("content_get")]).then(function(r){
+    state.inq=r[0].items||[];state.pending=r[1].items||[];state.content=r[2].content||{};state.hasBackup=!!r[2].hasBackup;state.loaded=true;idle();render()}).catch(function(e){if(e.message!=="auth")fail()})}
+
+var TABS=[["inq","📩 문의"],["rev","⭐ 후기"],["gal","🖼 현장갤러리"],["set","📢 공지·설정"],["sns","📺 SNS·영상"],["dsg","🎨 디자인"],["sec","🔑 보안"]];
+function render(){
+  var nNew=state.inq.filter(function(x){return x.status==="신규"}).length;
+  $("#tabs").innerHTML=TABS.map(function(t){var b=t[0]==="inq"&&nNew?'<span class="badge">'+nNew+'</span>':t[0]==="rev"&&state.pending.length?'<span class="badge">'+state.pending.length+'</span>':"";
+    return '<button type="button" role="tab" data-t="'+t[0]+'" aria-selected="'+(state.tab===t[0])+'">'+t[1]+b+'</button>'}).join("");
+  var v=$("#view");({inq:vInq,rev:vRev,gal:vGal,set:vSet,sns:vSns,dsg:vDsg,sec:vSec})[state.tab](v)}
+$("#tabs").addEventListener("click",function(ev){var b=ev.target.closest("button[data-t]");if(!b)return;state.tab=b.dataset.t;render()});
+
+/* ---------- 문의 ---------- */
+function fmt(iso){var d=new Date(iso);return isNaN(d)?iso:d.getFullYear()+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+("0"+d.getDate()).slice(-2)+" "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2)}
+function vInq(v){
+  var cnt={};STATUS.forEach(function(s){cnt[s]=state.inq.filter(function(x){return x.status===s}).length});
+  var list=state.inq.filter(function(x){return(state.filter==="전체"||x.status===state.filter)&&(!state.q||(x.name+x.phone+x.msg+x.svc+x.memo).toLowerCase().indexOf(state.q.toLowerCase())>=0)});
+  v.innerHTML='<div class="card"><div class="row c2"><div><label>검색<input id="q" value="'+esc(state.q)+'" placeholder="이름·연락처·내용"></label></div><div style="display:flex;gap:8px;align-items:end"><button class="btn ghost" id="reload" type="button">새로고침</button><button class="btn ghost" id="csv" type="button">엑셀(CSV) 받기</button></div></div>'+
+    '<div class="chips">'+["전체"].concat(STATUS).map(function(s){return '<button type="button" data-f="'+s+'" class="'+(state.filter===s?"on":"")+'">'+s+(s==="전체"?" "+state.inq.length:" "+cnt[s])+'</button>'}).join("")+'</div></div>'+
+    (list.length?list.map(inqCard).join(""):'<div class="card muted">표시할 문의가 없습니다.</div>');
+  $("#q").addEventListener("input",function(e){state.q=e.target.value;var pos=e.target.selectionStart;vInq(v);var q=$("#q");q.focus();q.setSelectionRange(pos,pos)});
+  $("#reload").onclick=function(){call("inq_list").then(function(j){state.inq=j.items||[];render();flash("새로 불러왔습니다.")}).catch(function(e){if(e.message!=="auth")fail()})};
+  $("#csv").onclick=function(){var rows=[["접수시각","종류","서비스","성함","연락처","내용","상태","메모"]].concat(list.map(function(x){return[fmt(x.at),x.type,x.svc,x.name,x.phone,x.msg,x.status,x.memo]}));
+    var csv="﻿"+rows.map(function(r){return r.map(function(c){var s=String(c==null?"":c);if(/^[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'}).join(",")}).join("\r\n");
+    var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="문의목록.csv";a.click()};
+  $$("[data-f]",v).forEach(function(b){b.onclick=function(){state.filter=b.dataset.f;render()}});
+  $$("[data-save]",v).forEach(function(b){b.onclick=function(){var id=b.dataset.save,c=$('[data-id="'+id+'"]',v);var st=$("select",c).value,memo=$("textarea",c).value;b.disabled=true;
+    call("inq_update",{id:id,status:st,memo:memo}).then(function(j){b.disabled=false;if(j.ok){var it=state.inq.filter(function(x){return x.id===id})[0];it.status=st;it.memo=memo;flash("저장했습니다.");render()}else flash("저장하지 못했습니다.","err")}).catch(function(e){b.disabled=false;if(e.message!=="auth")fail()})}});
+  $$("[data-del]",v).forEach(function(b){b.onclick=function(){if(!confirm("이 문의를 삭제할까요? 되돌릴 수 없습니다."))return;call("inq_delete",{id:b.dataset.del}).then(function(j){if(j.ok){state.inq=state.inq.filter(function(x){return x.id!==b.dataset.del});render();flash("삭제했습니다.")}}).catch(function(e){if(e.message!=="auth")fail()})}});
+}
+function inqCard(x){var tel=String(x.phone||"").replace(/[^0-9+]/g,"");
+  return '<div class="card" data-id="'+esc(x.id)+'"><div class="inq-h"><span class="st '+esc(x.status)+'">'+esc(x.status)+'</span><b>'+esc(x.name||"(이름 없음)")+'</b>'+(tel?'<a href="tel:'+esc(tel)+'">☎ '+esc(x.phone)+'</a> <a href="sms:'+esc(tel)+'">문자</a>':'')+'<span class="muted">'+esc(x.svc||x.type)+' · '+esc(fmt(x.at))+'</span></div>'+
+    '<div class="inq-m">'+esc(x.msg||"(내용 없음)")+'</div>'+
+    '<div class="row c2"><label>상태<select>'+STATUS.map(function(s){return '<option'+(s===x.status?" selected":"")+'>'+s+'</option>'}).join("")+'</select></label><label>메모 (고객에게 보이지 않음)<textarea placeholder="통화 내용, 방문 일정 등">'+esc(x.memo)+'</textarea></label></div>'+
+    '<div class="act"><button class="btn sm" data-save="'+esc(x.id)+'" type="button">저장</button><button class="btn warn sm" data-del="'+esc(x.id)+'" type="button">삭제</button></div></div>'}
+
+/* ---------- 공통: 서버에 저장된 값이 없으면 현재 홈페이지 기본값으로 채워 보여줌 ---------- */
+function cur(key){var c=state.content;return c&&c[key]!=null?c[key]:(S[key]||[])}
+function saveContent(part,done){return call("content_set",{content:part}).then(function(j){if(j.ok){state.content=Object.assign(state.content||{},part);state.hasBackup=true;flash("홈페이지에 반영했습니다. (방문자 화면에는 잠시 후 적용됩니다)");done&&done()}else flash("저장하지 못했습니다.","err")}).catch(function(e){if(e.message!=="auth")fail()})}
+function seedNote(key){return state.content&&state.content[key]!=null?"":'<p class="muted">아직 저장한 적이 없어 현재 홈페이지 기본(예시) 내용이 표시됩니다. 수정 후 저장하면 이 내용이 홈페이지에 적용됩니다.</p>'}
+
+/* ---------- 후기 ---------- */
+function vRev(v){var rv=JSON.parse(JSON.stringify(cur("reviews")));state.rev=rv;
+  v.innerHTML='<h2 style="margin:8px 0">고객이 남긴 후기 (승인 대기)</h2>'+
+    (state.pending.length?state.pending.map(function(p){return '<div class="card" data-p="'+esc(p.id)+'"><div class="inq-h"><b>'+esc(p.name)+'</b><span>'+"★".repeat(Math.max(1,Math.min(5,+p.stars||5)))+'</span><span class="muted">'+esc(fmt(p.at))+(p.phone?' · '+esc(p.phone):'')+'</span></div><div class="inq-m">'+esc(p.text)+'</div><div class="row c2"><label>표시할 지역(선택)<input class="parea" placeholder="예: 구로구"></label></div><div class="act"><button class="btn sm" data-ok="'+esc(p.id)+'" type="button">승인하고 게시</button><button class="btn warn sm" data-no="'+esc(p.id)+'" type="button">거절</button></div></div>'}).join(""):'<div class="card muted">대기 중인 후기가 없습니다.</div>')+
+    '<h2 style="margin:18px 0 8px">홈페이지에 게시 중인 후기</h2>'+seedNote("reviews")+'<div id="rl"></div><div class="sticky-save"><button class="btn ghost" id="radd" type="button">+ 후기 직접 추가</button><button class="btn" id="rsave" type="button">홈페이지에 반영</button></div>';
+  var drawR=function(){$("#rl").innerHTML=state.rev.map(function(r,i){return '<div class="card" data-i="'+i+'"><div class="row c3"><label>이름<input data-k="name" value="'+esc(r.name)+'"></label><label>지역<input data-k="area" value="'+esc(r.area)+'"></label><label>별점<select data-k="stars">'+[5,4,3,2,1].map(function(n){return '<option value="'+n+'"'+(+r.stars===n?" selected":"")+'>'+"★".repeat(n)+'</option>'}).join("")+'</select></label></div><label style="margin-top:8px">후기 내용<textarea data-k="text">'+esc(r.text)+'</textarea></label><div class="act"><button class="btn ghost sm" data-up="'+i+'" type="button">↑</button><button class="btn ghost sm" data-dn="'+i+'" type="button">↓</button><button class="btn warn sm" data-rm="'+i+'" type="button">삭제</button></div></div>'}).join("")||'<div class="card muted">게시 중인 후기가 없습니다.</div>'};
+  var sync=function(){$$("#rl [data-i]").forEach(function(c){var r=state.rev[+c.dataset.i];$$("[data-k]",c).forEach(function(f){r[f.dataset.k]=f.dataset.k==="stars"?+f.value:f.value})})};
+  drawR();
+  $("#rl").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;sync();var d=b.dataset;
+    if(d.rm!=null){state.rev.splice(+d.rm,1)}else if(d.up!=null&&+d.up>0){var i=+d.up;state.rev.splice(i-1,0,state.rev.splice(i,1)[0])}else if(d.dn!=null&&+d.dn<state.rev.length-1){var j=+d.dn;state.rev.splice(j+1,0,state.rev.splice(j,1)[0])}drawR()});
+  $("#radd").onclick=function(){sync();state.rev.unshift({name:"",area:"",stars:5,text:""});drawR()};
+  $("#rsave").onclick=function(){sync();saveContent({reviews:state.rev.filter(function(r){return r.text.trim()})},function(){render()})};
+  $$("[data-ok],[data-no]",v).forEach(function(b){b.onclick=function(){var id=b.dataset.ok||b.dataset.no,ok=!!b.dataset.ok,area=ok?($(".parea",b.closest(".card")).value||""):"";
+    var pre=ok&&(!state.content||state.content.reviews==null)&&(S.reviews||[]).length?call("content_set",{content:{reviews:S.reviews}}):Promise.resolve({ok:true});
+    pre.then(function(){return call("rev_decide",{id:id,approve:ok,area:area})}).then(function(j){if(!j.ok)return flash("처리하지 못했습니다.","err");
+      state.pending=state.pending.filter(function(p){return p.id!==id});return call("content_get").then(function(c){state.content=c.content||{};render();flash(ok?"후기를 게시했습니다.":"후기를 거절했습니다.")})}).catch(function(e){if(e.message!=="auth")fail()})}});
+}
+
+/* ---------- 사진 업로드(브라우저에서 줄여서 보냄) ---------- */
+function shrink(file,max){return new Promise(function(res,rej){var im=new Image(),u=URL.createObjectURL(file);im.onload=function(){URL.revokeObjectURL(u);var s=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+  var out=function(b,m){if(!b)return rej(new Error("변환 실패"));var fr=new FileReader();fr.onload=function(){res({mime:m,b64:String(fr.result).split(",")[1]})};fr.readAsDataURL(b)};
+  c.toBlob(function(b){if(b&&b.type==="image/webp")out(b,"image/webp");else c.toBlob(function(b2){out(b2,"image/jpeg")},"image/jpeg",.85)},"image/webp",.82)};im.onerror=function(){rej(new Error("이미지를 읽을 수 없습니다."))};im.src=u})}
+
+/* ---------- 현장갤러리 ---------- */
+function vGal(v){var g=JSON.parse(JSON.stringify(cur("gallery")));state.gal=g;
+  v.innerHTML='<p class="muted" style="margin:8px 0">사진은 올리면 자동으로 줄여서 저장됩니다. 글자가 박힌 사진은 피해 주세요. 고객 얼굴·번호판·집 주소가 보이지 않는 사진만 올려 주세요.</p>'+seedNote("gallery")+'<div id="gl"></div><div class="sticky-save"><button class="btn ghost" id="gadd" type="button">+ 사례 추가</button><button class="btn" id="gsave" type="button">홈페이지에 반영</button></div>';
+  var src=function(p){if(window.HRC_DEMO_IMG)p=window.HRC_DEMO_IMG(p);return !p?"":/^(https?:|data:)/.test(p)?p:"../"+p};
+  var draw=function(){$("#gl").innerHTML=state.gal.map(function(x,i){return '<div class="card" data-i="'+i+'"><div class="gi"><div><img class="thumb" alt="" src="'+esc(src(x.image))+'"'+(x.image?'':' hidden')+'><label class="btn ghost sm" style="display:inline-block;margin-top:6px;text-align:center">사진 선택<input type="file" accept="image/*" data-up="'+i+'" hidden></label></div><div><div class="row c3"><label>제목<input data-k="title" value="'+esc(x.title)+'"></label><label>지역<input data-k="area" value="'+esc(x.area)+'"></label><label>분류<input data-k="tag" list="tags" value="'+esc(x.tag)+'"></label></div><label style="margin-top:8px">설명<textarea data-k="text">'+esc(x.text)+'</textarea></label></div></div><div class="act"><button class="btn ghost sm" data-mv="-1:'+i+'" type="button">↑</button><button class="btn ghost sm" data-mv="1:'+i+'" type="button">↓</button><button class="btn warn sm" data-rm="'+i+'" type="button">삭제</button></div></div>'}).join("")+'<datalist id="tags"><option>방역</option><option>배관</option><option>기타</option></datalist>'};
+  var sync=function(){$$("#gl [data-i]").forEach(function(c){var r=state.gal[+c.dataset.i];$$("[data-k]",c).forEach(function(f){r[f.dataset.k]=f.value})})};
+  draw();
+  $("#gl").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;sync();
+    if(b.dataset.rm!=null)state.gal.splice(+b.dataset.rm,1);else if(b.dataset.mv){var p=b.dataset.mv.split(":"),d=+p[0],i=+p[1],j=i+d;if(j<0||j>=state.gal.length)return;state.gal.splice(j,0,state.gal.splice(i,1)[0])}draw()});
+  $("#gl").addEventListener("change",function(e){var inp=e.target.closest("input[type=file]");if(!inp||!inp.files[0])return;sync();var i=+inp.dataset.up;flash("사진을 올리는 중입니다…");
+    shrink(inp.files[0],1280).then(function(o){return call("upload",{mime:o.mime,b64:o.b64})}).then(function(j){if(j.ok){state.gal[i].image=j.url;draw();flash("사진을 올렸습니다. 아래 '홈페이지에 반영'을 눌러야 적용됩니다.")}else flash(j.error==="size"?"사진이 너무 큽니다.":"사진을 올리지 못했습니다.","err")}).catch(function(err){if(err.message!=="auth")flash("사진을 올리지 못했습니다. "+(err.message||""),"err")})});
+  $("#gadd").onclick=function(){sync();state.gal.unshift({image:"",title:"",area:"",tag:"방역",text:""});draw()};
+  $("#gsave").onclick=function(){sync();saveContent({gallery:state.gal.filter(function(x){return x.title.trim()||x.image})},function(){render()})};
+}
+
+/* ---------- 공지·설정 ---------- */
+function vSet(v){var c=state.content||{},areas=(c.areas!=null?c.areas:S.areas||[]).join("\n"),ban=c.banner||{text:"",href:""},nt=JSON.parse(JSON.stringify(c.notices||[]));state.nt=nt;
+  v.innerHTML='<div class="card"><h2 style="margin:0 0 8px">상단 안내 띠</h2><p class="muted" style="margin:0 0 8px">홈페이지 맨 위에 한 줄로 보입니다. 휴무·이벤트 안내 등에 쓰세요. 비우면 표시되지 않습니다.</p><div class="row c2"><label>문구<input id="bt" maxlength="120" value="'+esc(ban.text)+'" placeholder="예: 추석 연휴 10/3~10/5 휴무 (긴급 전화는 가능)"></label><label>눌렀을 때 이동할 주소(선택)<input id="bh" value="'+esc(ban.href)+'" placeholder="https://… 또는 비움"></label></div></div>'+
+    '<div class="card"><h2 style="margin:0 0 8px">서비스 지역</h2>'+seedNote("areas")+'<label>한 줄에 한 지역<textarea id="ar" rows="6" placeholder="구로구&#10;금천구&#10;영등포구">'+esc(areas)+'</textarea></label></div>'+
+    '<div class="card"><h2 style="margin:0 0 8px">공지사항</h2><p class="muted" style="margin:0 0 8px">고객센터 “공지사항”에 보입니다.</p><div id="nl"></div><button class="btn ghost sm" id="nadd" type="button">+ 공지 추가</button></div>'+
+    '<div class="sticky-save"><button class="btn" id="ssave" type="button">홈페이지에 반영</button>'+(state.hasBackup?'<button class="btn ghost" id="srestore" type="button">직전 저장 상태로 되돌리기</button>':'')+'</div>';
+  var draw=function(){$("#nl").innerHTML=state.nt.map(function(n,i){return '<div class="card" data-i="'+i+'" style="margin:8px 0"><div class="row c2"><label>제목<input data-k="title" value="'+esc(n.title)+'"></label><label>날짜<input data-k="date" value="'+esc(n.date)+'" placeholder="2026.10.11"></label></div><label style="margin-top:8px">내용<textarea data-k="body">'+esc(n.body)+'</textarea></label><div class="act"><button class="btn warn sm" data-rm="'+i+'" type="button">삭제</button></div></div>'}).join("")};
+  var sync=function(){$$("#nl [data-i]").forEach(function(c){var r=state.nt[+c.dataset.i];$$("[data-k]",c).forEach(function(f){r[f.dataset.k]=f.value})})};
+  draw();
+  $("#nl").addEventListener("click",function(e){var b=e.target.closest("[data-rm]");if(!b)return;sync();state.nt.splice(+b.dataset.rm,1);draw()});
+  var rs=$("#srestore");if(rs)rs.onclick=function(){if(!confirm("방금 전에 저장하기 직전의 상태(후기·갤러리·공지·지역·디자인 등 전체)로 되돌릴까요?"))return;call("content_restore").then(function(j){if(!j.ok)return flash("되돌릴 내용이 없습니다.","err");return call("content_get").then(function(c){state.content=c.content||{};render();flash("이전 상태로 되돌렸습니다.")})}).catch(function(e){if(e.message!=="auth")fail()})};
+  $("#nadd").onclick=function(){sync();var d=new Date();state.nt.unshift({title:"",date:d.getFullYear()+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+("0"+d.getDate()).slice(-2),body:""});draw()};
+  $("#ssave").onclick=function(){sync();var bt=$("#bt").value.trim(),bh=$("#bh").value.trim();
+    if(bh&&!/^(https?:\/\/|\/|[a-z0-9_.\-\/#]+)$/i.test(bh)||/^javascript:/i.test(bh))return flash("이동 주소를 확인해 주세요.","err");
+    saveContent({banner:bt?{text:bt,href:bh}:null,areas:$("#ar").value.split(/\n/).map(function(s){return s.trim()}).filter(Boolean),notices:state.nt.filter(function(n){return n.title.trim()})},function(){render()})};
+}
+
+/* ---------- SNS·영상 ---------- */
+function ytId(s){s=String(s||"").trim();var m=s.match(/(?:shorts\/|v=|youtu\.be\/|embed\/|live\/)([A-Za-z0-9_-]{11})/);if(m)return m[1];return /^[A-Za-z0-9_-]{11}$/.test(s)?s:""}
+function vSns(v){var c=state.content||{},sc=c.social||S.social||{instagram:"",youtube:""},sh=JSON.parse(JSON.stringify(c.shorts!=null?c.shorts:(S.shorts||[])));state.sh=sh.map(function(x){return{id:x.id||"",title:x.title||"",url:x.id?"https://youtube.com/shorts/"+x.id:""}});
+  v.innerHTML='<div class="card"><h2 style="margin:0 0 8px">SNS 링크</h2><p class="muted" style="margin:0 0 8px">홈페이지 아래쪽(푸터)과 “문의하기” 칸에 버튼이 생깁니다. 비우면 보이지 않습니다.</p><div class="row c2"><label>인스타그램 주소<input id="ig" value="'+esc(sc.instagram)+'" placeholder="https://www.instagram.com/내계정/"></label><label>유튜브 채널 주소<input id="yt" value="'+esc(sc.youtube)+'" placeholder="https://www.youtube.com/@내채널"></label></div></div>'+
+    '<div class="card"><h2 style="margin:0 0 8px">숏츠 영상 (최대 12개)</h2><p class="muted" style="margin:0 0 8px">유튜브 숏츠의 주소(공유 링크)를 그대로 붙여 넣으세요. 홈페이지에 “숏츠 영상” 칸이 생기고, 방문자가 누르면 그 자리에서 재생됩니다. 영상은 유튜브에서 재생되며 내 채널의 조회수로 잡힙니다.</p><div id="shl"></div><button class="btn ghost sm" id="shadd" type="button">+ 숏츠 추가</button></div>'+
+    '<div class="sticky-save"><button class="btn" id="snsave" type="button">홈페이지에 반영</button></div>';
+  var draw=function(){$("#shl").innerHTML=state.sh.map(function(x,i){var id=ytId(x.url);return '<div class="card" data-i="'+i+'" style="margin:8px 0"><div class="row c2"><label>숏츠 주소<input data-k="url" value="'+esc(x.url)+'" placeholder="https://youtube.com/shorts/…"></label><label>제목(선택)<input data-k="title" maxlength="60" value="'+esc(x.title)+'"></label></div>'+(id?'<p class="muted" style="margin:6px 0 0">인식된 영상: '+esc(id)+'</p>':(x.url?'<p style="margin:6px 0 0;color:var(--bad)">주소를 인식하지 못했습니다.</p>':''))+'<div class="act"><button class="btn ghost sm" data-up="'+i+'" type="button">↑</button><button class="btn ghost sm" data-dn="'+i+'" type="button">↓</button><button class="btn warn sm" data-rm="'+i+'" type="button">삭제</button></div></div>'}).join("")||'<p class="muted">등록된 숏츠가 없습니다.</p>'};
+  var sync=function(){$$("#shl [data-i]").forEach(function(c){var r=state.sh[+c.dataset.i];$$("[data-k]",c).forEach(function(f){r[f.dataset.k]=f.value})})};
+  draw();
+  $("#shl").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;sync();var d=b.dataset;
+    if(d.rm!=null)state.sh.splice(+d.rm,1);else if(d.up!=null&&+d.up>0){var i=+d.up;state.sh.splice(i-1,0,state.sh.splice(i,1)[0])}else if(d.dn!=null&&+d.dn<state.sh.length-1){var j=+d.dn;state.sh.splice(j+1,0,state.sh.splice(j,1)[0])}draw()});
+  $("#shl").addEventListener("change",function(){sync();draw()});
+  $("#shadd").onclick=function(){sync();if(state.sh.length>=12)return flash("숏츠는 12개까지 등록할 수 있습니다.","err");state.sh.push({id:"",title:"",url:""});draw()};
+  $("#snsave").onclick=function(){sync();var ig=$("#ig").value.trim(),yt=$("#yt").value.trim();
+    if(ig&&!/^https:\/\/(www\.)?instagram\.com\/\S+$/i.test(ig))return flash("인스타그램 주소는 https://www.instagram.com/… 형식이어야 합니다.","err");
+    if(yt&&!/^https:\/\/(www\.|m\.)?(youtube\.com|youtu\.be)\/\S+$/i.test(yt))return flash("유튜브 주소는 https://www.youtube.com/… 형식이어야 합니다.","err");
+    var list=state.sh.filter(function(x){return x.url.trim()}).map(function(x){return{id:ytId(x.url),title:x.title}});
+    if(list.some(function(x){return !x.id}))return flash("인식하지 못한 숏츠 주소가 있습니다. 확인해 주세요.","err");
+    saveContent({social:{instagram:ig,youtube:yt},shorts:list},function(){render()})};
+}
+
+/* ---------- 디자인·홈 구성 ---------- */
+var PRESETS=[["기본 블루","#12408f","#e5531d"],["딥 그린","#1b5e3f","#e07b00"],["네이비·골드","#0f2a52","#c8962e"],["차분한 그레이","#2f3e4e","#d4551f"],["코랄 포인트","#284b8f","#ff5a5f"]];
+var SECS=[["slider","메인 슬라이드"],["hero","첫 소개 (하수구 막힘 케어)"],["trust","신뢰 띠 (10년·0원…)"],["services","서비스 소개"],["quick","바로가기 카드"],["why","왜 저희일까요"],["guarantee","환불보장"],["gallery","시공 사례"],["shorts","숏츠 영상"],["reviews","고객 후기"],["about","회사소개"],["journal","현장일지"],["faq","자주 묻는 질문"],["contact","문의하기"],["directory","전체 메뉴 바로가기"]];
+function lum(h){var n=parseInt(h.slice(1),16),f=function(v){v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)};return .2126*f(n>>16)+.7152*f((n>>8)&255)+.0722*f(n&255)}
+function contrast(a,b){var x=lum(a),y=lum(b);return(Math.max(x,y)+.05)/(Math.min(x,y)+.05)}
+function vDsg(v){var c=state.content||{},th=c.theme||{brand:"#12408f",accent:"#e5531d"},ly=c.layout||{order:[],hidden:[]};
+  var order=SECS.map(function(s){return s[0]});if(ly.order&&ly.order.length){var seen={};order=ly.order.filter(function(k){return order.indexOf(k)>=0&&!seen[k]&&(seen[k]=1)});SECS.forEach(function(s){if(order.indexOf(s[0])<0)order.push(s[0])})}
+  var hid=(ly.hidden||[]).slice();state.ord=order;state.hid=hid;state.th={brand:th.brand,accent:th.accent};
+  v.innerHTML='<div class="card"><h2 style="margin:0 0 4px">색상</h2><p class="muted" style="margin:0 0 10px">해마다 분위기를 바꾸고 싶을 때 여기서 바꾸세요. 버튼·링크·강조 색이 사이트 전체에 적용됩니다. (밝은 화면 기준)</p><div class="chips" id="pre">'+PRESETS.map(function(p,i){return '<button type="button" data-p="'+i+'"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:'+p[1]+';vertical-align:-2px"></span> <span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:'+p[2]+';vertical-align:-2px;margin-right:4px"></span>'+esc(p[0])+'</button>'}).join("")+'</div>'+
+    '<div class="row c2"><label>대표색 (버튼·메뉴 바)<input type="color" id="cb" value="'+esc(th.brand)+'" style="height:48px;padding:4px"></label><label>강조색 (전화·포인트)<input type="color" id="ca" value="'+esc(th.accent)+'" style="height:48px;padding:4px"></label></div>'+
+    '<p id="cw" class="muted" style="margin:8px 0 0"></p><div id="sw" style="margin-top:10px;border-radius:12px;overflow:hidden;border:1px solid var(--line)"><div id="sw1" style="padding:12px 16px;color:#fff;font-weight:700">메뉴 바 · 버튼 미리보기</div><div style="padding:12px 16px;background:var(--card)"><b id="sw2">☎ 1661-6179</b> <span class="muted">강조색 미리보기</span></div></div>'+
+    '<div class="act"><button class="btn" id="tsave" type="button">색상 적용</button><button class="btn ghost" id="treset" type="button">기본 색으로</button></div></div>'+
+    '<div class="card"><h2 style="margin:0 0 4px">홈 화면 구성</h2><p class="muted" style="margin:0 0 10px">홈 화면의 순서를 바꾸거나 필요 없는 칸을 숨길 수 있습니다. (숨겨도 내용은 지워지지 않습니다)</p><div id="ol"></div><div class="act"><button class="btn" id="lsave" type="button">구성 적용</button><button class="btn ghost" id="lreset" type="button">기본 순서로</button></div></div>';
+  var lab=function(k){return SECS.filter(function(s){return s[0]===k})[0][1]};
+  var drawO=function(){$("#ol").innerHTML=state.ord.map(function(k,i){var off=state.hid.indexOf(k)>=0;return '<div class="card" style="margin:6px 0;padding:10px 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap'+(off?';opacity:.55':'')+'"><b style="flex:1;min-width:160px">'+(i+1)+'. '+esc(lab(k))+'</b><label style="display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" data-h="'+k+'" style="width:auto;min-height:0;margin:0"'+(off?"":" checked")+'> 보이기</label><button class="btn ghost sm" data-u="'+i+'" type="button">↑</button><button class="btn ghost sm" data-d="'+i+'" type="button">↓</button></div>'}).join("")};
+  drawO();
+  var upd=function(){var b=$("#cb").value,a=$("#ca").value;state.th={brand:b,accent:a};$("#sw1").style.background=b;$("#sw2").style.color=a;var r=contrast("#ffffff",b),r2=contrast("#ffffff",a);
+    $("#cw").innerHTML=(r<4.5?'<span style="color:var(--bad)">⚠ 대표색이 흰 글씨와 대비가 약해 읽기 어려울 수 있습니다.</span> ':"")+(r2<3?'<span style="color:var(--warn)">강조색이 흰 배경에서 약하게 보일 수 있습니다.</span>':"")};
+  upd();$("#cb").addEventListener("input",upd);$("#ca").addEventListener("input",upd);
+  $("#pre").addEventListener("click",function(e){var b=e.target.closest("[data-p]");if(!b)return;var p=PRESETS[+b.dataset.p];$("#cb").value=p[1];$("#ca").value=p[2];upd()});
+  $("#tsave").onclick=function(){if(contrast("#ffffff",state.th.brand)<3)return flash("대표색이 너무 밝아 글씨가 보이지 않습니다. 더 진한 색을 골라 주세요.","err");saveContent({theme:state.th})};
+  $("#treset").onclick=function(){saveContent({theme:null},function(){render()})};
+  $("#ol").addEventListener("click",function(e){var b=e.target.closest("button"),c=e.target.closest("input[data-h]");
+    if(c){var k=c.dataset.h,i=state.hid.indexOf(k);if(c.checked&&i>=0)state.hid.splice(i,1);else if(!c.checked&&i<0)state.hid.push(k);drawO();return}
+    if(!b)return;var i2=+(b.dataset.u!=null?b.dataset.u:b.dataset.d),j=b.dataset.u!=null?i2-1:i2+1;if(j<0||j>=state.ord.length)return;state.ord.splice(j,0,state.ord.splice(i2,1)[0]);drawO()});
+  $("#lsave").onclick=function(){saveContent({layout:{order:state.ord,hidden:state.hid}})};
+  $("#lreset").onclick=function(){saveContent({layout:{order:[],hidden:[]}},function(){render()})};
+}
+
+/* ---------- 보안 ---------- */
+function vSec(v){v.innerHTML='<div class="card"><h2 style="margin:0 0 8px">비밀번호 변경</h2><form id="pf"><div class="row c2"><label>현재 비밀번호<input type="password" id="po" required autocomplete="current-password"></label><label>새 비밀번호 (12자 이상, 다른 곳에서 쓰지 않는 것)<input type="password" id="pn" required minlength="12" autocomplete="new-password"></label></div><button class="btn" style="margin-top:12px" type="submit">변경</button></form><p class="muted" style="margin:10px 0 0">바꾸면 다른 기기의 로그인은 모두 끊기고, 메일 알림(설정한 경우)이 갑니다.</p></div>'+
+  '<div class="card"><h2 style="margin:0 0 8px">개인정보 정리</h2><p class="muted" style="margin:0 0 8px">보유 기간이 지난 문의는 지워야 합니다. “완료” 처리된 문의 중 지정한 기간이 지난 것을 삭제합니다. (되돌릴 수 없습니다)</p><div class="row c2"><label>몇 개월 지난 것<select id="pm"><option value="6">6개월</option><option value="12" selected>12개월 (1년)</option><option value="24">24개월</option></select></label><div style="align-self:end"><button class="btn warn" id="pg" type="button">정리하기</button></div></div></div>'+
+  '<div class="card"><h2 style="margin:0 0 8px">최근 활동 기록</h2><p class="muted" style="margin:0 0 8px">로그인·저장·삭제 기록입니다. 모르는 활동이 보이면 바로 비밀번호를 바꾸세요.</p><div id="al" class="muted">불러오는 중…</div></div>'+
+  '<div class="card muted">로그인은 6시간(자리를 비우면 30분) 유지되고, 비밀번호를 틀리면 응답이 느려지며 5번 이상 틀리면 메일로 알려 드립니다(메일 설정 시). 공용 컴퓨터에서는 사용 후 꼭 로그아웃하세요.</div>';
+  call("audit_list").then(function(j){$("#al").innerHTML=(j.items||[]).length?'<table style="width:100%;border-collapse:collapse;font-size:.88rem">'+j.items.slice(0,40).map(function(x){return '<tr style="border-top:1px solid var(--line)"><td style="padding:6px 8px 6px 0;white-space:nowrap">'+esc(fmt(x.at))+'</td><td style="padding:6px 8px;white-space:nowrap"><b>'+esc(x.kind)+'</b></td><td style="padding:6px 0">'+esc(x.note)+'</td></tr>'}).join("")+'</table>':"기록이 없습니다."}).catch(function(e){if(e.message!=="auth")$("#al").textContent="불러오지 못했습니다."});
+  $("#pg").onclick=function(){var m=$("#pm").value;if(!confirm(m+"개월이 지난 ‘완료’ 문의를 모두 삭제합니다. 계속할까요?"))return;call("inq_purge",{months:+m}).then(function(j){if(j.ok){flash(j.deleted+"건을 삭제했습니다.");return call("inq_list").then(function(r){state.inq=r.items||[]})}}).catch(function(e){if(e.message!=="auth")fail()})};
+  $("#pf").addEventListener("submit",function(ev){ev.preventDefault();call("password_change",{oldPassword:$("#po").value,newPassword:$("#pn").value}).then(function(j){if(j.ok){logoutUI("")
+      ;$("#lmsg").innerHTML='<div class="msg ok">비밀번호를 바꿨습니다. 새 비밀번호로 다시 로그인해 주세요.</div>'}else flash(j.error==="bad_password"?"현재 비밀번호가 맞지 않습니다.":"새 비밀번호는 12자 이상이어야 합니다.","err")}).catch(function(e){if(e.message!=="auth")fail()})})}
+
+/* ---------- 진입 ---------- */
+if(!API)showLogin();else if(token)start();else showLogin();
+})();
+</script>
+</body>
+</html>

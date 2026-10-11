@@ -735,10 +735,27 @@ def build_headers():
     (ROOT / "_headers").write_text(txt, encoding="utf-8")
 
 
+def build_admin_demo():
+    """관리자 체험 화면(admin/demo.html): 진짜 서버 코드(Code.gs)를 브라우저 안에서 돌려 보는 연습용 페이지. 실제 서버·시트와 무관합니다."""
+    src = ROOT / "admin" / "index.html"
+    code = ROOT / "tools" / "inquiry-server" / "Code.gs"
+    if not src.exists() or not code.exists():
+        return
+    (ROOT / "admin" / "demo-data.js").write_text("// build.py 가 만드는 파일입니다. (관리자 체험 화면용)\nwindow.HRC_GAS_SRC=%s;\n" % json.dumps(code.read_text(encoding="utf-8"), ensure_ascii=False), encoding="utf-8")
+    h = src.read_text(encoding="utf-8")
+    csp = ('<meta http-equiv="Content-Security-Policy" content="default-src \'self\'; script-src \'self\' \'unsafe-inline\' \'unsafe-eval\'; style-src \'self\' \'unsafe-inline\'; '
+           'img-src \'self\' data: blob: https:; connect-src \'self\'; object-src \'none\'; base-uri \'self\'; form-action \'self\'">')
+    h = re.sub(r"<!--CSP-->[\s\S]*?<!--/CSP-->", lambda m: "<!--CSP-->\n" + csp + "\n<!--/CSP-->", h, count=1)
+    h = h.replace("<title>관리자 | 홈로취케어</title>", "<title>관리자 체험 | 홈로취케어</title>", 1)
+    h = h.replace('<script src="../content.js"></script>', '<script src="../content.js"></script>\n<script src="demo-data.js"></script>\n<script src="demo-gas.js"></script>', 1)
+    (ROOT / "admin" / "demo.html").write_text(h, encoding="utf-8")
+
+
 # ---------------------------------------------------------------- 실행
 def main():
     prerender_home()
     inject_admin_csp()
+    build_admin_demo()
     inject_home()
     build_css()
     build_pwa()

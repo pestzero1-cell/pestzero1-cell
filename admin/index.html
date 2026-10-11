@@ -158,7 +158,8 @@ function vRev(v){var rv=JSON.parse(JSON.stringify(cur("reviews")));state.rev=rv;
   $("#radd").onclick=function(){sync();state.rev.unshift({name:"",area:"",stars:5,text:""});drawR()};
   $("#rsave").onclick=function(){sync();saveContent({reviews:state.rev.filter(function(r){return r.text.trim()})},function(){render()})};
   $$("[data-ok],[data-no]",v).forEach(function(b){b.onclick=function(){var id=b.dataset.ok||b.dataset.no,ok=!!b.dataset.ok,area=ok?($(".parea",b.closest(".card")).value||""):"";
-    call("rev_decide",{id:id,approve:ok,area:area}).then(function(j){if(!j.ok)return flash("처리하지 못했습니다.","err");
+    var pre=ok&&(!state.content||state.content.reviews==null)&&(S.reviews||[]).length?call("content_set",{content:{reviews:S.reviews}}):Promise.resolve({ok:true});
+    pre.then(function(){return call("rev_decide",{id:id,approve:ok,area:area})}).then(function(j){if(!j.ok)return flash("처리하지 못했습니다.","err");
       state.pending=state.pending.filter(function(p){return p.id!==id});return call("content_get").then(function(c){state.content=c.content||{};render();flash(ok?"후기를 게시했습니다.":"후기를 거절했습니다.")})}).catch(function(e){if(e.message!=="auth")fail()})}});
 }
 
@@ -170,7 +171,7 @@ function shrink(file,max){return new Promise(function(res,rej){var im=new Image(
 /* ---------- 현장갤러리 ---------- */
 function vGal(v){var g=JSON.parse(JSON.stringify(cur("gallery")));state.gal=g;
   v.innerHTML='<p class="muted" style="margin:8px 0">사진은 올리면 자동으로 줄여서 저장됩니다. 글자가 박힌 사진은 피해 주세요. 고객 얼굴·번호판·집 주소가 보이지 않는 사진만 올려 주세요.</p>'+seedNote("gallery")+'<div id="gl"></div><div class="sticky-save"><button class="btn ghost" id="gadd" type="button">+ 사례 추가</button><button class="btn" id="gsave" type="button">홈페이지에 반영</button></div>';
-  var src=function(p){return !p?"":/^(https?:|data:)/.test(p)?p:"../"+p};
+  var src=function(p){if(window.HRC_DEMO_IMG)p=window.HRC_DEMO_IMG(p);return !p?"":/^(https?:|data:)/.test(p)?p:"../"+p};
   var draw=function(){$("#gl").innerHTML=state.gal.map(function(x,i){return '<div class="card" data-i="'+i+'"><div class="gi"><div><img class="thumb" alt="" src="'+esc(src(x.image))+'"'+(x.image?'':' hidden')+'><label class="btn ghost sm" style="display:inline-block;margin-top:6px;text-align:center">사진 선택<input type="file" accept="image/*" data-up="'+i+'" hidden></label></div><div><div class="row c3"><label>제목<input data-k="title" value="'+esc(x.title)+'"></label><label>지역<input data-k="area" value="'+esc(x.area)+'"></label><label>분류<input data-k="tag" list="tags" value="'+esc(x.tag)+'"></label></div><label style="margin-top:8px">설명<textarea data-k="text">'+esc(x.text)+'</textarea></label></div></div><div class="act"><button class="btn ghost sm" data-mv="-1:'+i+'" type="button">↑</button><button class="btn ghost sm" data-mv="1:'+i+'" type="button">↓</button><button class="btn warn sm" data-rm="'+i+'" type="button">삭제</button></div></div>'}).join("")+'<datalist id="tags"><option>방역</option><option>배관</option><option>기타</option></datalist>'};
   var sync=function(){$$("#gl [data-i]").forEach(function(c){var r=state.gal[+c.dataset.i];$$("[data-k]",c).forEach(function(f){r[f.dataset.k]=f.value})})};
   draw();

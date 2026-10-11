@@ -5,13 +5,19 @@
   if (window.HRC_OVERLAY) return;
   var S = window.SITE || window.SITE_BOT || {};
   var url = /^https:\/\//.test(S.inquiryEndpoint || "") || /^http:\/\/localhost[:/]/.test(S.inquiryEndpoint || "") ? S.inquiryEndpoint : "";
-  if (!url) return;
-  var KEY = "hrc_overlay", FLAG = "hrc_overlay_reload";
+  // 체험 모드: 주소 뒤에 ?demo=1 을 붙여 열면, 관리자 체험 화면(admin/demo.html)에서 바꾼 내용(이 브라우저에만 저장)으로 홈페이지를 미리 볼 수 있습니다.
+  var DEMO = false;
+  try { if (/[?&]demo=1(&|$)/.test(location.search)) sessionStorage.setItem("hrc_demo", "1"); if (/[?&]demo=0(&|$)/.test(location.search)) sessionStorage.removeItem("hrc_demo"); DEMO = sessionStorage.getItem("hrc_demo") === "1" && localStorage.getItem("hrc_demo_db") != null; } catch (e) {}
+  var demoDb = null;
+  if (DEMO) { try { demoDb = JSON.parse(localStorage.getItem("hrc_demo_db")); } catch (e) { DEMO = false; } }
+  if (!url && !DEMO) return;
+  var KEY = DEMO ? "hrc_overlay_demo" : "hrc_overlay", FLAG = DEMO ? "hrc_overlay_reload_demo" : "hrc_overlay_reload";
   var cache = null;
   try { cache = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) {}
   var has = function (v) { return v !== null && v !== undefined; };
   var okImg = function (u) { u = String(u || ""); return u === "" || /^images\/[A-Za-z0-9_.\-\/가-힣]{1,120}$/.test(u) || /^https:\/\/lh3\.googleusercontent\.com\/d\/[A-Za-z0-9_\-]{10,80}(=w\d{2,4})?$/.test(u); };
-  var cleanG = function (l) { return (l || []).map(function (g) { var x = Object.assign({}, g); if (!okImg(x.image)) x.image = ""; return x; }); };
+  var demoImg = function (u) { var m = String(u || "").match(/lh3\.googleusercontent\.com\/d\/([A-Za-z0-9_-]+)/); return DEMO && m && demoDb.files && demoDb.files[m[1]] ? demoDb.files[m[1]] : u; };
+  var cleanG = function (l) { return (l || []).map(function (g) { var x = Object.assign({}, g); if (!okImg(x.image)) x.image = ""; else x.image = demoImg(x.image); return x; }); };
   function apply(d) {
     if (!d || !window.SITE) return;
     if (has(d.reviews)) window.SITE.reviews = d.reviews;
@@ -27,7 +33,11 @@
   var fetching = null;
   function fresh() {
     if (fetching) return fetching;
-    fetching = fetch(url + (url.indexOf("?") < 0 ? "?" : "&") + "action=public", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
+    var src = DEMO ? new Promise(function (res) {
+      var c = {}; try { var rows = (JSON.parse(localStorage.getItem("hrc_demo_db")).sheets["콘텐츠"] || []); c = JSON.parse((rows[0] || [])[0] || "{}"); } catch (e) {}
+      res({ ok: true, version: c.version || 0, reviews: c.reviews || null, gallery: c.gallery || null, areas: c.areas || null, banner: c.banner || null, notices: c.notices || [], theme: c.theme || null, layout: c.layout || null, social: c.social || null, shorts: c.shorts || null });
+    }) : fetch(url + (url.indexOf("?") < 0 ? "?" : "&") + "action=public", { cache: "no-store" }).then(function (r) { return r.json(); });
+    fetching = src.then(function (j) {
       fetching = null;
       if (!j || !j.ok) return cache;
       var changed = !cache || cache.version !== j.version;
@@ -112,8 +122,16 @@
   }
 
   function paint(d) { if (!d) return; banner(d.banner); if (has(d.gallery)) paintGallery(cleanG(d.gallery)); theme(d.theme || (window.SITE && window.SITE.theme)); layout(d.layout); if (window.HRC_SOCIAL) window.HRC_SOCIAL.paint(d.social || (window.SITE && window.SITE.social)); }
+  function demoBar() {
+    if (!DEMO) return;
+    var el = document.createElement("div");
+    el.style.cssText = "background:#7a3b00;color:#fff;text-align:center;font-size:.85rem;padding:7px 12px;line-height:1.4;word-break:keep-all;position:relative;z-index:50";
+    el.innerHTML = '🧪 체험 모드로 보는 중입니다 (관리자 체험 화면에서 바꾼 내용). <a href="?demo=0" style="color:#ffd9a8;font-weight:700">체험 끄기</a>';
+    document.body.insertBefore(el, document.body.firstChild);
+  }
   var ready = function (f) { if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", f); else f(); };
   ready(function () {
+    demoBar();
     paint(cache);
     fresh().then(function (d) {
       if (!d) return;
