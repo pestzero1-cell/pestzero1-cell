@@ -1,0 +1,14 @@
+# build.py 가 만드는 파일입니다. Cloudflare Pages · Netlify 에서 그대로 쓰입니다. (다른 호스팅은 SECURITY.md 참고)
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Cross-Origin-Opener-Policy: same-origin
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self'; manifest-src 'self'; frame-ancestors 'none'
+/admin/*
+  Cache-Control: no-store
+  Referrer-Policy: no-referrer
+/sw.js
+  Cache-Control: no-cache

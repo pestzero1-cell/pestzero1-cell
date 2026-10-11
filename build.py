@@ -200,10 +200,10 @@ def head(title, desc, path, depth, og_image=None, extra="", jsonld=None):
 <link rel="apple-touch-icon" href="%simages/favicon.png">
 <link rel="manifest" href="%smanifest.webmanifest">
 <meta name="theme-color" content="#12408f">
-<link rel="stylesheet" href="%sassets/site.css">
+%s<link rel="stylesheet" href="%sassets/site.css">
 %s</head>
 """ % (e(title), e(desc), e(canon), e(BRAND), e(title), e(desc), e(canon),
-       ('<meta property="og:image" content="%s">\n' % e(og_img)) if og_img else "", verify, extra, e(BRAND), rel(depth), rel(depth), rel(depth), rel(depth), rel(depth), ld)
+       ('<meta property="og:image" content="%s">\n' % e(og_img)) if og_img else "", verify, extra, e(BRAND), rel(depth), rel(depth), rel(depth), rel(depth), csp_meta(), rel(depth), ld)
 
 
 def header_footer(depth, current_key=None):
@@ -213,7 +213,7 @@ def header_footer(depth, current_key=None):
         rel(depth), e(BRAND), logo, e(re.sub(r"[^0-9+]", "", S["phone"])), e(S["phone"]), nav_html(depth, current_key))
     c = S.get("company") or {}
     blogs = " · ".join('<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>' % (e(b["url"]), e(b["label"])) for b in S.get("blogs", []))
-    foot = ('<footer><div class="wrap"><b>%s</b><br>대표 %s · 전화 <a href="tel:%s">%s</a><br>사업자등록번호 %s · 통신판매업신고번호 %s<br>%s<br>%s<br>© %s All rights reserved.</div></footer>') % (
+    foot = ('<footer><div class="wrap"><b>%s</b><br>대표 %s · 전화 <a href="tel:%s">%s</a><br>사업자등록번호 %s · 통신판매업신고번호 %s<br>%s<br>%s<br><a href="' + rel(depth) + 'privacy/">개인정보처리방침</a> · © %s All rights reserved.</div></footer>') % (
         e(S["pageTitle"]), e(S["owner"]), e(re.sub(r"[^0-9]", "", S["phone"])), e(S["phone"]), e(c.get("bizNo", "")), e(c.get("mailOrderNo", "")), e(c.get("address", "")), blogs, datetime.date.today().year)
     return top, foot
 
@@ -481,6 +481,7 @@ def build_css():
 .pgrid2{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));padding-block:20px 56px}
 .pcard a{display:block;border:1px solid var(--line);border-radius:12px;overflow:hidden;height:100%;background:var(--bg)}.pcard a:hover{box-shadow:0 8px 24px rgba(18,64,143,.12)}
 .pcard img,.pnoimg{width:100%;aspect-ratio:16/9;object-fit:cover;display:grid;place-items:center;background:var(--card);color:var(--muted)}
+.privacy h2{font-size:1.1rem;color:var(--brand);margin:22px 0 4px}.privacy p{margin:0;line-height:1.8;max-width:none}
 .gfilter{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}.gfilter button{border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:999px;padding:7px 16px;font-weight:700;cursor:pointer}.gfilter button.on{background:var(--brand);color:var(--on);border-color:var(--brand)}
 .ggrid{padding-block:14px 8px}.gcard[hidden]{display:none}.gcard .gt{font-size:1.1rem;margin:8px 0 2px}
 .smell{padding-bottom:56px}.sm-b{margin:26px 0}.sm-b h2{font-size:1.25rem;color:var(--brand);margin:0 0 10px}.sm-b ul{margin:0;padding-left:1.2em;line-height:1.9}
@@ -509,7 +510,7 @@ def inject_home():
         verify += '<meta name="naver-site-verification" content="%s">\n' % e(S["naverVerification"])
     if S.get("googleVerification"):
         verify += '<meta name="google-site-verification" content="%s">\n' % e(S["googleVerification"])
-    headseo = ('<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">\n<link rel="apple-touch-icon" href="images/favicon.png">\n<link rel="manifest" href="manifest.webmanifest">\n<meta name="theme-color" content="#12408f">\n<link rel="canonical" href="%s/">\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="%s">\n<meta property="og:title" content="%s">\n'
+    headseo = ('<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">\n<link rel="apple-touch-icon" href="images/favicon.png">\n<link rel="manifest" href="manifest.webmanifest">\n' + csp_meta() + '<meta name="theme-color" content="#12408f">\n<link rel="canonical" href="%s/">\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="%s">\n<meta property="og:title" content="%s">\n'
                '<meta property="og:description" content="%s">\n<meta property="og:url" content="%s/">\n<meta property="og:image" content="%s/%s">\n%s'
                '<link rel="alternate" type="application/rss+xml" title="%s 현장일지" href="posts/rss.xml">\n<script type="application/ld+json">%s</script>\n') % (
         SITE_URL, e(BRAND), e(title), e(desc), SITE_URL, SITE_URL, e(S.get("ogImage", "")), verify, e(BRAND), json.dumps(ld, ensure_ascii=False))
@@ -639,12 +640,99 @@ self.addEventListener("fetch", (ev) => {
     (ROOT / "sw.js").write_text(sw, encoding="utf-8")
 
 
+def build_privacy():
+    """개인정보처리방침 페이지. 문의·후기 서버를 쓰면 구글(Google)에 위탁 저장하므로 그 내용도 함께 안내합니다."""
+    pv = S.get("privacy") or {}
+    c = S.get("company") or {}
+    depth = 1
+    top, foot = header_footer(depth, "privacy")
+    srv = bool(S.get("inquiryEndpoint"))
+    brand, owner, phone = BRAND, S.get("owner", ""), S.get("phone", "")
+    ret = pv.get("retention", "문의 처리 완료 후 1년")
+    eff = pv.get("effective", TODAY)
+    items = [
+        ("1. 수집하는 개인정보 항목", "이름, 연락처(전화번호), 문의·후기 내용(고객이 직접 입력한 내용). 서비스 이용 과정에서 방문 주소가 추가로 확인될 수 있습니다."),
+        ("2. 수집·이용 목적", "방역·하수구 서비스 상담 및 견적 안내, 문의에 대한 답변, 서비스 일정 협의와 사후 관리, 이용후기 게시 확인."),
+        ("3. 보유 및 이용 기간", "%s까지 보관한 뒤 지체 없이 파기합니다. 다만 관계 법령에서 보존을 요구하는 경우 해당 기간 동안 보관합니다." % ret),
+        ("4. 제3자 제공", "고객의 개인정보를 동의 없이 제3자에게 제공하지 않습니다."),
+        ("5. 처리 위탁 및 국외 이전", ("문의·후기 접수 내용은 Google LLC(미국)의 Google 스프레드시트·드라이브에 저장됩니다. 이전 항목: 위 1항의 정보, 이전 시기·방법: 문의 등록 시 암호화된 통신으로 전송, 이용 목적: 접수 내용의 저장·보관, 보유 기간: 위 3항과 같음. 동의하지 않으실 수 있으며, 이 경우 전화 %s 로 문의해 주세요." % phone) if srv else "현재 문의는 고객의 휴대폰 문자 앱 또는 전화로 직접 접수되며 별도 서버에 저장하지 않습니다."),
+        ("6. 파기 절차 및 방법", "보유 기간이 지난 정보는 시트에서 삭제하는 방식으로 파기합니다."),
+        ("7. 정보주체의 권리", "고객은 언제든지 본인의 개인정보 열람·정정·삭제·처리정지를 요청할 수 있습니다. 전화 %s 로 요청해 주세요." % phone),
+        ("8. 개인정보 보호책임자", "대표 %s (전화 %s)" % (owner, phone)),
+        ("9. 안전성 확보 조치", "관리자 화면은 비밀번호로 보호되며 접속 기록을 남깁니다. 입력 내용은 암호화된 통신(HTTPS)으로 전송됩니다."),
+        ("10. 시행일", "이 방침은 %s부터 적용됩니다." % eff),
+    ]
+    body = "".join("<h2>%s</h2><p>%s</p>" % (e(h), e(t)) for h, t in items)
+    page = head("개인정보처리방침 | %s" % BRAND, "%s 개인정보처리방침" % BRAND, "privacy/", depth) + "<body>\n" + top + """
+<main><div class="wrap privacy" style="max-width:820px;padding-bottom:56px">%s<h1 style="margin:10px 0 6px">개인정보처리방침</h1><p class="sub">%s(%s)은 고객의 개인정보를 소중히 다룹니다.</p>%s</div></main>
+%s
+</body>
+</html>
+""" % (crumbs([(BRAND, "index.html"), ("개인정보처리방침", None)], depth), e(brand), e(c.get("bizNo", "")), body, foot)
+    page = page.replace("</body>", bot_scripts(depth) + "\n</body>")
+    out = ROOT / "privacy"
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "index.html").write_text(page, encoding="utf-8")
+    return "privacy/"
+
+
+def csp_meta():
+    """브라우저 보안 규칙(CSP). 이 사이트가 불러올 수 있는 곳을 제한해서, 악성 스크립트가 끼어들거나 정보를 밖으로 보내는 것을 막습니다."""
+    from urllib.parse import urlparse
+    origins = ["https://script.google.com", "https://script.googleusercontent.com"]
+    for u in (S.get("inquiryEndpoint"), (S.get("bot") or {}).get("aiEndpoint")):
+        if u:
+            p = urlparse(u)
+            if p.scheme and p.netloc:
+                o = "%s://%s" % (p.scheme, p.netloc)
+                if o not in origins:
+                    origins.append(o)
+    pol = ("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; "
+           "connect-src 'self' %s; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self'; manifest-src 'self'") % " ".join(origins)
+    return ('<meta http-equiv="Content-Security-Policy" content="%s">\n<meta name="referrer" content="strict-origin-when-cross-origin">\n' % pol)
+
+
+def inject_admin_csp():
+    p = ROOT / "admin" / "index.html"
+    if not p.exists():
+        return
+    h = p.read_text(encoding="utf-8")
+    block = "<!--CSP-->\n" + csp_meta().replace('strict-origin-when-cross-origin', 'no-referrer') + "<!--/CSP-->"
+    h = re.sub(r"<!--CSP-->[\s\S]*?<!--/CSP-->", lambda m: block, h, count=1)
+    p.write_text(h, encoding="utf-8")
+
+
+def build_headers():
+    """호스팅(Cloudflare Pages · Netlify 등)에 올릴 때 쓰는 보안 헤더 파일(_headers)."""
+    meta = csp_meta()
+    import re as _re
+    pol = _re.search(r'content="([^"]*)"', meta).group(1)
+    txt = """# build.py 가 만드는 파일입니다. Cloudflare Pages · Netlify 에서 그대로 쓰입니다. (다른 호스팅은 SECURITY.md 참고)
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Cross-Origin-Opener-Policy: same-origin
+  Content-Security-Policy: %s; frame-ancestors 'none'
+/admin/*
+  Cache-Control: no-store
+  Referrer-Policy: no-referrer
+/sw.js
+  Cache-Control: no-cache
+""" % pol
+    (ROOT / "_headers").write_text(txt, encoding="utf-8")
+
+
 # ---------------------------------------------------------------- 실행
 def main():
     prerender_home()
+    inject_admin_csp()
     inject_home()
     build_css()
     build_pwa()
+    build_headers()
     urls = [("", "1.0")]
     for key, sec_title, d, items in SECTIONS:
         for i in range(len(items)):
@@ -652,7 +740,7 @@ def main():
             urls.append((path, "0.8"))
     build_posts_index()
     build_support()
-    for fn in (build_gallery, build_smell):
+    for fn in (build_gallery, build_smell, build_privacy):
         pth = fn()
         if pth:
             urls.append((pth, "0.8"))

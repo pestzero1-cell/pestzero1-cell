@@ -10,10 +10,12 @@
   var cache = null;
   try { cache = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) {}
   var has = function (v) { return v !== null && v !== undefined; };
+  var okImg = function (u) { u = String(u || ""); return u === "" || /^images\/[A-Za-z0-9_.\-\/가-힣]{1,120}$/.test(u) || /^https:\/\/lh3\.googleusercontent\.com\/d\/[A-Za-z0-9_\-]{10,80}(=w\d{2,4})?$/.test(u); };
+  var cleanG = function (l) { return (l || []).map(function (g) { var x = Object.assign({}, g); if (!okImg(x.image)) x.image = ""; return x; }); };
   function apply(d) {
     if (!d || !window.SITE) return;
     if (has(d.reviews)) window.SITE.reviews = d.reviews;
-    if (has(d.gallery)) window.SITE.gallery = d.gallery;
+    if (has(d.gallery)) window.SITE.gallery = cleanG(d.gallery);
     if (has(d.areas)) window.SITE.areas = d.areas;
     if (has(d.notices)) window.SITE.notices = d.notices;
     if (d.banner) window.SITE.banner = d.banner;
@@ -78,7 +80,36 @@
     }
   }
 
-  function paint(d) { if (!d) return; banner(d.banner); if (has(d.gallery)) paintGallery(d.gallery); }
+
+  // ---- 디자인(색상): 관리자 화면 > 디자인에서 고른 색을 사이트 전체에 적용 (밝은 화면 기준) ----
+  function shade(hex, f) { var n = parseInt(hex.slice(1), 16), c = function (v) { return Math.max(0, Math.min(255, Math.round(v * f))).toString(16).padStart(2, "0"); }; return "#" + c(n >> 16) + c((n >> 8) & 255) + c(n & 255); }
+  function theme(t) {
+    var s = document.getElementById("hrc-theme");
+    if (s) s.remove();
+    if (!t || !/^#[0-9a-fA-F]{6}$/.test(t.brand || "") || !/^#[0-9a-fA-F]{6}$/.test(t.accent || "")) return;
+    s = document.createElement("style");
+    s.id = "hrc-theme";
+    s.textContent = "@media (prefers-color-scheme:light){:root{--brand:" + t.brand + ";--brand-d:" + shade(t.brand, .72) + ";--accent:" + t.accent + "}}";
+    document.head.appendChild(s);
+    var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute("content", t.brand);
+  }
+  // ---- 홈 구성: 섹션 순서·표시 여부 ----
+  var PICK = { slider: "#slider", hero: ".hero", trust: ".trust", services: "#services", quick: "#quick", why: "#why", guarantee: "#guarantee", gallery: "#gallery", reviews: "#reviews", about: "#about", journal: "#journal", faq: "#faq", contact: "#contact", directory: "#directory" };
+  function layout(l) {
+    var main = document.getElementById("top");
+    if (!l || !main || !document.getElementById("app")) return;
+    var els = {}, cur = [];
+    Object.keys(PICK).forEach(function (k) { var el = main.querySelector(":scope > " + PICK[k]) || document.querySelector("main " + PICK[k]); if (el && el.parentNode === main) els[k] = el; });
+    [].forEach.call(main.children, function (c) { Object.keys(els).forEach(function (k) { if (els[k] === c) cur.push(k); }); });
+    var want = (l.order || []).filter(function (k) { return els[k]; });
+    cur.forEach(function (k) { if (want.indexOf(k) < 0) want.push(k); });             // 목록에 없는 건 기존 순서대로 뒤에
+    var anchors = cur.map(function (k) { var a = document.createComment("s"); main.insertBefore(a, els[k]); return a; });
+    want.forEach(function (k, i) { main.insertBefore(els[k], anchors[i].nextSibling); });
+    anchors.forEach(function (a) { a.remove(); });
+    Object.keys(els).forEach(function (k) { els[k].hidden = (l.hidden || []).indexOf(k) >= 0; });
+  }
+
+  function paint(d) { if (!d) return; banner(d.banner); if (has(d.gallery)) paintGallery(cleanG(d.gallery)); theme(d.theme || (window.SITE && window.SITE.theme)); layout(d.layout); }
   var ready = function (f) { if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", f); else f(); };
   ready(function () {
     paint(cache);

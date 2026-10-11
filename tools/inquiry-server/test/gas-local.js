@@ -2,6 +2,7 @@
 // 사용: node gas-local.js [포트] [관리자비밀번호]   → http://localhost:포트/exec
 const fs = require("fs"), vm = require("vm"), http = require("http"), path = require("path"), crypto = require("crypto");
 const port = Number(process.argv[2] || 8787), PW = process.argv[3] || "test-password-1";
+const sleepLog = [], sentMail = [];
 const sheets = {}, props = { ADMIN_PASSWORD: PW }, cacheData = {}, files = {};
 function mkSheet(name) {
   const rows = [];
@@ -25,11 +26,11 @@ const ctx = {
   PropertiesService: { getScriptProperties: () => ({ getProperty: (k) => props[k] ?? null, setProperty: (k, v) => { props[k] = v; } }) },
   CacheService: { getScriptCache: () => ({ get: (k) => (cacheData[k] && cacheData[k].exp > Date.now() ? cacheData[k].v : null), put: (k, v, s) => { cacheData[k] = { v, exp: Date.now() + s * 1000 }; }, remove: (k) => { delete cacheData[k]; } }) },
   LockService: { getScriptLock: () => ({ waitLock() {}, releaseLock() {} }) },
-  Utilities: { getUuid: () => crypto.randomUUID(), base64Decode: (s) => Array.from(Buffer.from(s, "base64")), newBlob: (bytes, mime, name) => ({ bytes, mime, name }) },
-  MailApp: { sendEmail() {} },
+  Utilities: { sleep: (ms) => { sleepLog.push(ms); }, getUuid: () => crypto.randomUUID(), base64Decode: (s) => Array.from(Buffer.from(s, "base64")), newBlob: (bytes, mime, name) => ({ bytes, mime, name }) },
+  MailApp: { sendEmail: (...a) => { sentMail.push(a); } },
   ContentService: { MimeType: { JSON: "json" }, createTextOutput: (t) => ({ t, setMimeType() { return this; } }) },
   DriveApp: { Access: { ANYONE_WITH_LINK: 1 }, Permission: { VIEW: 1 },
-    getFoldersByName: () => ({ hasNext: () => true, next: () => ({ createFile: (b) => { const id = "F" + Object.keys(files).length; files[id] = b; return { getId: () => id, setSharing() {} }; } }) }),
+    getFoldersByName: () => ({ hasNext: () => true, next: () => ({ createFile: (b) => { const id = "1" + crypto.randomBytes(16).toString("hex") + Object.keys(files).length; files[id] = b; return { getId: () => id, setSharing() {} }; } }) }),
     createFolder: () => ({}) },
 };
 vm.createContext(ctx);
@@ -41,6 +42,7 @@ http.createServer((req, res) => {
   let body = "";
   req.on("data", (d) => (body += d));
   req.on("end", () => {
+    if (u.pathname === "/_debug") { res.writeHead(200, cors); return res.end(JSON.stringify({ sleepLog, sentMail, props: Object.keys(props), logs: (sheets["기록"] ? sheets["기록"]._rows : []) })); }
     const out = req.method === "POST" ? ctx.doPost({ postData: { contents: body } }) : ctx.doGet({ parameter: Object.fromEntries(u.searchParams) });
     res.writeHead(200, { ...cors, "Content-Type": "text/plain;charset=utf-8" });
     res.end(out.t);
