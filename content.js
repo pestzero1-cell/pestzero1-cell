@@ -23,6 +23,8 @@ window.SITE = {
   // 푸터에 표시되는 사업자 정보 (주소 등은 실제 값으로 확인해 주세요)
   company: { bizNo: "113-91-16219", mailOrderNo: "2014-서울구로-1298", address: "08233 서울 구로구 개봉동 455-7" },
   phone: "1661-6179",          // 표시용 (하이픈 가능)
+  // 문의를 사장님 구글 시트로 받는 주소(비우면 문자 앱 연결). 설정 방법: tools/inquiry-server/README.md
+  inquiryEndpoint: "",
   smsNumber: "01051830456",        // 문자 문의를 받을 휴대폰 번호 (숫자만)
   smsDisplay: "010-5183-0456",     // 화면에 보여줄 문자 문의 번호
   // 네이버 블로그: 서비스 카드(services[].blog)와 문의 영역 버튼에 연결됩니다. 비워두면 버튼 숨김
@@ -53,10 +55,10 @@ window.SITE = {
   slider: {
     interval: 5000,
     slides: [
-      { theme: "blue", kicker: "위기탈출 넘버원 촬영업체", title: "철저하고 완벽한 박멸시스템", sub: "친환경 소독, 방역 & 해충을 완벽하게!", text: "자연과 사람을 중시하며, 변화하는 환경속에서 연구 개발과 꾸준한 전문인재육성으로 고객님께 보다 진보된 방역기술과 서비스를 드리겠습니다.", button: { label: "홈로취케어 소개 바로가기", href: "#about" }, images: ["images/sl-home.jpg"] },
-      { theme: "navy", kicker: "하수구 막힘 케어", title: "정확한 원인 분석, 한방에 해결", sub: "출장비 0원 / 미해결시 0원", text: "싱크대, 화장실, 욕조배수구 막힘부터 공동배관, 소변기, 양변기 막힘까지 해결해 드립니다.", button: { label: "하수구 시공사례 보기", href: "#drain" }, images: ["images/sl-drain.jpg"] },
-      { theme: "warm", kicker: "독보적인 홈로취케어만의 기술", title: "빈대퇴치, 안전하게 지켜드립니다", sub: "방역 중 외출 NO, 생활 그대로 OK", text: "2014년부터 쌓아온 빈대퇴치 노하우와 단독제작 장비·천연약품으로 박멸합니다.", button: { label: "빈대 정보 보기", href: "#info" }, images: ["images/sl-bed.jpg"] },
-      { theme: "blue", kicker: "투명한 가격 안내", title: "서비스 단가표를 확인하세요", sub: "바퀴벌레 · 개미 · 쥐 · 특수방역 · 소독", text: "평수별 단가와 보장 기간을 한눈에 확인하고 전화 한 통으로 상담받으세요.", button: { label: "서비스단가표 보기", href: "#price" }, images: ["images/sl-price.jpg"] }
+      { theme: "blue", kicker: "위기탈출 넘버원 촬영업체", title: "철저하고 완벽한 박멸시스템", sub: "친환경 소독, 방역 & 해충을 완벽하게!", text: "자연과 사람을 중시하며, 변화하는 환경속에서 연구 개발과 꾸준한 전문인재육성으로 고객님께 보다 진보된 방역기술과 서비스를 드리겠습니다.", button: { label: "홈로취케어 소개 바로가기", href: "#about" }, images: ["images/sl-home.webp"] },
+      { theme: "navy", kicker: "하수구 막힘 케어", title: "정확한 원인 분석, 한방에 해결", sub: "출장비 0원 / 미해결시 0원", text: "싱크대, 화장실, 욕조배수구 막힘부터 공동배관, 소변기, 양변기 막힘까지 해결해 드립니다.", button: { label: "하수구 시공사례 보기", href: "#drain" }, images: ["images/sl-drain.webp"] },
+      { theme: "warm", kicker: "독보적인 홈로취케어만의 기술", title: "빈대퇴치, 안전하게 지켜드립니다", sub: "방역 중 외출 NO, 생활 그대로 OK", text: "2014년부터 쌓아온 빈대퇴치 노하우와 단독제작 장비·천연약품으로 박멸합니다.", button: { label: "빈대 정보 보기", href: "#info" }, images: ["images/sl-bed.webp"] },
+      { theme: "blue", kicker: "투명한 가격 안내", title: "서비스 단가표를 확인하세요", sub: "바퀴벌레 · 개미 · 쥐 · 특수방역 · 소독", text: "평수별 단가와 보장 기간을 한눈에 확인하고 전화 한 통으로 상담받으세요.", button: { label: "서비스단가표 보기", href: "#price" }, images: ["images/sl-price.webp"] }
     ]
   },
 
@@ -91,13 +93,13 @@ window.SITE = {
     ],
     button1: "무료 상담 신청",
     button2: "홈로취케어 소개 바로가기",
-    // 첫 화면 사진 타일(문구는 label). 내 사진을 쓰려면 images/ 폴더에 사진을 올리고 image 경로만 바꾸거나, 같은 파일명(ti-*.jpg)으로 덮어쓰세요. 가로세로 비슷한 사진이 잘 어울립니다.
+    // 첫 화면 사진 타일(문구는 label). 내 사진을 쓰려면 images/ 폴더에 사진을 올리고 image 경로만 바꾸거나, 같은 파일명(ti-*.webp)으로 덮어쓰세요. 가로세로 비슷한 사진이 잘 어울립니다.
     tiles: [
-      { label: "세탁실 막힘", image: "images/ti-laundry.jpg" },
-      { label: "양변기 막힘", image: "images/ti-toilet.jpg" },
-      { label: "소변기 막힘", image: "images/ti-urinal.jpg" },
-      { label: "배수구 해빙", image: "images/ti-thaw.jpg" },
-      { label: "건물공동배관막힘", image: "images/ti-pipe.jpg" }
+      { label: "세탁실 막힘", image: "images/ti-laundry.webp" },
+      { label: "양변기 막힘", image: "images/ti-toilet.webp" },
+      { label: "소변기 막힘", image: "images/ti-urinal.webp" },
+      { label: "배수구 해빙", image: "images/ti-thaw.webp" },
+      { label: "건물공동배관막힘", image: "images/ti-pipe.webp" }
     ]
   },
 
@@ -133,7 +135,7 @@ window.SITE = {
   // 표의 셀: 글자 그대로 쓰거나, 세로 병합은 { t: "글자", rs: 2 } 로 씁니다. 줄바꿈은 \n
   price: {
     title: "서비스단가표",
-    banner: { image: "images/banner-pest.jpg", small: "철저하고 완벽한 박멸시스템", title: "친환경 소독,", sub: "방역 & 해충을 완벽하게!" },
+    banner: { image: "images/banner-pest.webp", small: "철저하고 완벽한 박멸시스템", title: "친환경 소독,", sub: "방역 & 해충을 완벽하게!" },
     items: [
       { slug: "roach", label: "바퀴벌레 퇴치", sections: [
         { heading: "가정집 (아파트, 빌라, 연립, 단독주택, 다가구 등)",
@@ -163,7 +165,7 @@ window.SITE = {
             "다른 해충의 제거를 추가 하는 경우에는 계약 금액의 50%가 추가됩니다.",
             "6개월보장형과 1년보장형은 초기방문 외 A/S접수로 출동 가능하며, 정기관리형은 연 4회(초회포함) 정기적으로 방문드려 점검 및 퇴치 해드리는 서비스입니다. 아이들 반려동물 걱정하지 마세요. 안전하고 깨끗하게 작업해드립니다."
           ],
-          image: "images/roach-process.jpg",
+          image: "images/roach-process.webp",
           footer: "안전하고 쾌적한 공간, 사람을 중요시합니다."
         },
         { heading: "소규모 사업장/영업장 (음식점, 사무실 및 기타 사업장)",
@@ -212,7 +214,7 @@ window.SITE = {
             "다른 해충의 제거를 추가 하는 경우에는 계약 금액의 50%가 추가됩니다.",
             "6개월보장형과 1년보장형은 초기방문 외 A/S접수로 출동 가능하며, 정기관리형은 연 4회(초회포함) 정기적으로 방문드려 점검 및 퇴치 해드리는 서비스입니다."
           ],
-          image: "images/ant-process.jpg",
+          image: "images/ant-process.webp",
           footer: "반려동물, 아이들 모두 안심하고 맡겨주세요."
         },
         { heading: "소규모 사업장/영업장 (음식점, 사무실 및 기타 사업장)",
@@ -260,7 +262,7 @@ window.SITE = {
             "다른 해충의 제거를 추가 하는 경우에는 계약 금액의 50%가 추가됩니다.",
             "2개월보장형과 1년보장형은 초기방문 외 A/S접수로 출동 가능하며, 정기관리형은 연 6회(초회포함) 정기적으로 방문드려 점검 및 퇴치 해드리는 서비스입니다."
           ],
-          image: "images/rat-process.jpg",
+          image: "images/rat-process.webp",
           footer: "현장 맞춤형 시공으로 박멸 해결(천장, 하우수, 베란다, 현관, 싱크대, 양변기)"
         },
         { heading: "소규모 사업장/영업장 (음식점, 사무실 및 기타 사업장)",
@@ -303,7 +305,7 @@ window.SITE = {
             "2개월보장형, 정기관리형 모두 바퀴,개미,쥐를 제외한 기타해충만을 대상으로 합니다.",
             "기타해충은 A/S 불가합니다. 1차, 2차, 3차 순으로 박멸 시공합니다."
           ],
-          image: "images/etc-process.jpg",
+          image: "images/etc-process.webp",
           footer: "안전하고 쾌적한 공간을 만들어 드립니다. 환경과 사람을 먼저 생각합니다. 날개미(흰개미), 특수방역"
         },
         { heading: "가정집/소규모 사업장 (아파트,빌라,연립,단독주택,다가구 등/음식점,사무실 및 기타사업장)",
@@ -320,7 +322,7 @@ window.SITE = {
         }
       ] },
       { slug: "legal-disinfection", label: "의무법정소독단가표", sections: [
-        { imageTop: "images/legal-process.jpg",
+        { imageTop: "images/legal-process.webp",
           heading: "의무법정소독단가표",
           table: {
             boldCols: [0, 2],
@@ -390,7 +392,7 @@ window.SITE = {
             "손 및 피부의 소독, 수술부위 피부의 소독, 의료용구의 소독."
           ] },
         { heading: "코로나 바이러스 감염증-19 대응 집단시설.다중이용시설 소독 개정전",
-          image: "images/legal-process.jpg" },
+          image: "images/legal-process.webp" },
         { heading: "코로나 바이러스 감염증-19 대응 집단시설.다중이용시설 소독 개정후",
           lead: "환경부 승인 코로나바이러스 전용약품 사용! 안전 최우선!",
           table: {
@@ -429,7 +431,7 @@ window.SITE = {
             "훈증 작업은 꼭 필요시에만 적용합니다.",
             "친환경약품의 경우는 2시간 정도 충분한 환기 필요합니다."
           ],
-          image: "images/silverfish-process.jpg",
+          image: "images/silverfish-process.webp",
           footer: "작업 중에 집에 계셔도 됩니다. 안전하게 모시겠습니다."
         },
         { heading: "빈대방제",
@@ -447,7 +449,7 @@ window.SITE = {
             "저희 전문가님 작업 및 사후관리 지침에만 따라주시면 100% 박멸됩니다.",
             "홈페이지 메인페이지에 블로그 현장사진을 클릭후 빈대 검색 하시면 작업 이력이 있습니다."
           ],
-          images: ["images/bedbug-1.jpg", "images/bedbug-2.jpg", "images/bedbug-3.jpg"]
+          images: ["images/bedbug-1.webp", "images/bedbug-2.webp", "images/bedbug-3.webp"]
         }
       ] },
       { slug: "drain-trap", label: "하수구트랩단가표", sections: [
@@ -472,7 +474,7 @@ window.SITE = {
               ["화장실바닥", "30,000원"]
             ]
           },
-          images: ["images/trap-photos.jpg"]
+          images: ["images/trap-photos.webp"]
         }
       ] },
       { slug: "insect-zapper", label: "포충기단가표", sections: [
@@ -506,7 +508,7 @@ window.SITE = {
               ["실외용 포충기", "별도협의", ""]
             ]
           },
-          images: ["images/zapper-brochure.jpg"]
+          images: ["images/zapper-brochure.webp"]
         }
       ] }
     ]
@@ -526,7 +528,7 @@ window.SITE = {
             { icon: "phone", text: "희망일자 / 시간 남겨주시면 **전화로 일정확인 후 접수처리**" }
           ] },
         { heading: "전화신청",
-          contact: { label: "고객센터", phone: "1661-6179", image: "images/consult.jpg" } }
+          contact: { label: "고객센터", phone: "1661-6179", image: "images/consult.webp" } }
       ] },
       { slug: "process", label: "진행순서", sections: [
         { heading: "진행순서",
@@ -570,7 +572,7 @@ window.SITE = {
             "주말출동 50,000원"
           ] },
         { heading: "전화신청",
-          contact: { label: "고객센터", phone: "1661-6179", image: "images/consult.jpg" } }
+          contact: { label: "고객센터", phone: "1661-6179", image: "images/consult.webp" } }
       ] },
       { slug: "refund", label: "환불보장제도", sections: [
         { heading: "환불보장제도",
@@ -580,7 +582,7 @@ window.SITE = {
             "서비스를 이용하시지만 사후처리에 의심을 갖으시는 고객분들 안심하고 이용 하세요."
           ] },
         { heading: "전화신청",
-          contact: { label: "고객센터", phone: "1661-6179", image: "images/consult.jpg" } }
+          contact: { label: "고객센터", phone: "1661-6179", image: "images/consult.webp" } }
       ] }
     ]
   },
@@ -593,16 +595,16 @@ window.SITE = {
         { table: {
             head: ["생김새", "크기", "수명", "습성", "특징"],
             rows: [
-              [{ img: "images/roach-german.jpg", t: "독일바퀴" }, "1.27~1.58cm", "64~251일",
+              [{ img: "images/roach-german.webp", t: "독일바퀴" }, "1.27~1.58cm", "64~251일",
                 "주방과 화장실등 어둡고 따뜻하며 습기가 많은 0.4cm정도의 틈이면 충분히 살 수 있음\n\n<대표서식지>\n씽크대바닥, 음식물조리대, 깨진타일등, 냉장고의 뒷편이나 윗부분,씽크대뒷편,식기건조대,욕실장뒷편,거울뒤편,조명 등 부근에 많이 서식함",
                 "알을 지니고있는 바퀴벌레는 부화하기 전 하루 전까지 알을 달고 다님"],
-              [{ img: "images/roach-japanese.jpg", t: "일본바퀴" }, "2.8cm", "316~533일",
+              [{ img: "images/roach-japanese.webp", t: "일본바퀴" }, "2.8cm", "316~533일",
                 "습도가 있는 곳에서 많이 발견됨\n\n<대표서식지>\n라디에다 주변, 보일러주변, 오븐이나 마루밑, 지하실공간에서 많이 서식하며 독일 바퀴가 발견되는 지역에서도 나타남",
                 "암놈 바퀴벌레는 안전하고 숨기 쉬운 틈에 알을 낳으며 자기들 배설물 사이에 알을 숨기기도 함"],
-              [{ img: "images/roach-american.jpg", t: "미국바퀴" }, "3.8~4.4cm", "320~1071일",
+              [{ img: "images/roach-american.webp", t: "미국바퀴" }, "3.8~4.4cm", "320~1071일",
                 "따뜻하고 습기가 많은 지하실이나 하수관, 정화조,집 수정 등에서 많이 발견되며 실내보다 실외에서 많이 서식하며 종종 실내에서 서식하는 경우도 있음\n\n<대표서식지>\n정화조, 맨홀주변,집 수정, 보일러 배관주위, 지하실, 낙엽, 건초 주위 등에서 많이 서식함",
                 "알이 부화하기 위해 상당한 습도가 필요하며 먹이가 있는 서식지 부근이나 부스러기들 사이틈에 알을 숨겨 놓기도 함"],
-              [{ img: "images/roach-oriental.jpg", t: "먹바퀴" }, "3.8cm", "324~890일", "미국바퀴벌레와 유사함", "미국바퀴벌레와 유사함"]
+              [{ img: "images/roach-oriental.webp", t: "먹바퀴" }, "3.8cm", "324~890일", "미국바퀴벌레와 유사함", "미국바퀴벌레와 유사함"]
             ]
           } },
         { heading: "바퀴벌레가 옮길 수 있는 질병",
@@ -646,13 +648,13 @@ window.SITE = {
         { table: {
             head: ["생김새", "크기", "활동시기 및 서식장소", "습성/생활"],
             rows: [
-              [{ img: "images/ant-house.jpg", t: "애집개미,불개미" }, "일개미\n0.2cm~2.5cm 여왕개미(3.5cm)", "일년 내내 활동하며 따뜻한 곳에서 많이 서식함",
+              [{ img: "images/ant-house.webp", t: "애집개미,불개미" }, "일개미\n0.2cm~2.5cm 여왕개미(3.5cm)", "일년 내내 활동하며 따뜻한 곳에서 많이 서식함",
                 "수백 마리씩 떼로 줄지어 다니며 몸의 경절이 두 마디이며 일개미들은 한 가지 형태이다. 몸 전체의 색깔은 황색이나 적갈색이며 복부 끝부분에만 흑색을 띤다.\n더듬이는 총12개이며 끝 마디가 세 부분으로 나뉘어져 있다. 애집개미는 열 생성 개미이므로 실내에서 많이 서식하며 27~30도씨의 온도와 70%의 습도에서 서식을 많이 하고 있으며 집을 만들기보다는 실내의 벽이나 천정 틈새 가구속,마루밑 등 어둡고 따뜻한 곳에서 서식하기를 좋아한다. 한 군체는 수 천마리~수 십만마리 이며 여왕개미 한 마리가 1회에 10개정도 씩의 알을 산란하여, 총400마리 이상 산란하며 성충 까지의 소요기간은 38~48일이다."],
-              [{ img: "images/ant-black.jpg", t: "곰개미" }, "일개미0.45~0.6cm\n여왕개미(1.3cm) 수개미(1.1cm)", "3월~10월까지활동하며 집주변의 공터나 풀밭에서 많이 서식함",
+              [{ img: "images/ant-black.webp", t: "곰개미" }, "일개미0.45~0.6cm\n여왕개미(1.3cm) 수개미(1.1cm)", "3월~10월까지활동하며 집주변의 공터나 풀밭에서 많이 서식함",
                 "양지바른 마른 땅속에 집을 짓고 산다.깊이가 자그마치 3m에 달하며 입구는 5~6개 이상을 만들어 놓고 드나든다.주로 6~7월이 되면 짝짓기를 하기 위해 활발히 움직이며 따뜻한 곳에서 한겨울을 왕성하게 활동한다."],
-              [{ img: "images/ant-carpenter.jpg", t: "일본왕개미" }, "일개미0.6~1.5cm\n여왕개미(1.8cm) 수개미(1.2cm)", "3월~10월까지활동하며 집주변이나 공원 및 공터 풀밭에서 많이 서식 함",
+              [{ img: "images/ant-carpenter.webp", t: "일본왕개미" }, "일개미0.6~1.5cm\n여왕개미(1.8cm) 수개미(1.2cm)", "3월~10월까지활동하며 집주변이나 공원 및 공터 풀밭에서 많이 서식 함",
                 "비교적 건조한 풀밭에 많이 서식하고 있으며 여러 가지 꽃이나 진딧물에 모이는 보통 종으로 봄에는 돌 밑, 여름에는 풀 밑 에서 서식하는데 10마리 이하인 것부터 수백 마리 이상인 것도 있다. 가을에는 나무와 뿌리 밑으로 모여들어 주변에 나무가 없으면 땅속으로 들어가고 10월경에 땅속 1.3m 에까지 관찰된 적도 있다."],
-              [{ img: "images/ant-redchest.jpg", t: "홍가슴개미" }, "준비중", "준비중",
+              [{ img: "images/ant-redchest.webp", t: "홍가슴개미" }, "준비중", "준비중",
                 "5~7월에 많이 나타나며 주로 나무의 뿌리, 기둥속에서 많이 서식하며 우리나라에서는 중부이남에 많이 분포되어 있다."]
             ]
           } },
@@ -691,13 +693,13 @@ window.SITE = {
         { table: {
             head: ["생김새", "크기", "활동시기 및 서식장소", "습성/생활"],
             rows: [
-              [{ img: "images/rat-norway.jpg", t: "시궁쥐" }, "몸길이\n22cm~26cm 꼬리길이17cm~20cm\n몸무게300~400g", "1년 내내 활동하며 부엌 및 가옥 안의 식량창고,마루밑,하수도,천장, 벽틈 등에서 많이 서식함",
+              [{ img: "images/rat-norway.webp", t: "시궁쥐" }, "몸길이\n22cm~26cm 꼬리길이17cm~20cm\n몸무게300~400g", "1년 내내 활동하며 부엌 및 가옥 안의 식량창고,마루밑,하수도,천장, 벽틈 등에서 많이 서식함",
                 "전국적으로 가장 널리 분포되어 있어 먹이를 구할수 있는곳이면 어디서든 발견되며 연3~5회정도 출산하며 임신기간은 약24일 한번에 4~10마리정도 출산을 한다. 쥐는 먹이와 물이 있는 조용한 곳이면 어디든지 서식처가 되며 보통 천정과 마루 이중벽사이, 가구나 쌓아놓은 저장물 밑 등에서 많이 서식한다.쥐는 갉지 않으면 치아가 빠르게 성장하여 아무것도 먹지못한채 죽게 된다. 보통 나무나 콘크리트 알루미늄,옷감,스티로폴,종이박스 등을 갉으며 특히 전선줄을 갉아 누전이나 합선을 일으켜 큰화재가 되어 문제가 되기도 한다. 가주성쥐는 사람의 음식물에 많이 의존하여 잡식성으로 바뀌었으며 보통 주변에서 얻기 쉬운 먹이를 좋아하며 적응한다."],
-              [{ img: "images/rat-mouse.jpg", t: "생쥐" }, "몸길이 6cm~10cm\n귀길이 1.1cm~1.4cm 뒷발 길이1.3cm1.8cm", "1년 내내 활동하며 도시에 많이 분포되어 있음",
+              [{ img: "images/rat-mouse.webp", t: "생쥐" }, "몸길이 6cm~10cm\n귀길이 1.1cm~1.4cm 뒷발 길이1.3cm1.8cm", "1년 내내 활동하며 도시에 많이 분포되어 있음",
                 "생쥐 성체늬 무게는 약 20g정도이며, 두동장은 80~120mm, 고리도 두동장과 비슷하다. 털은 배면이 갈색이고, 복면은 회색이다. 생쥐의 성체는 시궁쥐,곰쥐 새끼와 비슷하여 식별이 어려운 편이다."],
-              [{ img: "images/rat-roof.jpg", t: "곰쥐, 집웅쥐" }, "몸길이 6cm~10cm\n뒤밭길이 1.1cm~1.4cm 꼬리길이17cm이상", "1년 내내 활동하며 집안 창고나 부엌, 마루밑, 하수도,천장이나, 벽틈 등에서 많이 서식",
+              [{ img: "images/rat-roof.webp", t: "곰쥐, 집웅쥐" }, "몸길이 6cm~10cm\n뒤밭길이 1.1cm~1.4cm 꼬리길이17cm이상", "1년 내내 활동하며 집안 창고나 부엌, 마루밑, 하수도,천장이나, 벽틈 등에서 많이 서식",
                 "털빛깔은 갈색 검은색을 띠며 농촌이나 항구지역에 많이 분포되 었었으나 현재 도시 빌딩내에서도 많이 증가하는 추세이며 식성은 식물성이지만 서식하는 장소에 따라 식성이 변하며 동작이 매우 빠르고 나무도 잘란다고 한다.\n보통 임신은 약26일에 거쳐 5~10마리정도의 새끼를 출산한다."],
-              [{ img: "images/rat-striped.jpg", t: "등줄쥐" }, "몸길이 7cm~12cm\n뒤박길이 1,5cm~2.5cm 꼬리길이5.2cm~9.6cm", "1년 내내 활동하며 농촌지역이나 산에서 주로 서식하며 습하지 않은 곳이면 어디든 살수 있다.",
+              [{ img: "images/rat-striped.webp", t: "등줄쥐" }, "몸길이 7cm~12cm\n뒤박길이 1,5cm~2.5cm 꼬리길이5.2cm~9.6cm", "1년 내내 활동하며 농촌지역이나 산에서 주로 서식하며 습하지 않은 곳이면 어디든 살수 있다.",
                 "등 면은 적갈색이며 몸 아랫 쪽은 회백색을 띤다. 검은 줄이 머리부터 꼬리 아랫쪽 까지 있으며. 꼬리는 몸 길이보다 짧고 굵은 털이 나있으며 귀가 작다. 1년에 4~5회 한배에 4~8마리 정도의 새끼를 출산하며 보통 2월에서 11월에 많이나타남."]
             ]
           } },
@@ -730,7 +732,7 @@ window.SITE = {
         { table: {
             head: ["생김새", "크기", "활동시기 및 서식장소", "습성/생활", "수명"],
             rows: [
-              [{ img: "images/booklouse.jpg", t: "먼지다듬이" }, "몸길이\n1mm~7mm 내외", "봄이나 여름에 주로 활동하며 따뜻하고 습기가 많은 계절엔 더욱 활발히 움직인다. 가구틈,벽과벽사이, 천장, 묵은 책, 벽지 사이 등에서 많이 서식함.",
+              [{ img: "images/booklouse.webp", t: "먼지다듬이" }, "몸길이\n1mm~7mm 내외", "봄이나 여름에 주로 활동하며 따뜻하고 습기가 많은 계절엔 더욱 활발히 움직인다. 가구틈,벽과벽사이, 천장, 묵은 책, 벽지 사이 등에서 많이 서식함.",
                 "세계적으로 1,650종이 있으며 우리나라에서는 3과가 알려져 있다.주로 가구나 벽틈 그리고 장판 가장자리 드에서 집단으로 서식하는데 외부에서 주택내로 유입되는 종은 아니며, 외부에서 들어오는 물건에 의해 들어오는 경우가 대부분이다. 먹이는 주택내의 미세한 유기물(곡물가루)이나곰팡이, 균류, 생선가루, 꽃가루, 먼지 등을 먹고 생활한다. 최근에는 친환경자래 즉, 방부재가 들어가지 않은 녹말풀 등을 이용하여 도배를 함으로 오염된 가구(싱크대)나 목재등이 들어오면서 대발생하는 경우가 많다.다듬이 벌레는 옅은회색 또는 갈색을 띄고 있으며 마르지 않은 목재,석고보드를 사용한 신축건물이나 가구에서 종종 발생하기도 하며 23도씨에서 29도씨의 온도와 70~90%의 습도가 발생했을시 많이 발생한다. 대부분 알로서 이동이 가능하며 매우 번식력이 크다.\n다듬이는 모두 암놈이며 단성생식을 한다, 평균60개의 알을 놓으며 1년에 7~8세대를 형성하여 겨울이 되면 성충은 모두 죽고 봄이 되면 살아남은 알은 부화를 하여 온도가 높고 습도가 많은 여름에 많이 번성한다. 분포는 현재 전세계에 분포되어있다",
                 "수명은 1~2달"]
             ]
@@ -740,29 +742,29 @@ window.SITE = {
         { table: {
             head: ["생김새", "크기", "활동시기 및 서식장소", "습성/생활"],
             rows: [
-              [{ img: "images/bedbug-photo.jpg", t: "빈대" }, "몸길이\n6.5~9mm", "집안, 새 둥지, 박쥐 동굴, 집에서 기르는 가축들의 몸",
+              [{ img: "images/bedbug-photo.webp", t: "빈대" }, "몸길이\n6.5~9mm", "집안, 새 둥지, 박쥐 동굴, 집에서 기르는 가축들의 몸",
                 "먹이를 먹기 전의 몸길이는 6.5~9mm이고, 몸빛깔은 대개 갈색이다. 그러나 먹이를 먹은 후에는 몸이 부풀어오르고 몸빛깔은 붉은색이 된다. 몸은 편평하고 약간 사각형으로 보이며 머리는 작다. 촉각(더듬이)은 겹눈 사이에서 올라와 있다. 모두 4마디로, 제1마디는 짧고 제2마디가 가장 길며 다른 것은 실 모양이다.\n\n주둥이는 4마디이다. 작은턱은 2개의 관으로 되어 있는데 등쪽은 식구(食溝), 배쪽은 타액구(唾液溝)이다. 이 관으로 기주를 찔러 그 피를 빨아먹는다. 큰턱은 작은턱 바깥쪽에 접해 있으며, 길고 가는 창 모양으로 끝에 미세한 이빨이 1줄 있다. 앞가슴등판은 편평하며 옆가두리는 넓고 편평하다. 반딱지날개는 판 모양으로 작고 뒷날개는 없다. 배부는 8마디로 편평하고 둥글며 크다.\n\n집안, 새 둥지, 박쥐 동굴 등을 은신처로 삼으며, 이 밖에도 집에서 기르는 가축들의 몸에도 발생한다. 암컷은 일생 동안 200여 개의 알을 낳으며, 알의 표면은 거칠다. 유충은 6~17일 안에 부화하며 5번의 달피를 통해 완전히 성숙하는 데 10주 정도가 걸린다. 밤에 주로 활동한다.\n\n집안에 사는 개체는 긴 주둥이로 사람을 찌르고 피를 빨며 불쾌한 가려움을 준다. 몸에 많은 개체가 발생하면 수면부족을 일으킨다. 나병·Q열·브루셀라병 등을 옮기는 것으로 의심되지만 사람에게 걸리는 질병은 옮기지 않는 것으로 보인다. 주거환경이 청결해지면서 볼 수 없는 해충이 되었다. 세계 공통종이다."]
             ]
           },
-          images: ["images/bedbug-1.jpg", "images/bedbug-2.jpg", "images/bedbug-3.jpg", "images/bb-history.jpg", "images/bb-covid.jpg", "images/bb-equip.jpg", "images/bb-flow.jpg", "images/bb-banner.jpg"] }
+          images: ["images/bedbug-1.webp", "images/bedbug-2.webp", "images/bedbug-3.webp", "images/bb-history.webp", "images/bb-covid.webp", "images/bb-equip.webp", "images/bb-flow.webp", "images/bb-banner.webp"] }
       ] },
       { slug: "other-pests", label: "기타해충", sections: [
         { table: {
             head: ["생김새", "크기", "활동시기 및 서식장소", "습성/생활"],
             rows: [
-              [{ img: "images/etc-carpet.jpg", t: "애수시렁이" }, "몸길이 3~5mm로 전체적으로 타원형\n(몸빛깔은 전체가 검은색 또는 흑갈색이며 광택이 있다. )",
+              [{ img: "images/etc-carpet.webp", t: "애수시렁이" }, "몸길이 3~5mm로 전체적으로 타원형\n(몸빛깔은 전체가 검은색 또는 흑갈색이며 광택이 있다. )",
                 "딱정벌레목 수시렁이과의 곤충. 딱정벌레목 수시렁이과 유충으로 월동하고 성충은 맑고 따뜻한 날씨에 날아다님.몸빛깔 검은색또는흑색 털옷이나 비단, 누에고치 등이 있는 창고나 가공공장에 서식.\n한국·일본·타이완에 분포",
                 "암컷은 400~900개의 알을 덩어리로 낳고 산란 후 약 10일이 지나면 부화한다.부화한 유충은 7~8회의 달피를 걸쳐 성장한다. 유충은 몸길이 약 9mm로 꼬리쪽으로 가면서 좁아지고 꼬리에는 길고 뻣뻣한 털이 무더기로 있으며 기문은 배에 있다. 보통 알에서 성충이 되는 데 걸리는 시간은 약 3개월이다. 성충과 유충 모두 털옷이나 비단, 누에고치 등을 먹이로 하므로 창고나 가공공장 등에서 볼 수 있는데 성충은 꽃에서도 볼 수 있다. 유충으로 월동하고 성충은 맑고 따뜻한 날씨에 날기도 한다.\n한국·일본·타이완 등지에 분포한다."],
-              [{ img: "images/etc-weevil.jpg", t: "쌀바구미" }, "성충은 몸길이 3~4㎜이며 몸은 타원형 (더듬이는 방망이모양이고 8개의 마디로 되어 있다.)",
+              [{ img: "images/etc-weevil.webp", t: "쌀바구미" }, "성충은 몸길이 3~4㎜이며 몸은 타원형 (더듬이는 방망이모양이고 8개의 마디로 되어 있다.)",
                 "딱정벌레목 바구미과의 곤충. Sitophilus oryzae 딱정벌레목 바구미과 딱지날개 연노란색 쌀·보리·밀·수수·옥수수 등의 저장 곡물에 서식 전세계 분포",
                 "세대 일수는 연간 기온차에 따라 달라 7월 중순~8월 중순까지는 23~30일, 6월에는 35~40일, 5월과 9월 상순에는 약 50일, 4월과 9월 하순에는 약 60일이 소요되며, 발생 최성기는 7월 중순~8월 중순이다. 알은 낟알 속에서 부화해 어른벌레가 될 때까지 그 안에서 자라는데, 이 때부터 시작하여 알 밖으로 나와서까지 낟알을 갉아먹는다."],
-              [{ img: "images/etc-silverfish.jpg", t: "좀벌레" }, "다리를 제외한 길이는 약 1센티미터\n(더듬이는 긴 실처럼 생겼다.)",
+              [{ img: "images/etc-silverfish.webp", t: "좀벌레" }, "다리를 제외한 길이는 약 1센티미터\n(더듬이는 긴 실처럼 생겼다.)",
                 "설탕이나 녹말등의 탄수화물을 먹고 살기 때문에 saccharina라는 학명을 가지고 있다.이 벌레가 살 수 있는 바닥 타일이나 마루의 갈라진 틈이 있다면, 주로 냉장고 밑이나 따뜻한 화장실에서 벌레를 발견할 수 있을 것이다. 이 벌레는 책, 융단, 섬유 등을 좀먹는다. 얼룩좀은 더 따뜻한 곳에서 사는데, 대표적인 곳이 밀가루와 빵이 있는 빵집이다.",
                 "매년 1회 발생하고 성충이 되기 전에 약 60번을 탈피하지만 변태는 하지 않아 유충과 성충의 겉모습이 크게 다르지 않다. 의류와 종이의 해충으로 질병을 매개하는 일은 드물다. 기둥 및 목재가구에 작은 구멍이 있거나 하얀 나무 가루가 있다면 좀이 쏠았을 가능성이 많으므로 구멍에다 살충제를 뿌리고 니스 등으로 구멍을 막는다. 한국에만 분포한다."],
-              [{ img: "images/etc-earwig.jpg", t: "집게벌레" }, "몸체의 길이는 1.3cm ~ 2,4cm",
+              [{ img: "images/etc-earwig.webp", t: "집게벌레" }, "몸체의 길이는 1.3cm ~ 2,4cm",
                 "몸체는 검은갈색이며, 머리부분은 붉은색이며, 더듬이는 누런갈색이다 후부에 두드러진 집게로 구별이 용이하다. 수컷의 집게는 구부러져있고 암컷의 집게는 곧다. 암컷은 흙속에 약30개의 알을 산란하며 계절에 따라 부화시기가 틀리다. 집게벌레 어미는 알보호에 대한 모성본능이 있다. 생활사는 1년정도 소요되고, 부패한 유기물이나 식물이 숙주이다. 오래된 종이나 판지 혹은 작은돌 틈에 많은 수가 숨어서 서식하며 야행이다.",
                 "집게벌레는 질병을 매개하지 않으며, 개체수가 많지않고 도시지역의 거주공간이 아파트등으로 변화됨으로써 점차 서식공간이 사라져 사람과 접할 기회가 상대적으로 적어져 위생학적으로 큰 피해를 일으키지 않는다. 다만 목격했을때 외형으로 사람에게 혐오감을 주며, 집게로서 사람을 물기도 한다."],
-              [{ img: "images/etc-centipede.jpg", t: "그리마" }, "몸길이 약 22mm",
+              [{ img: "images/etc-centipede.webp", t: "그리마" }, "몸길이 약 22mm",
                 "절지동물 그리마목 그리마과의 순각류(脣脚類). 그리마목 그리마과 부속지수 15개 (다리) 풀숲,인가지붕밑, 얕은 동굴 등에 서식.\n한국·일본·타이완에 분포 징그럽게 생긴 외형으로 사람에게 혐오감을 줌",
                 "더듬이는 쉽게 구부러지고 10개 이상의 마디가 있다. 다리는 15쌍인데, 마디가 10개 이상이고 가늘고 길면서 탄력이 있다. 그리마는 곤충과 거미 따위를 먹고산다. 나방을 잡을 때는 높게 뛰어올라 잡아채기도 한다. 봄에서 가을에 걸쳐 알을 1개씩 낳아 진흙으로 싸서 땅 위에 둔다. 부화한 애벌레는 다리가 4쌍뿐이지만, 허물을 벗을 때마다 다리와 몸마디가 늘어난다. 다리가 15쌍이 된 뒤에도 허물을 계속 벗으면서 3년이 지나면 다 자란다. 적의 습격을 받으면 다리를 자르고 도망가며, 떨어져나간 다리는 다음 번 허물을 벗을 때 다시 생긴다. 삼림 풀숲이나 인가 지붕 밑, 얕은 동굴 등에 살며 동작이 재빠르다."]
             ]
@@ -810,7 +812,7 @@ window.SITE = {
     ]
   },
 
-  // 하수구막힘 뚫음: 왼쪽 메뉴 4개. 시공사례 사진은 images/case-*.jpg
+  // 하수구막힘 뚫음: 왼쪽 메뉴 4개. 시공사례 사진은 images/case-*.webp
   drain: {
     title: "하수구막힘 뚫음",
     items: [
@@ -835,13 +837,13 @@ window.SITE = {
       ] },
       { slug: "apartment-cases", label: "아파트빌라시공사례", sections: [
         { intro: "365일 상황 발생시 빠른 출동 서비스로 현장 불편함을 최소화 해 드립니다." },
-        { heading: "베란다 세탁실 배수구 막힘", image: "images/case-veranda.jpg" },
-        { heading: "화장실 배수구 막힘", image: "images/case-toilet.jpg" },
-        { heading: "샤워실 긴트렌치 배수구막힘", image: "images/case-shower.jpg" },
-        { heading: "남자 소변기 막힘", image: "images/case-urinal.jpg" },
-        { heading: "공동배관 오수관 막힘", image: "images/case-pipe.jpg" },
-        { heading: "아파트, 빌라 욕조 배수구 막힘", image: "images/case-bath.jpg" },
-        { heading: "세면대 벽배관 배수구 막힘", image: "images/case-basin.jpg" }
+        { heading: "베란다 세탁실 배수구 막힘", image: "images/case-veranda.webp" },
+        { heading: "화장실 배수구 막힘", image: "images/case-toilet.webp" },
+        { heading: "샤워실 긴트렌치 배수구막힘", image: "images/case-shower.webp" },
+        { heading: "남자 소변기 막힘", image: "images/case-urinal.webp" },
+        { heading: "공동배관 오수관 막힘", image: "images/case-pipe.webp" },
+        { heading: "아파트, 빌라 욕조 배수구 막힘", image: "images/case-bath.webp" },
+        { heading: "세면대 벽배관 배수구 막힘", image: "images/case-basin.webp" }
       ] },
       { slug: "winter-thaw", label: "겨울철 하수구 해빙", sections: [
         { heading: "겨울철 배수구 얼었을때 해빙 (2층 필로티 구조 세탁실, 베란다, 화장실, 싱크대연결 배관)",
@@ -853,13 +855,13 @@ window.SITE = {
       ] },
       { slug: "pilotis-freeze-cases", label: "2층필로티 세탁실 베란다 화장실 언배관 시공사례", sections: [
         { intro: "365일 상황 발생시 빠른 출동 서비스로 현장 불편함을 최소화 해 드립니다." },
-        { heading: "세탁실 얼음으로 막힘 역류", image: "images/ice-laundry.jpg" },
-        { heading: "3층 베란다 얼음 해빙", image: "images/ice-veranda3.jpg" },
-        { heading: "필로티 2층 세탁실 얼음", image: "images/ice-pilotis2.jpg" },
-        { heading: "외풍으로 베란다 얼음", image: "images/ice-wind.jpg" },
-        { heading: "세탁실 2층 얼음 역류", image: "images/ice-laundry2.jpg" },
-        { heading: "필로티 3층 세탁실 얼음", image: "images/ice-pilotis3.jpg" },
-        { heading: "연구소 사무실 얼음 막힘", image: "images/ice-lab.jpg" }
+        { heading: "세탁실 얼음으로 막힘 역류", image: "images/ice-laundry.webp" },
+        { heading: "3층 베란다 얼음 해빙", image: "images/ice-veranda3.webp" },
+        { heading: "필로티 2층 세탁실 얼음", image: "images/ice-pilotis2.webp" },
+        { heading: "외풍으로 베란다 얼음", image: "images/ice-wind.webp" },
+        { heading: "세탁실 2층 얼음 역류", image: "images/ice-laundry2.webp" },
+        { heading: "필로티 3층 세탁실 얼음", image: "images/ice-pilotis3.webp" },
+        { heading: "연구소 사무실 얼음 막힘", image: "images/ice-lab.webp" }
       ] }
     ]
   },
@@ -1169,6 +1171,8 @@ window.SITE = {
     ],
     // 금액·보장기간이 들어간 답변 아래에 자동으로 붙는 안내 문구 (특정 항목만 끄려면 해당 intent 에 disclaimer: false)
     disclaimer: "※ 안내해 드린 금액과 보장기간은 기본 기준이며, 현장 상황에 따라 전문가 판단과 협의가 별도로 필요할 수 있습니다.",
+    // AI 답변(선택): 키워드로 답하지 못한 질문만 이 주소로 보내 답을 받습니다. 비우면 사용 안 함. 설정: tools/ai-worker/README.md
+    aiEndpoint: "",
     fallback: "질문을 정확히 이해하지 못했어요. 😥\n아래 항목을 눌러 보시거나, 전화·카카오톡으로 문의해 주시면 자세히 안내해 드립니다.",
     estimate: {
       // 가정집 기준 대략 금액. max 는 "이하" 평수 상한(숫자), 마지막 항목은 평당 계산.
@@ -1284,15 +1288,15 @@ window.SITE = {
   services: [
     { icon: "🐾", tag: "방역", name: "홈로취케어", image: "images/svc-pest.jpg", blog: "https://blog.naver.com/giberga1",
       items: ["바퀴벌레·개미·모기 등 해충 방제", "가정·상가·사무실 정기 방역", "배수구 해충 유입 차단 관리"] },
-    { icon: "🔧", tag: "배관", name: "헬로하수구", image: "images/svc-pipe.jpg", blog: "https://blog.naver.com/hellodrain_number1",
+    { icon: "🔧", tag: "배관", name: "헬로하수구", image: "images/svc-pipe.webp", blog: "https://blog.naver.com/hellodrain_number1",
       items: ["하수구·배수구 막힘 뚫음", "배관 누수·역류 원인 점검", "주방·욕실·베란다 배관 정비"] }
   ],
 
   why: [
-    { icon: "👤", image: "images/why-visit.jpg", title: "전화 통화 상담", text: "상담부터 마무리까지 전문가가 책임집니다." },
-    { icon: "💬", image: "images/why-explain.jpg", title: "작업 전 설명", text: "원인과 작업 범위, 비용을 먼저 말씀드립니다." },
-    { icon: "🔁", image: "images/why-cause.jpg", title: "원인부터 차단", text: "겉만 치우지 않고 재발 경로를 함께 잡습니다." },
-    { icon: "📞", image: "images/why-after.jpg", title: "사후 상담", text: "작업 후 문제가 생기면 다시 연락 주세요." }
+    { icon: "👤", image: "images/why-visit.webp", title: "전화 통화 상담", text: "상담부터 마무리까지 전문가가 책임집니다." },
+    { icon: "💬", image: "images/why-explain.webp", title: "작업 전 설명", text: "원인과 작업 범위, 비용을 먼저 말씀드립니다." },
+    { icon: "🔁", image: "images/why-cause.webp", title: "원인부터 차단", text: "겉만 치우지 않고 재발 경로를 함께 잡습니다." },
+    { icon: "📞", image: "images/why-after.webp", title: "사후 상담", text: "작업 후 문제가 생기면 다시 연락 주세요." }
   ],
 
   // 하수구 냄새차단 전용 페이지(smell/). 트랩 장점·설치 안내는 서비스단가표 > 하수구트랩 문구를 그대로 가져옵니다.
@@ -1337,11 +1341,11 @@ window.SITE = {
     { title: "사후 관리", text: "재발 시 상담, 정기 관리 제안" }
   ],
 
-  // 시공 사례: image 에 사진 경로(images/case1.jpg 등)를 넣으면 사진이 표시됩니다. 비우면 예시 이미지.
+  // 시공 사례: image 에 사진 경로(images/case1.webp 등)를 넣으면 사진이 표시됩니다. 비우면 예시 이미지.
   gallery: [
-    { image: "images/case1.jpg", title: "건설현장 연막 소독", area: "예시 지역", tag: "방역", text: "현장 숙소 주변을 연막 소독해 해충 발생 환경을 정리했습니다." },
-    { image: "images/case2.jpg", title: "바퀴벌레 서식처 확인·방제", area: "예시 지역", tag: "방역", text: "유입 경로와 서식처를 확인하고 겔·분무 방제 후 재발 방지 안내를 드렸습니다." },
-    { image: "images/case3.jpg", title: "주방 싱크대 배관 작업", area: "예시 지역", tag: "배관", text: "주방 배수 상태를 점검하고 막힘 원인을 제거했습니다." }
+    { image: "images/case1.webp", title: "건설현장 연막 소독", area: "예시 지역", tag: "방역", text: "현장 숙소 주변을 연막 소독해 해충 발생 환경을 정리했습니다." },
+    { image: "images/case2.webp", title: "바퀴벌레 서식처 확인·방제", area: "예시 지역", tag: "방역", text: "유입 경로와 서식처를 확인하고 겔·분무 방제 후 재발 방지 안내를 드렸습니다." },
+    { image: "images/case3.webp", title: "주방 싱크대 배관 작업", area: "예시 지역", tag: "배관", text: "주방 배수 상태를 점검하고 막힘 원인을 제거했습니다." }
   ],
 
   reviews: [

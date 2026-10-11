@@ -175,7 +175,25 @@
     var hit = findIntent(text);
     if (/견적알아보기|다른견적/.test(q)) { startEstimate(); return; }
     if (hit) handleIntent(hit);
+    else if (/^https:\/\//.test(B.aiEndpoint || "")) aiAsk(text);
     else botSay(rich(B.fallback) + linkHtml([], true), function () { setChips(B.chips); });
+  }
+  // 키워드로 답할 수 없는 질문만 AI 서버(bot.aiEndpoint)에 묻습니다. 실패하면 기존 안내 문구로 돌아갑니다.
+  function aiAsk(text) {
+    var t = add("bot", '<span class="hb-typing"><i></i><i></i><i></i></span>');
+    var done = function (html) { t.innerHTML = html; scroll(); setChips(B.chips); };
+    var fb = function () { done(rich(B.fallback) + linkHtml([], true)); };
+    var ctl = window.AbortController ? new AbortController() : null;
+    var to = setTimeout(function () { if (ctl) ctl.abort(); }, 15000);
+    fetch(B.aiEndpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: text.slice(0, 500) }), signal: ctl ? ctl.signal : undefined })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(function (j) {
+        clearTimeout(to);
+        var a = j && typeof j.answer === "string" ? j.answer.trim() : "";
+        if (!a) return fb();
+        done(rich(a.slice(0, 1200)) + '<div class="hb-disc">AI가 작성한 안내입니다. 정확한 진단과 견적은 전화 ' + esc(PHONE) + ' 로 확인해 주세요.</div>' + linkHtml([], true));
+      })
+      .catch(function () { clearTimeout(to); fb(); });
   }
   function expertBox() {
     return '<div class="hb-expert"><b>⚠ 전문가 상담 필수</b>정확한 진단과 견적은 전문가와 통화 후 안내됩니다.' +

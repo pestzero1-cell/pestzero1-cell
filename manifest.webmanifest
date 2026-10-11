@@ -1,0 +1,25 @@
+{
+  "name": "홈로취케어",
+  "short_name": "홈로취케어",
+  "description": "소독·방역·하수구 막힘 뚫음·냄새차단 전문 홈로취케어. 출장비 0원, 미해결시 0원.",
+  "lang": "ko",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#12408f",
+  "icons": [
+    {
+      "src": "images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

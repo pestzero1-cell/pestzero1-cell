@@ -2,7 +2,7 @@
 title: 싱크대 배수구가 자꾸 막힐 때, 원인부터 확인하세요 (예시)
 date: 2026-01-15
 description: 배관을 뚫어도 다시 막히는 싱크대. 기름 찌꺼기와 구배(기울기) 문제를 확인하는 순서를 정리했습니다.
-image: images/case-toilet.jpg
+image: images/case-toilet.webp
 tags: 하수구막힘, 싱크대, 헬로하수구
 slug: sink-drain-keeps-clogging
 sample: true

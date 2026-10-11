@@ -1,4 +1,4 @@
-# 메인 슬라이드용 깔끔한 일러스트(SVG)를 만들고 images/sl-*.jpg 로 저장합니다. (python3 tools/art/make_slides.py)
+# 메인 슬라이드용 깔끔한 일러스트(SVG)를 만들고 images/sl-*.webp 로 저장합니다. (python3 tools/art/make_slides.py)
 import pathlib, subprocess, sys
 OUT = pathlib.Path(__file__).resolve().parents[2] / "images"
 W, H = 960, 720
@@ -82,3 +82,8 @@ subprocess.check_call(["node", str(tmp / "_r.js")], env={**__import__("os").envi
 (tmp / "_r.js").unlink()
 for n in names: (tmp / (n + ".svg")).unlink()
 print("ok", names)
+from PIL import Image  # 화면 캡처(jpg)를 용량이 작은 webp 로 바꿉니다.
+for _n in names:
+    _p = OUT / (_n + ".jpg")
+    Image.open(_p).convert("RGB").save(OUT / (_n + ".webp"), "WEBP", quality=80, method=6)
+    _p.unlink()

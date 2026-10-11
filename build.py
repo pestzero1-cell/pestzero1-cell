@@ -198,11 +198,12 @@ def head(title, desc, path, depth, og_image=None, extra="", jsonld=None):
 %s%s%s<link rel="alternate" type="application/rss+xml" title="%s 현장일지" href="%sposts/rss.xml">
 <link rel="icon" type="image/png" sizes="32x32" href="%simages/favicon-32.png">
 <link rel="apple-touch-icon" href="%simages/favicon.png">
+<link rel="manifest" href="%smanifest.webmanifest">
 <meta name="theme-color" content="#12408f">
 <link rel="stylesheet" href="%sassets/site.css">
 %s</head>
 """ % (e(title), e(desc), e(canon), e(BRAND), e(title), e(desc), e(canon),
-       ('<meta property="og:image" content="%s">\n' % e(og_img)) if og_img else "", verify, extra, e(BRAND), rel(depth), rel(depth), rel(depth), rel(depth), ld)
+       ('<meta property="og:image" content="%s">\n' % e(og_img)) if og_img else "", verify, extra, e(BRAND), rel(depth), rel(depth), rel(depth), rel(depth), rel(depth), ld)
 
 
 def header_footer(depth, current_key=None):
@@ -228,7 +229,7 @@ def kakao_fab():
 def bot_scripts(depth):
     """정적 페이지에 자동응답 도우미를 붙입니다. (bot.enabled 가 true 일 때만)"""
     r = rel(depth)
-    zoom = '<script src="%szoom.js" defer></script>' % r
+    zoom = '<script src="%szoom.js" defer></script><script src="%spwa.js" defer></script>' % (r, r)
     if not (S.get("bot") or {}).get("enabled", True) or not S.get("bot"):
         return zoom
     return zoom + '<script>window.SITE_BASE="%s";</script><script src="%sassets/bot-data.js"></script><script src="%schatbot.js" defer></script><script src="%scallbar.js" defer></script>' % (r, r, r, r)
@@ -398,7 +399,7 @@ def build_support():
 <main><div class="wrap">%s<h1 style="margin:10px 0 0">고객센터</h1></div>
 <div id="board-root"></div><noscript><div class="wrap"><p>자바스크립트를 켜면 게시판을 볼 수 있습니다. 문의는 전화 %s 로 연락 주세요.</p></div></noscript></main>
 %s
-<script src="../content.js"></script><script src="../board.js"></script>
+<script src="../content.js"></script><script src="../inquiry.js"></script><script src="../board.js"></script>
 </body>
 </html>
 """ % (crumbs([(BRAND, "index.html"), ("고객센터", None)], depth), e(S["phone"]), foot)
@@ -508,7 +509,7 @@ def inject_home():
         verify += '<meta name="naver-site-verification" content="%s">\n' % e(S["naverVerification"])
     if S.get("googleVerification"):
         verify += '<meta name="google-site-verification" content="%s">\n' % e(S["googleVerification"])
-    headseo = ('<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">\n<link rel="apple-touch-icon" href="images/favicon.png">\n<meta name="theme-color" content="#12408f">\n<link rel="canonical" href="%s/">\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="%s">\n<meta property="og:title" content="%s">\n'
+    headseo = ('<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">\n<link rel="apple-touch-icon" href="images/favicon.png">\n<link rel="manifest" href="manifest.webmanifest">\n<meta name="theme-color" content="#12408f">\n<link rel="canonical" href="%s/">\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="%s">\n<meta property="og:title" content="%s">\n'
                '<meta property="og:description" content="%s">\n<meta property="og:url" content="%s/">\n<meta property="og:image" content="%s/%s">\n%s'
                '<link rel="alternate" type="application/rss+xml" title="%s 현장일지" href="posts/rss.xml">\n<script type="application/ld+json">%s</script>\n') % (
         SITE_URL, e(BRAND), e(title), e(desc), SITE_URL, SITE_URL, e(S.get("ogImage", "")), verify, e(BRAND), json.dumps(ld, ensure_ascii=False))
@@ -592,10 +593,58 @@ def build_smell():
     return "smell/"
 
 
+def prerender_home():
+    """홈 화면을 미리 그려 index.html 에 넣습니다(node+playwright 가 있을 때). 없으면 미리 그린 내용을 비워 오래된 내용이 남지 않게 합니다."""
+    import subprocess, os, shutil
+    p = ROOT / "index.html"
+    clear = lambda: p.write_text(re.sub(r"(<!--PRERENDER-START-->)[\s\S]*?(<!--PRERENDER-END-->)", r"\1\2", p.read_text(encoding="utf-8")), encoding="utf-8")
+    if not shutil.which("node"):
+        clear(); print("· node 가 없어 홈 미리그리기를 건너뜁니다(기존처럼 동작)."); return
+    try:
+        root = subprocess.run(["npm", "root", "-g"], capture_output=True, text=True).stdout.strip()
+        env = dict(os.environ, NODE_PATH=os.pathsep.join(x for x in [root, os.environ.get("NODE_PATH", "")] if x))
+        r = subprocess.run(["node", str(ROOT / "tools" / "prerender.js")], capture_output=True, text=True, timeout=90, env=env)
+        if r.returncode != 0:
+            raise RuntimeError((r.stderr or r.stdout).strip()[:200])
+        print("·", r.stdout.strip())
+    except Exception as ex:
+        clear(); print("· 홈 미리그리기를 건너뜁니다:", ex)
+
+
+def build_pwa():
+    """앱 설치용 manifest.webmanifest 와, 캐시 버전이 들어 있는 sw.js 를 만듭니다."""
+    mf = {"name": S.get("pageTitle") or BRAND, "short_name": BRAND, "description": S.get("description", ""), "lang": "ko",
+          "start_url": "./index.html", "scope": "./", "display": "standalone", "background_color": "#ffffff", "theme_color": "#12408f",
+          "icons": [{"src": "images/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+                    {"src": "images/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}]}
+    (ROOT / "manifest.webmanifest").write_text(json.dumps(mf, ensure_ascii=False, indent=2), encoding="utf-8")
+    import hashlib
+    ver = hashlib.md5(((ROOT / "content.js").read_bytes() + (ROOT / "assets" / "site.css").read_bytes())).hexdigest()[:10]
+    sw = """/* build.py 가 만드는 파일입니다. 직접 고치지 마세요. 내용이 바뀌면 버전이 바뀌어 옛 저장본이 지워집니다. */
+const V = "hrc-%s";
+self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("activate", (ev) => {
+  ev.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k.startsWith("hrc-") && k !== V).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
+});
+// 항상 최신을 먼저 받고(인터넷 연결 시), 연결이 안 될 때만 저장본을 보여줍니다.
+self.addEventListener("fetch", (ev) => {
+  const r = ev.request;
+  if (r.method !== "GET" || new URL(r.url).origin !== location.origin) return;
+  ev.respondWith(fetch(r).then((res) => {
+    if (res.ok) { const c = res.clone(); caches.open(V).then((ch) => ch.put(r, c)); }
+    return res;
+  }).catch(() => caches.match(r).then((m) => m || caches.match("./index.html"))));
+});
+""" % ver
+    (ROOT / "sw.js").write_text(sw, encoding="utf-8")
+
+
 # ---------------------------------------------------------------- 실행
 def main():
+    prerender_home()
     inject_home()
     build_css()
+    build_pwa()
     urls = [("", "1.0")]
     for key, sec_title, d, items in SECTIONS:
         for i in range(len(items)):

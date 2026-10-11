@@ -114,7 +114,7 @@
       else if(f==="bwrite"){
         var go=function(img){var arr5=load(st.tab),id=arr5.reduce(function(m,x){return Math.max(m,x.id)},0)+1;
           arr5.push({id:id,title:$("#bw-title").value.trim(),author:$("#bw-name").value.trim(),date:now(),views:0,likes:0,dislikes:0,secret:$("#bw-secret").checked,pw:$("#bw-pw").value,phone:$("#bw-phone").value.trim(),content:$("#bw-content").value.trim(),image:img||"",reply:null,comments:[]});
-          save(st.tab,arr5);st.view="list";st.page=1;st.sort="new";st.q="";st.msg="글이 등록되었습니다.";renderList()};
+          save(st.tab,arr5);st.view="list";st.page=1;st.sort="new";st.q="";st.msg="글이 등록되었습니다.";if(window.HRC_INQUIRY&&window.HRC_INQUIRY.enabled){window.HRC_INQUIRY.send(cfg(st.tab).label,{title:arr5[arr5.length-1].title,name:arr5[arr5.length-1].author,phone:arr5[arr5.length-1].phone,msg:arr5[arr5.length-1].content,svc:cfg(st.tab).label}).catch(function(){})}renderList()};
         var file=$("#bw-img").files[0];if(file)shrink(file,go);else go("");
       }
     });

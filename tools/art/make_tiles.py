@@ -1,4 +1,4 @@
-# 첫 화면 타일용 깔끔한 일러스트(images/ti-*.jpg) 생성. (python3 tools/art/make_tiles.py)
+# 첫 화면 타일용 깔끔한 일러스트(images/ti-*.webp) 생성. (python3 tools/art/make_tiles.py)
 import pathlib, subprocess, os
 OUT = pathlib.Path(__file__).resolve().parents[2] / "images"; HERE = pathlib.Path(__file__).parent
 W, H = 800, 700
@@ -46,3 +46,8 @@ for(const n of %s){await p.goto('file://%s/'+n+'.svg');await p.screenshot({path:
 subprocess.check_call(["node", str(HERE / "_r.js")], env={**os.environ, "NODE_PATH": subprocess.check_output(["npm", "root", "-g"]).decode().strip()})
 (HERE / "_r.js").unlink()
 for n in items: (HERE / (n + ".svg")).unlink()
+from PIL import Image  # 화면 캡처(jpg)를 용량이 작은 webp 로 바꿉니다.
+for _n in list(items):
+    _p = OUT / (_n + ".jpg")
+    Image.open(_p).convert("RGB").save(OUT / (_n + ".webp"), "WEBP", quality=80, method=6)
+    _p.unlink()
