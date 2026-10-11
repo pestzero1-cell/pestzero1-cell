@@ -1,5 +1,5 @@
 /* build.py 가 만드는 파일입니다. 직접 고치지 마세요. 내용이 바뀌면 버전이 바뀌어 옛 저장본이 지워집니다. */
-const V = "hrc-a285fd1175";
+const V = "hrc-e364353e5d";
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (ev) => {
   ev.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k.startsWith("hrc-") && k !== V).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
