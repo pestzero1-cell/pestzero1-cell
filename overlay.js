@@ -19,6 +19,8 @@
     if (has(d.areas)) window.SITE.areas = d.areas;
     if (has(d.notices)) window.SITE.notices = d.notices;
     if (d.banner) window.SITE.banner = d.banner;
+    if (d.social) window.SITE.social = d.social;
+    if (has(d.shorts)) window.SITE.shorts = d.shorts;
   }
   apply(cache);
 
@@ -94,7 +96,7 @@
     var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute("content", t.brand);
   }
   // ---- 홈 구성: 섹션 순서·표시 여부 ----
-  var PICK = { slider: "#slider", hero: ".hero", trust: ".trust", services: "#services", quick: "#quick", why: "#why", guarantee: "#guarantee", gallery: "#gallery", reviews: "#reviews", about: "#about", journal: "#journal", faq: "#faq", contact: "#contact", directory: "#directory" };
+  var PICK = { slider: "#slider", hero: ".hero", trust: ".trust", services: "#services", quick: "#quick", why: "#why", guarantee: "#guarantee", gallery: "#gallery", shorts: "#shorts", reviews: "#reviews", about: "#about", journal: "#journal", faq: "#faq", contact: "#contact", directory: "#directory" };
   function layout(l) {
     var main = document.getElementById("top");
     if (!l || !main || !document.getElementById("app")) return;
@@ -109,7 +111,7 @@
     Object.keys(els).forEach(function (k) { els[k].hidden = (l.hidden || []).indexOf(k) >= 0; });
   }
 
-  function paint(d) { if (!d) return; banner(d.banner); if (has(d.gallery)) paintGallery(cleanG(d.gallery)); theme(d.theme || (window.SITE && window.SITE.theme)); layout(d.layout); }
+  function paint(d) { if (!d) return; banner(d.banner); if (has(d.gallery)) paintGallery(cleanG(d.gallery)); theme(d.theme || (window.SITE && window.SITE.theme)); layout(d.layout); if (window.HRC_SOCIAL) window.HRC_SOCIAL.paint(d.social || (window.SITE && window.SITE.social)); }
   var ready = function (f) { if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", f); else f(); };
   ready(function () {
     paint(cache);

@@ -232,7 +232,7 @@ def bot_scripts(depth):
     zoom = '<script src="%szoom.js" defer></script><script src="%spwa.js" defer></script>' % (r, r)
     if not (S.get("bot") or {}).get("enabled", True) or not S.get("bot"):
         return zoom
-    return zoom + '<script>window.SITE_BASE="%s";</script><script src="%sassets/bot-data.js"></script><script src="%schatbot.js" defer></script><script src="%scallbar.js" defer></script><script src="%soverlay.js" defer></script>' % (r, r, r, r, r)
+    return zoom + '<script>window.SITE_BASE="%s";</script><script src="%sassets/bot-data.js"></script><script src="%schatbot.js" defer></script><script src="%scallbar.js" defer></script><script src="%soverlay.js" defer></script><script src="%ssocial.js" defer></script>' % (r, r, r, r, r, r)
 
 
 def crumbs(items, depth):
@@ -443,7 +443,7 @@ def build_rss():
 
 
 def build_bot_data():
-    data = {"phone": S["phone"], "kakaoUrl": S.get("kakaoUrl", ""), "inquiryEndpoint": S.get("inquiryEndpoint", ""), "bot": S.get("bot")}
+    data = {"phone": S["phone"], "kakaoUrl": S.get("kakaoUrl", ""), "inquiryEndpoint": S.get("inquiryEndpoint", ""), "social": S.get("social") or {}, "bot": S.get("bot")}
     (ROOT / "assets").mkdir(exist_ok=True)
     (ROOT / "assets" / "bot-data.js").write_text("// build.py 가 자동으로 만드는 파일입니다. 직접 고치지 마세요.\nwindow.SITE_BOT=%s;\n" % json.dumps(data, ensure_ascii=False), encoding="utf-8")
 
@@ -698,7 +698,7 @@ def csp_meta():
                 if o not in origins:
                     origins.append(o)
     pol = ("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; "
-           "connect-src 'self' %s; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self'; manifest-src 'self'") % " ".join(origins)
+           "connect-src 'self' %s; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self'; manifest-src 'self'; frame-src https://www.youtube-nocookie.com") % " ".join(origins)
     return ('<meta http-equiv="Content-Security-Policy" content="%s">\n<meta name="referrer" content="strict-origin-when-cross-origin">\n' % pol)
 
 

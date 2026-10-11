@@ -23,6 +23,16 @@ window.SITE = {
   // 푸터에 표시되는 사업자 정보 (주소 등은 실제 값으로 확인해 주세요)
   company: { bizNo: "113-91-16219", mailOrderNo: "2014-서울구로-1298", address: "08233 서울 구로구 개봉동 455-7" },
   phone: "1661-6179",          // 표시용 (하이픈 가능)
+  // SNS·영상. 주소를 넣으면 푸터·문의하기 칸에 링크가 생기고, 숏츠를 넣으면 홈에 "숏츠 영상" 칸이 나타납니다. 비우면 아무것도 보이지 않습니다.
+  // (서버를 연결하면 관리자 화면 > 📺 SNS·영상 에서도 바꿀 수 있습니다)
+  social: {
+    instagram: "",   // 예: "https://www.instagram.com/내계정/"
+    youtube: ""      // 예: "https://www.youtube.com/@내채널"
+  },
+  shorts: [
+    // { id: "유튜브영상ID(11자리)", title: "영상 제목" }   예: https://youtube.com/shorts/AbCdEfGhIjK → id: "AbCdEfGhIjK"
+  ],
+
   // 개인정보처리방침(privacy/) 내용. 실제 운영 전에 꼭 확인하세요(기본 양식).
   privacy: {
     retention: "문의 처리 완료 후 1년",   // 보유 기간 (관리자 화면 > 보안에서 오래된 문의를 지울 수 있습니다)

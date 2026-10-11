@@ -299,6 +299,12 @@ button{font:inherit;border:0;cursor:pointer}
 .note{font-size:.85rem;color:var(--muted)}
 footer{border-top:1px solid var(--line);padding:32px 0 calc(96px + env(safe-area-inset-bottom,0px));color:var(--muted);font-size:.88rem}
 .fab{position:fixed;right:16px;bottom:16px;z-index:20;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.shorts{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 12px;-webkit-overflow-scrolling:touch}
+.short{flex:0 0 min(46vw,200px);aspect-ratio:9/16;border-radius:14px;overflow:hidden;position:relative;border:0;padding:0;background:#000;scroll-snap-align:start;cursor:pointer;color:#fff}
+.short img{width:100%;height:100%;object-fit:cover;display:block;opacity:.92}.short .play{position:absolute;inset:0;margin:auto;width:54px;height:54px;border-radius:50%;background:rgba(0,0,0,.55);display:grid;place-items:center;font-size:1.2rem;padding-left:3px}
+.short b{position:absolute;left:0;right:0;bottom:0;padding:26px 10px 10px;font-size:.85rem;text-align:left;background:linear-gradient(transparent,rgba(0,0,0,.78));word-break:keep-all}.short iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+@media(min-width:900px){.shorts{overflow:visible;flex-wrap:wrap}.short{flex-basis:200px}}
+.ch.insta .ch-ic{background:linear-gradient(45deg,#f9ce34,#ee2a7b 55%,#6228d7)}.ch.yt .ch-ic{background:#f00}
 [hidden]{display:none!important}
 
 /* ---- 정적 페이지 전용 ---- */

@@ -246,8 +246,10 @@ function contentRestore() {
 // 사진·링크 주소 검사: 우리 사이트 안의 사진(images/…)이거나 구글 드라이브에 올린 사진만 허용
 function okImg(u) { u = String(u || ""); return u === "" || /^images\/[A-Za-z0-9_.\-\/가-힣]{1,120}$/.test(u) || /^https:\/\/lh3\.googleusercontent\.com\/d\/[A-Za-z0-9_\-]{10,80}(=w\d{2,4})?$/.test(u); }
 function okLink(u) { u = String(u || ""); return u === "" || (/^(https?:\/\/[^\s<>"']+|\/[^\s<>"']*|[a-z0-9_.\-\/#]+)$/i.test(u) && !/^(javascript|data|vbscript):/i.test(u)); }
+function okIg(u) { u = String(u || ""); return u === "" || /^https:\/\/(www\.)?instagram\.com\/[^\s"'<>]{1,200}$/i.test(u); }
+function okYt(u) { u = String(u || ""); return u === "" || /^https:\/\/(www\.|m\.)?(youtube\.com|youtu\.be)\/[^\s"'<>]{1,200}$/i.test(u); }
 function okColor(c) { return /^#[0-9a-fA-F]{6}$/.test(String(c || "")); }
-var HOME_SECTIONS = ["slider", "hero", "trust", "services", "quick", "why", "guarantee", "gallery", "reviews", "about", "journal", "faq", "contact", "directory"];
+var HOME_SECTIONS = ["slider", "hero", "trust", "services", "quick", "why", "guarantee", "gallery", "shorts", "reviews", "about", "journal", "faq", "contact", "directory"];
 function clean(arr, fields, max) {
   var out = [];
   (Array.isArray(arr) ? arr : []).slice(0, max || 100).forEach(function (x) {
@@ -260,7 +262,7 @@ function clean(arr, fields, max) {
 }
 function publicData() {
   var c = readContent();
-  return { ok: true, version: c.version || 0, reviews: c.reviews || null, gallery: c.gallery || null, areas: c.areas || null, banner: c.banner || null, notices: c.notices || [], theme: c.theme || null, layout: c.layout || null };
+  return { ok: true, version: c.version || 0, reviews: c.reviews || null, gallery: c.gallery || null, areas: c.areas || null, banner: c.banner || null, notices: c.notices || [], theme: c.theme || null, layout: c.layout || null, social: c.social || null, shorts: c.shorts || null };
 }
 function contentSet(p) {
   var lock = LockService.getScriptLock(); lock.waitLock(10000);
@@ -272,6 +274,8 @@ function contentSet(p) {
     if ("banner" in n) c.banner = n.banner && n.banner.text ? { text: cut(n.banner.text, 120), href: okLink(n.banner.href) ? cut(n.banner.href, 300) : "" } : null;
     if ("notices" in n) c.notices = clean(n.notices, ["title", "date", "body"], 100);
     if ("theme" in n) c.theme = n.theme && okColor(n.theme.brand) && okColor(n.theme.accent) ? { brand: n.theme.brand, accent: n.theme.accent } : null;
+    if ("social" in n) { var s = n.social || {}; c.social = { instagram: okIg(s.instagram) ? cut(s.instagram, 250) : "", youtube: okYt(s.youtube) ? cut(s.youtube, 250) : "" }; }
+    if ("shorts" in n) c.shorts = (Array.isArray(n.shorts) ? n.shorts : []).slice(0, 12).filter(function (v) { return v && /^[A-Za-z0-9_-]{11}$/.test(String(v.id || "")); }).map(function (v) { return { id: String(v.id), title: cut(v.title, 60) }; });
     if ("layout" in n) {
       var l = n.layout || {};
       c.layout = { order: (Array.isArray(l.order) ? l.order : []).filter(function (k, i, a) { return HOME_SECTIONS.indexOf(k) >= 0 && a.indexOf(k) === i; }), hidden: (Array.isArray(l.hidden) ? l.hidden : []).filter(function (k) { return HOME_SECTIONS.indexOf(k) >= 0; }) };
