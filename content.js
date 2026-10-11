@@ -51,7 +51,7 @@ window.SITE = {
   blogUrl: "",
   // 카카오톡 채널 1:1 채팅 주소 (카카오톡 채널 관리자센터 > 홍보하기 > 채팅 URL, 예: https://pf.kakao.com/_xxxxxx/chat)
   // 비워두면 실제 버튼은 숨겨지고, 예시 모드(sampleMode)에서만 "주소 입력 필요" 버튼이 보입니다.
-  kakaoUrl: "",
+  kakaoUrl: "https://pf.kakao.com/_uNfrxd/chat",
   kakaoLabel: "카카오톡 상담",
 
   // 상단 메뉴: label=표시 이름, href=이동할 곳(#섹션 또는 주소)
