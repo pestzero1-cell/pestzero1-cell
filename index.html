@@ -397,8 +397,6 @@ footer{border-top:1px solid var(--line);padding:32px 0 calc(96px + env(safe-area
   '<section id="why" class="alt"><div class="wrap"><h2>왜 저희일까요</h2><p class="sub">작은 업체라서 가능한 방식입니다.</p><div class="why">'+
     list(S.why,function(x,i){return '<div class="why-card">'+(x.image?'<img class="why-img" loading="lazy" src="'+e(x.image)+'" alt="'+e(x.title)+'">':'<span class="why-ic">'+(WHY_IC[x.icon]||e(x.icon))+'</span>')+'<div class="why-body"><span class="why-no">POINT 0'+(i+1)+'</span><b>'+e(x.title)+'</b><span class="why-tx">'+e(x.text)+'</span></div></div>'})+'</div></div></section>'+
 
-  '<section id="process"><div class="wrap"><h2>진행 순서</h2><p class="sub">전화 한 통이면 시작됩니다.</p><div class="steps">'+
-    list(S.steps,function(x){return '<div><b>'+e(x.title)+'</b><span>'+e(x.text)+'</span></div>'})+'</div></div></section>'+
 
   ((S.gallery||[]).length?'<section id="gallery" class="alt"><div class="wrap"><h2>시공 사례</h2><p class="sub">실제 현장 기록입니다.</p><div class="grid">'+
     list(S.gallery,function(x){return '<div class="card"><div class="shot">'+(x.image?'<img loading="lazy" src="'+e(x.image)+'" alt="'+e(x.title)+'">':'사진 자리')+'</div><span class="tag">'+e(x.tag)+'</span><h3>'+e(x.title)+'</h3><p class="meta">'+e(x.area)+'</p><p style="color:var(--muted);font-size:.93rem;margin-top:6px">'+e(x.text)+'</p></div>'})+
