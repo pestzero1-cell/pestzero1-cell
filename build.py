@@ -487,6 +487,16 @@ def build_css():
 .smell{padding-bottom:56px}.sm-b{margin:26px 0}.sm-b h2{font-size:1.25rem;color:var(--brand);margin:0 0 10px}.sm-b ul{margin:0;padding-left:1.2em;line-height:1.9}
 .sm-steps{list-style:none;counter-reset:s;margin:0;padding:0;display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
 .sm-steps li{counter-increment:s;background:var(--card);border-left:4px solid var(--accent);border-radius:10px;padding:12px 14px}.sm-steps li::before{content:"0" counter(s);font-weight:800;color:var(--accent);display:block}.sm-steps b{display:block}.sm-steps span{color:var(--muted);font-size:.92rem}
+/* 휴대폰·태블릿: 같은 메뉴 안의 품목 선택(바퀴벌레/개미/쥐…)을 가로로 넘겨 보는 칩 한 줄로 만들고, 스크롤해도 맨 위(메뉴 바로 아래)에 고정 */
+@media(max-width:999px){
+.about{gap:0}.about-side{display:contents}
+.about-side .h2like{padding:16px 20px;font-size:1.2rem;border-radius:10px 10px 0 0}
+.ptabs.side{position:sticky;top:var(--hh,112px);z-index:8;display:flex;flex-wrap:nowrap;overflow-x:auto;gap:8px;padding:9px 10px;background:var(--bg);border:1px solid var(--line);border-top:0;box-shadow:0 8px 12px -10px rgba(10,30,70,.35);scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.ptabs.side::-webkit-scrollbar{display:none}
+.ptabs.side a{flex:none;white-space:nowrap;border:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:.9rem;background:var(--card);min-width:0}
+.ptabs.side a[aria-current]{background:var(--brand);color:var(--on);border-color:var(--brand);font-weight:700}
+.about-main{padding-top:20px}
+}
 .pcard h2{font-size:1.1rem;margin:12px 16px 4px;line-height:1.35}.pcard p{margin:0 16px 8px;color:var(--muted);font-size:.92rem}.pcard .pmeta{margin:0 16px 14px}
 """
     (ROOT / "assets").mkdir(exist_ok=True)

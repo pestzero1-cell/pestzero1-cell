@@ -1,6 +1,14 @@
 /* 모바일 하단 고정 상담 바: 전화 / 도우미 / 카카오(채널 주소가 있을 때만). 휴대폰(너비 700px 이하)에서만 보입니다.
  * 전화번호·카카오 주소는 content.js 값을 씁니다. */
 (function () {
+  // 메뉴 바(상단 고정) 높이를 알려 줘서, 품목 선택 줄이 그 바로 아래에 붙어 있게 하고, 선택된 품목이 보이도록 가로로 이동합니다.
+  var hd = document.querySelector("header");
+  if (hd) {
+    var setH = function () { document.documentElement.style.setProperty("--hh", hd.offsetHeight + "px"); };
+    setH(); window.addEventListener("resize", setH); window.addEventListener("load", setH);
+    var cur = document.querySelector(".ptabs.side a[aria-current]");
+    if (cur && cur.parentNode.scrollWidth > cur.parentNode.clientWidth) cur.parentNode.scrollLeft = Math.max(0, cur.offsetLeft - 16);
+  }
   var S = window.SITE || window.SITE_BOT || {};
   var tel = String(S.phone || "").replace(/[^0-9]/g, "");
   if (!tel) return;
