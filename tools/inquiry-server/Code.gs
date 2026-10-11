@@ -250,6 +250,26 @@ function okIg(u) { u = String(u || ""); return u === "" || /^https:\/\/(www\.)?i
 function okYt(u) { u = String(u || ""); return u === "" || /^https:\/\/(www\.|m\.)?(youtube\.com|youtu\.be)\/[^\s"'<>]{1,200}$/i.test(u); }
 function okColor(c) { return /^#[0-9a-fA-F]{6}$/.test(String(c || "")); }
 var HOME_SECTIONS = ["slider", "hero", "trust", "services", "quick", "why", "guarantee", "gallery", "shorts", "reviews", "about", "journal", "faq", "contact", "directory"];
+var THEMES = ["blue", "navy", "warm"];
+function cleanSlider(s) {
+  var out = [];
+  (Array.isArray(s && s.slides) ? s.slides : []).slice(0, 8).forEach(function (x) {
+    if (!x) return;
+    var imgs = (Array.isArray(x.images) ? x.images : []).slice(0, 3).filter(function (u) { return u && okImg(u); });
+    out.push({ theme: THEMES.indexOf(x.theme) >= 0 ? x.theme : "blue", kicker: cut(x.kicker, 60), title: cut(x.title, 80), sub: cut(x.sub, 100), text: cut(x.text, 300),
+      button: x.button && x.button.label && okLink(x.button.href) && x.button.href ? { label: cut(x.button.label, 40), href: cut(x.button.href, 300) } : null, images: imgs });
+  });
+  return { slides: out };
+}
+function cleanHero(h) {
+  h = h || {};
+  var tiles = (Array.isArray(h.tiles) ? h.tiles : []).slice(0, 8).map(function (t) { t = t || {}; return { label: cut(t.label, 30), image: okImg(t.image) ? cut(t.image, 250) : "" }; });
+  return { badge: cut(h.badge, 40), kicker: cut(h.kicker, 40), deal: cut(h.deal, 60), title: cut(h.title, 40), highlight: cut(h.highlight, 40),
+    bullets: (Array.isArray(h.bullets) ? h.bullets : []).slice(0, 5).map(function (b) { return cut(b, 100); }).filter(String), button1: cut(h.button1, 30), button2: cut(h.button2, 30), tiles: tiles };
+}
+function cleanWhy(a) {
+  return (Array.isArray(a) ? a : []).slice(0, 6).filter(Boolean).map(function (x) { return { title: cut(x.title, 40), text: cut(x.text, 120), image: okImg(x.image) ? cut(x.image, 250) : "" }; });
+}
 function clean(arr, fields, max) {
   var out = [];
   (Array.isArray(arr) ? arr : []).slice(0, max || 100).forEach(function (x) {
@@ -262,7 +282,7 @@ function clean(arr, fields, max) {
 }
 function publicData() {
   var c = readContent();
-  return { ok: true, version: c.version || 0, reviews: c.reviews || null, gallery: c.gallery || null, areas: c.areas || null, banner: c.banner || null, notices: c.notices || [], theme: c.theme || null, layout: c.layout || null, social: c.social || null, shorts: c.shorts || null };
+  return { ok: true, version: c.version || 0, reviews: c.reviews || null, gallery: c.gallery || null, areas: c.areas || null, banner: c.banner || null, notices: c.notices || [], theme: c.theme || null, layout: c.layout || null, social: c.social || null, shorts: c.shorts || null, slider: c.slider || null, hero: c.hero || null, why: c.why || null };
 }
 function contentSet(p) {
   var lock = LockService.getScriptLock(); lock.waitLock(10000);
@@ -276,6 +296,9 @@ function contentSet(p) {
     if ("theme" in n) c.theme = n.theme && okColor(n.theme.brand) && okColor(n.theme.accent) ? { brand: n.theme.brand, accent: n.theme.accent } : null;
     if ("social" in n) { var s = n.social || {}; c.social = { instagram: okIg(s.instagram) ? cut(s.instagram, 250) : "", youtube: okYt(s.youtube) ? cut(s.youtube, 250) : "" }; }
     if ("shorts" in n) c.shorts = (Array.isArray(n.shorts) ? n.shorts : []).slice(0, 12).filter(function (v) { return v && /^[A-Za-z0-9_-]{11}$/.test(String(v.id || "")); }).map(function (v) { return { id: String(v.id), title: cut(v.title, 60) }; });
+    if ("slider" in n) c.slider = n.slider ? cleanSlider(n.slider) : null;
+    if ("hero" in n) c.hero = n.hero ? cleanHero(n.hero) : null;
+    if ("why" in n) c.why = n.why ? cleanWhy(n.why) : null;
     if ("layout" in n) {
       var l = n.layout || {};
       c.layout = { order: (Array.isArray(l.order) ? l.order : []).filter(function (k, i, a) { return HOME_SECTIONS.indexOf(k) >= 0 && a.indexOf(k) === i; }), hidden: (Array.isArray(l.hidden) ? l.hidden : []).filter(function (k) { return HOME_SECTIONS.indexOf(k) >= 0; }) };

@@ -108,12 +108,12 @@ function start(){$("#login").hidden=true;$("#app").hidden=false;
   Promise.all([call("inq_list"),call("rev_pending"),call("content_get")]).then(function(r){
     state.inq=r[0].items||[];state.pending=r[1].items||[];state.content=r[2].content||{};state.hasBackup=!!r[2].hasBackup;state.loaded=true;idle();render()}).catch(function(e){if(e.message!=="auth")fail()})}
 
-var TABS=[["inq","📩 문의"],["rev","⭐ 후기"],["gal","🖼 현장갤러리"],["set","📢 공지·설정"],["sns","📺 SNS·영상"],["dsg","🎨 디자인"],["sec","🔑 보안"]];
+var TABS=[["inq","📩 문의"],["home","🏠 메인 화면"],["rev","⭐ 후기"],["gal","🖼 현장갤러리"],["set","📢 공지·설정"],["sns","📺 SNS·영상"],["dsg","🎨 디자인"],["sec","🔑 보안"]];
 function render(){
   var nNew=state.inq.filter(function(x){return x.status==="신규"}).length;
   $("#tabs").innerHTML=TABS.map(function(t){var b=t[0]==="inq"&&nNew?'<span class="badge">'+nNew+'</span>':t[0]==="rev"&&state.pending.length?'<span class="badge">'+state.pending.length+'</span>':"";
     return '<button type="button" role="tab" data-t="'+t[0]+'" aria-selected="'+(state.tab===t[0])+'">'+t[1]+b+'</button>'}).join("");
-  var v=$("#view");({inq:vInq,rev:vRev,gal:vGal,set:vSet,sns:vSns,dsg:vDsg,sec:vSec})[state.tab](v)}
+  var v=$("#view");({inq:vInq,home:vHome,rev:vRev,gal:vGal,set:vSet,sns:vSns,dsg:vDsg,sec:vSec})[state.tab](v)}
 $("#tabs").addEventListener("click",function(ev){var b=ev.target.closest("button[data-t]");if(!b)return;state.tab=b.dataset.t;render()});
 
 /* ---------- 문의 ---------- */
@@ -144,6 +144,51 @@ function inqCard(x){var tel=String(x.phone||"").replace(/[^0-9+]/g,"");
 function cur(key){var c=state.content;return c&&c[key]!=null?c[key]:(S[key]||[])}
 function saveContent(part,done){return call("content_set",{content:part}).then(function(j){if(j.ok){state.content=Object.assign(state.content||{},part);state.hasBackup=true;flash("홈페이지에 반영했습니다. (방문자 화면에는 잠시 후 적용됩니다)");done&&done()}else flash("저장하지 못했습니다.","err")}).catch(function(e){if(e.message!=="auth")fail()})}
 function seedNote(key){return state.content&&state.content[key]!=null?"":'<p class="muted">아직 저장한 적이 없어 현재 홈페이지 기본(예시) 내용이 표시됩니다. 수정 후 저장하면 이 내용이 홈페이지에 적용됩니다.</p>'}
+
+/* ---------- 메인 화면: 슬라이드·첫 소개·왜 저희일까요 (사진·글) ---------- */
+function vHome(v){var c=state.content||{},D=function(o){return JSON.parse(JSON.stringify(o))};
+  var hm={s:D((c.slider&&c.slider.slides&&c.slider.slides.length?c.slider.slides:(S.slider&&S.slider.slides)||[])),h:Object.assign(D(S.hero||{}),D(c.hero||{})),w:D(c.why&&c.why.length?c.why:(S.why||[]))};
+  hm.h.tiles=hm.h.tiles||[];hm.h.bullets=hm.h.bullets||[];state.hm=hm;
+  var saved=!!(c.slider||c.hero||c.why);
+  var src=function(p){if(window.HRC_DEMO_IMG)p=window.HRC_DEMO_IMG(p);return !p?"":/^(https?:|data:)/.test(p)?p:"../"+p};
+  var ib=function(path,url,label){return '<div class="ib" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">'+(url?'<img class="thumb" alt="" src="'+esc(src(url))+'">':'<div class="thumb muted" style="display:grid;place-items:center;font-size:.8rem">'+esc(label||"사진 없음")+'</div>')+'<div><label class="btn ghost sm" style="display:inline-block;text-align:center">사진 선택<input type="file" accept="image/*" data-up="'+path+'" hidden></label> '+(url?'<button type="button" class="btn ghost sm" data-clr="'+path+'">지우기</button>':'')+'</div></div>'};
+  var inp=function(path,label,val,ph,ml){return '<label>'+label+'<input data-f="'+path+'" value="'+esc(val)+'"'+(ml?' maxlength="'+ml+'"':'')+(ph?' placeholder="'+esc(ph)+'"':'')+'></label>'};
+  var get=function(path){var p=path.split("."),o=state.hm;for(var i=0;i<p.length;i++){if(o==null)return undefined;o=o[p[i]]}return o};
+  var set=function(path,val){var p=path.split("."),o=state.hm;for(var i=0;i<p.length-1;i++){if(o[p[i]]==null)o[p[i]]=/^\d+$/.test(p[i+1])?[]:{};o=o[p[i]]}o[p[p.length-1]]=val};
+  v.innerHTML='<p class="muted" style="margin:8px 0">홈페이지 맨 위 슬라이드와 첫 소개 영역의 사진·글을 바꿉니다. 사진은 올리면 자동으로 줄여서 저장됩니다. 글자가 박힌 사진은 피하고, 고객 얼굴·번호판·집 주소가 보이지 않는 사진을 쓰세요.</p>'+(saved?'':'<p class="muted">아직 저장한 적이 없어 현재 홈페이지 기본 내용이 표시됩니다.</p>')+
+    '<div class="card"><h2 style="margin:0 0 4px">메인 슬라이드</h2><p class="muted" style="margin:0 0 8px">자동으로 넘어가는 맨 위 화면입니다. 사진은 슬라이드당 최대 3장(1장이면 크게, 2~3장이면 나란히)입니다.</p><div id="sl"></div><button class="btn ghost sm" id="sladd" type="button">+ 슬라이드 추가 (최대 8개)</button></div>'+
+    '<div class="card"><h2 style="margin:0 0 4px">첫 소개 영역 (하수구 막힘 케어)</h2><div class="row c2" id="hf"></div><label style="margin-top:8px">소개 문구 (한 줄에 하나, 최대 5줄)<textarea data-f="h.bullets">'+esc(hm.h.bullets.join("\n"))+'</textarea></label><h3 style="margin:16px 0 6px;font-size:1rem">사진 칸 (최대 8개)</h3><p class="muted" style="margin:0 0 6px">실제 시공 사진으로 바꿀 수 있습니다. 칸마다 아래 이름표가 사진 위에 표시됩니다.</p><div id="tl"></div><button class="btn ghost sm" id="tladd" type="button">+ 사진 칸 추가</button></div>'+
+    '<div class="card"><h2 style="margin:0 0 4px">왜 저희일까요 (사진 카드)</h2><p class="muted" style="margin:0 0 8px">직원 사진을 실제 사진으로 바꾸세요. 사람이 나오는 사진은 본인 동의를 받은 사진만 쓰세요.</p><div id="wl"></div></div>'+
+    '<div class="sticky-save"><button class="btn" id="hsave" type="button">홈페이지에 반영</button><button class="btn ghost" id="hreset" type="button">기본 내용으로 되돌리기</button></div>';
+  var HF=[["h.badge","상단 이름표","",40],["h.kicker","작은 제목","",40],["h.deal","강조 문구","",60],["h.title","큰 제목","",40],["h.highlight","큰 제목 둘째 줄","",40],["h.button1","첫째 버튼","",30],["h.button2","둘째 버튼","",30]];
+  var draw=function(){
+    $("#sl").innerHTML=state.hm.s.map(function(s,i){var b=s.button||{label:"",href:""},im=s.images||[];
+      return '<div class="card" data-sl="'+i+'" style="margin:10px 0"><div class="inq-h"><b>슬라이드 '+(i+1)+'</b><span class="sp" style="flex:1"></span><label style="display:flex;gap:6px;align-items:center;margin:0">색 <select data-f="s.'+i+'.theme" style="width:auto;min-height:36px;margin:0"><option value="blue"'+(s.theme==="blue"?" selected":"")+'>파랑</option><option value="navy"'+(s.theme==="navy"?" selected":"")+'>남색</option><option value="warm"'+(s.theme==="warm"?" selected":"")+'>따뜻한 색</option></select></label><button class="btn ghost sm" data-smv="-1:'+i+'" type="button">↑</button><button class="btn ghost sm" data-smv="1:'+i+'" type="button">↓</button><button class="btn warn sm" data-srm="'+i+'" type="button">삭제</button></div>'+
+        '<div class="row c2" style="margin-top:8px">'+inp("s."+i+".kicker","작은 이름표",s.kicker,"",60)+inp("s."+i+".title","큰 제목",s.title,"",80)+inp("s."+i+".sub","강조 문구",s.sub,"",100)+inp("s."+i+".button.label","버튼 글자",b.label,"예: 서비스단가표 보기",40)+'</div>'+
+        '<label style="margin-top:8px">설명<textarea data-f="s.'+i+'.text" maxlength="300">'+esc(s.text)+'</textarea></label><div class="row c2" style="margin-top:8px">'+inp("s."+i+".button.href","버튼이 이동할 주소",b.href,"예: price/roach/ 또는 https://…",300)+'</div>'+
+        '<div class="row c3" style="margin-top:10px">'+[0,1,2].map(function(k){return '<div><label>사진 '+(k+1)+'</label>'+ib("s."+i+".images."+k,im[k]||"","없음")+'</div>'}).join("")+'</div></div>'}).join("");
+    $("#hf").innerHTML=HF.map(function(f){return inp(f[0],f[1],get(f[0])||"",f[2],f[3])}).join("");
+    $("#tl").innerHTML=state.hm.h.tiles.map(function(t,i){return '<div class="card" data-tl="'+i+'" style="margin:8px 0;padding:12px"><div class="gi">'+ib("h.tiles."+i+".image",t.image,"사진 없음")+'<div>'+inp("h.tiles."+i+".label","이름표(사진 아래 글자)",t.label,"",30)+'<div class="act"><button class="btn ghost sm" data-tmv="-1:'+i+'" type="button">↑</button><button class="btn ghost sm" data-tmv="1:'+i+'" type="button">↓</button><button class="btn warn sm" data-trm="'+i+'" type="button">삭제</button></div></div></div></div>'}).join("")||'<p class="muted">사진 칸이 없습니다.</p>';
+    $("#wl").innerHTML=state.hm.w.map(function(w,i){return '<div class="card" style="margin:8px 0;padding:12px"><div class="gi">'+ib("w."+i+".image",w.image,"사진 없음")+'<div class="row c2">'+inp("w."+i+".title","제목",w.title,"",40)+inp("w."+i+".text","설명",w.text,"",120)+'</div></div></div>'}).join("")};
+  var sync=function(){$$("[data-f]",v).forEach(function(f){var p=f.dataset.f;if(p==="h.bullets")state.hm.h.bullets=f.value.split(/\n/).map(function(x){return x.trim()}).filter(Boolean).slice(0,5);else set(p,f.value)})};
+  draw();
+  v.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;var d=b.dataset;
+    if(d.srm!=null){sync();state.hm.s.splice(+d.srm,1);draw()}
+    else if(d.smv){sync();var p=d.smv.split(":"),i=+p[1],j=i+ +p[0];if(j>=0&&j<state.hm.s.length){state.hm.s.splice(j,0,state.hm.s.splice(i,1)[0]);draw()}}
+    else if(d.trm!=null){sync();state.hm.h.tiles.splice(+d.trm,1);draw()}
+    else if(d.tmv){sync();var q=d.tmv.split(":"),k=+q[1],m=k+ +q[0];if(m>=0&&m<state.hm.h.tiles.length){state.hm.h.tiles.splice(m,0,state.hm.h.tiles.splice(k,1)[0]);draw()}}
+    else if(d.clr){sync();set(d.clr,"");draw()}});
+  $("#sladd").onclick=function(){sync();if(state.hm.s.length>=8)return flash("슬라이드는 8개까지 만들 수 있습니다.","err");state.hm.s.push({theme:"blue",kicker:"",title:"새 슬라이드",sub:"",text:"",button:{label:"",href:""},images:[]});draw()};
+  $("#tladd").onclick=function(){sync();if(state.hm.h.tiles.length>=8)return flash("사진 칸은 8개까지입니다.","err");state.hm.h.tiles.push({label:"",image:""});draw()};
+  v.addEventListener("change",function(e){var f=e.target.closest("input[type=file]");if(!f||!f.files[0])return;sync();var path=f.dataset.up;flash("사진을 올리는 중입니다…");
+    shrink(f.files[0],1280).then(function(o){return call("upload",{mime:o.mime,b64:o.b64})}).then(function(j){if(j.ok){set(path,j.url);draw();flash("사진을 올렸습니다. 아래 ‘홈페이지에 반영’을 눌러야 적용됩니다.")}else flash(j.error==="size"?"사진이 너무 큽니다.":"사진을 올리지 못했습니다.","err")}).catch(function(err){if(err.message!=="auth")flash("사진을 올리지 못했습니다. "+(err.message||""),"err")})});
+  $("#hsave").onclick=function(){sync();var h=state.hm;
+    var slides=h.s.map(function(s){var b=s.button&&s.button.label&&s.button.href?{label:s.button.label,href:s.button.href}:null;return{theme:s.theme,kicker:s.kicker,title:s.title,sub:s.sub,text:s.text,button:b,images:(s.images||[]).filter(Boolean)}}).filter(function(s){return s.title.trim()});
+    if(!slides.length)return flash("슬라이드가 하나 이상 있어야 합니다.","err");
+    if(!h.h.title.trim())return flash("첫 소개의 큰 제목을 입력해 주세요.","err");
+    saveContent({slider:{slides:slides},hero:{badge:h.h.badge,kicker:h.h.kicker,deal:h.h.deal,title:h.h.title,highlight:h.h.highlight,bullets:h.h.bullets,button1:h.h.button1,button2:h.h.button2,tiles:h.h.tiles.filter(function(t){return t.label.trim()||t.image})},why:h.w.filter(function(w){return w.title.trim()})},function(){render()})};
+  $("#hreset").onclick=function(){if(!confirm("슬라이드·첫 소개·왜 저희일까요를 처음 기본 내용으로 되돌립니다. (올려 둔 사진 파일은 지워지지 않습니다)"))return;saveContent({slider:null,hero:null,why:null},function(){render()})};
+}
 
 /* ---------- 후기 ---------- */
 function vRev(v){var rv=JSON.parse(JSON.stringify(cur("reviews")));state.rev=rv;
