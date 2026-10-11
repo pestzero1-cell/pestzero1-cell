@@ -74,7 +74,6 @@ a{color:var(--brand)}
 <script>
 (function(){
 "use strict";
-if(window.top!==window.self){document.documentElement.innerHTML="";return}
 var S=window.SITE||{},API=/^https:\/\//.test(S.inquiryEndpoint||"")||/^http:\/\/localhost[:/]/.test(S.inquiryEndpoint||"")?S.inquiryEndpoint:"";
 var $=function(s,r){return(r||document).querySelector(s)},$$=function(s,r){return[].slice.call((r||document).querySelectorAll(s))};
 var esc=function(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};

@@ -747,6 +747,7 @@ def build_admin_demo():
            'img-src \'self\' data: blob: https:; connect-src \'self\'; object-src \'none\'; base-uri \'self\'; form-action \'self\'">')
     h = re.sub(r"<!--CSP-->[\s\S]*?<!--/CSP-->", lambda m: "<!--CSP-->\n" + csp + "\n<!--/CSP-->", h, count=1)
     h = h.replace("<title>관리자 | 홈로취케어</title>", "<title>관리자 체험 | 홈로취케어</title>", 1)
+    h = h.replace('if(window.top!==window.self){document.documentElement.innerHTML="";return}\n', "", 1)   # 체험 화면은 미리보기 창(iframe) 안에서도 열려야 함
     h = h.replace('<script src="../content.js"></script>', '<script src="../content.js"></script>\n<script src="demo-data.js"></script>\n<script src="demo-gas.js"></script>', 1)
     (ROOT / "admin" / "demo.html").write_text(h, encoding="utf-8")
 
