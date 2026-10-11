@@ -26,7 +26,7 @@ window.SITE = {
   // SNS·영상. 주소를 넣으면 푸터·문의하기 칸에 링크가 생기고, 숏츠를 넣으면 홈에 "숏츠 영상" 칸이 나타납니다. 비우면 아무것도 보이지 않습니다.
   // (서버를 연결하면 관리자 화면 > 📺 SNS·영상 에서도 바꿀 수 있습니다)
   social: {
-    instagram: "",   // 예: "https://www.instagram.com/내계정/"
+    instagram: "https://www.instagram.com/homeroachcare/",   // 예: "https://www.instagram.com/내계정/"
     youtube: "https://www.youtube.com/@%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD1"      // 예: "https://www.youtube.com/@내채널"
   },
   shorts: [
