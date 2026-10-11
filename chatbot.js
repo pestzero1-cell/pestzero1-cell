@@ -16,11 +16,17 @@
   var norm = function (t) { return String(t || "").toLowerCase().replace(/[\s.,!?~·\-_/()]+/g, ""); };
   var money = function (n) { return n.toLocaleString("ko-KR") + "원"; };
 
+  var MASCOT = B.mascot ? (/^https?:\/\//.test(B.mascot) ? B.mascot : BASE + B.mascot) : "";
+  var avImg = MASCOT ? '<img class="hb-av" src="' + esc(MASCOT) + '" alt="" width="46" height="46">' : "";
   var css = '' +
     '.hb-launch{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;align-items:center;gap:8px;background:var(--brand,#12408f);color:var(--on,#fff);border:0;border-radius:999px;padding:12px 18px;font:700 .92rem/1 inherit;font-family:inherit;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.28)}' +
     '.hb-launch:hover{filter:brightness(1.08)}.hb-launch svg{width:20px;height:20px}' +
     '.hb-panel{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;width:min(380px,calc(100vw - 32px));height:min(560px,calc(100dvh - 32px));display:none;flex-direction:column;background:var(--bg,#fff);color:var(--fg,#1c2b25);border:1px solid var(--line,#dfe8e3);border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.28);overflow:hidden;font-family:inherit}' +
     '.hb-panel.open{display:flex}.hb-launch.hide{display:none}' +
+    '.hb-av{width:36px;height:36px;border-radius:50%;object-fit:cover;background:#fff;border:2px solid #fff;flex:none;display:block}' +
+    '.hb-launch.has-av{padding:5px 18px 5px 5px}.hb-head .hb-av{width:46px;height:46px}' +
+    '.hb-hero{display:flex;flex-direction:column;align-items:center;gap:4px;padding:2px 0 4px}.hb-hero img{width:92px;height:92px;border-radius:50%;object-fit:cover;border:3px solid var(--bg,#fff);box-shadow:0 4px 14px rgba(10,30,70,.22);background:#fff}.hb-hero span{font-size:.78rem;color:var(--muted,#5d6b64)}' +
+    '.hb-panel.has-av .hb-m.bot{position:relative;margin-left:36px}.hb-panel.has-av .hb-m.bot::before{content:"";position:absolute;left:-36px;top:0;width:28px;height:28px;border-radius:50%;background:var(--hb-av) center/cover #fff;border:1px solid var(--line,#dfe8e3)}' +
     '.hb-head{background:var(--brand,#12408f);color:var(--on,#fff);padding:14px 16px;display:flex;align-items:center;gap:10px}' +
     '.hb-head b{font-size:1rem;flex:1}.hb-head small{display:block;font-weight:400;opacity:.85;font-size:.76rem}' +
     '.hb-x{background:transparent;border:0;color:inherit;font-size:1.4rem;line-height:1;cursor:pointer;padding:4px 8px;border-radius:6px}.hb-x:hover{background:rgba(255,255,255,.18)}' +
@@ -49,8 +55,8 @@
 
   var root = document.createElement("div");
   root.innerHTML =
-    '<button type="button" class="hb-launch" aria-haspopup="dialog" aria-controls="hb-panel"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 4v-4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg><span>' + esc(B.launcher || "무엇이든 물어보세요") + '</span></button>' +
-    '<div class="hb-panel" id="hb-panel" role="dialog" aria-label="' + esc(B.name) + '"><div class="hb-head"><b>' + esc(B.name) + '<small>자동응답 · 정확한 금액은 상담으로 확정</small></b><button type="button" class="hb-x" aria-label="닫기">×</button></div>' +
+    '<button type="button" class="hb-launch' + (MASCOT ? ' has-av' : '') + '" aria-haspopup="dialog" aria-controls="hb-panel">' + (MASCOT ? avImg : '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 4v-4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>') + '<span>' + esc(B.launcher || "무엇이든 물어보세요") + '</span></button>' +
+    '<div class="hb-panel" id="hb-panel" role="dialog" aria-label="' + esc(B.name) + '"><div class="hb-head">' + avImg + '<b>' + esc(B.name) + '<small>자동응답 · 정확한 금액은 상담으로 확정</small></b><button type="button" class="hb-x" aria-label="닫기">×</button></div>' +
     '<div class="hb-log" role="log" aria-live="polite"></div><div class="hb-chips"></div>' +
     '<form class="hb-form"><input type="text" maxlength="100" placeholder="궁금한 내용을 입력하세요" aria-label="질문 입력" autocomplete="off"><button type="submit">보내기</button></form>' +
     '<p class="hb-note">AI가 아닌 정해진 안내 문구로 답하는 자동응답입니다.</p></div>';
@@ -58,6 +64,14 @@
 
   var launch = root.querySelector(".hb-launch"), panel = root.querySelector(".hb-panel"), log = root.querySelector(".hb-log"),
     chips = root.querySelector(".hb-chips"), form = root.querySelector(".hb-form"), input = form.querySelector("input");
+  if (MASCOT) {
+    panel.classList.add("has-av");
+    panel.style.setProperty("--hb-av", "url(\"" + MASCOT.replace(/"/g, "") + "\")");
+    var hero = document.createElement("div");
+    hero.className = "hb-hero";
+    hero.innerHTML = '<img src="' + esc(MASCOT) + '" alt="홈로취케어 마스코트 말티즈" width="92" height="92"><span>홈로취케어 마스코트 · 말티즈</span>';
+    log.appendChild(hero);
+  }
   var state = { step: "idle", svc: null, started: false };
 
   function scroll() { log.scrollTop = log.scrollHeight; }

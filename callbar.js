@@ -29,7 +29,7 @@
   bt.addEventListener("click", function () { var l = document.querySelector(".hb-launch"); if (l) l.click(); });
   // 도우미(chatbot.js)가 늦게 뜨므로 잠시 기다렸다가 버튼을 보여줍니다.
   var n = 0, t = setInterval(function () {
-    if (document.querySelector(".hb-launch")) { bt.hidden = false; clearInterval(t); }
+    var l = document.querySelector(".hb-launch"); if (l) { var im = l.querySelector("img"); if (im) bt.innerHTML = '<img src="' + im.src + '" alt="" width="30" height="30" style="width:30px;height:30px;border-radius:50%;object-fit:cover;background:#fff;border:2px solid #fff"> 도우미'; bt.hidden = false; clearInterval(t); }
     else if (++n > 40) clearInterval(t);
   }, 250);
 })();
