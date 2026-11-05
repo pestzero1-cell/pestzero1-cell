@@ -4,7 +4,7 @@
  *  - 후기·갤러리·공지·서비스지역·디자인(색상)·홈 구성을 관리자 화면에서 고치면 홈페이지에 반영
  * 비밀번호는 코드에 적지 않고 [프로젝트 설정 → 스크립트 속성]의 ADMIN_PASSWORD 에 넣습니다.
  */
-var NOTIFY_EMAIL = "";            // 새 문의·보안 경고를 메일로 받을 본인 메일 주소(권장). 비우면 시트에만 쌓입니다.
+var NOTIFY_EMAIL = "pestzero1@gmail.com";            // 새 문의·보안 경고를 메일로 받을 본인 메일 주소(권장). 비우면 시트에만 쌓입니다.
 var SHEET_INQ = "문의", SHEET_REV = "후기대기", SHEET_CONTENT = "콘텐츠", SHEET_LOG = "기록", SHEET_BLOCK = "차단목록", SHEET_PRICE = "가격표";
 var MAX = 2000;                   // 글자 수 제한
 var SESSION_SEC = 6 * 3600;       // 로그인 유지 시간(6시간)
