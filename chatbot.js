@@ -10,6 +10,12 @@
   var TEL = "tel:" + String(PHONE).replace(/[^0-9+]/g, "");
   var KAKAO = /^https?:\/\//.test(S.kakaoUrl || "") ? S.kakaoUrl : "";
   var PREVIEW = !!window.SITE_PREVIEW;
+  // 답변 안의 {{phone}} {{address}} {{owner}} {{bizNo}} {{mailOrderNo}} {{brand}} {{hours}} 를 홈페이지 값으로 바꿉니다.
+  function fill(t) {
+    var c = S.company || {};
+    var map = { phone: PHONE, address: c.address || "", owner: S.owner || "", bizNo: c.bizNo || "", mailOrderNo: c.mailOrderNo || "", brand: S.brand || "홈로취케어", hours: S.hours || "정확한 상담 가능 시간은 전화로 확인해 주세요." };
+    return String(t || "").replace(/\{\{(\w+)\}\}/g, function (m, k) { return map[k] != null ? map[k] : ""; });
+  }
 
   var esc = function (t) { return String(t == null ? "" : t).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   var rich = function (t) { return esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\n/g, "<br>"); };
@@ -160,6 +166,7 @@
     });
     return bestScore >= 2 ? best : null;
   }
+  window.HRC_BOT = { find: function (t) { var i = findIntent(t); return i ? i.id : null; } };   // 시험용
   function handle(text) {
     text = text.trim();
     if (!text) return;
@@ -221,14 +228,14 @@
   function pestChips() { return (B.pests || []).map(function (p) { return p.label; }); }
   function handleIntent(it) {
     if (it.id === "pests" && B.pests) {
-      botSay(rich(it.answer), function () { setChips(pestChips(), true); });
+      botSay(rich(fill(it.answer)), function () { setChips(pestChips(), true); });
       return;
     }
     if (it.expert) {
-      botSay(rich(it.answer) + linkHtml(it.links, false) + expertBox(), function () { setChips(B.chips.filter(function (c) { return norm(c) !== norm(it.label); }).slice(0, 5)); });
+      botSay(rich(fill(it.answer)) + linkHtml(it.links, false) + expertBox(), function () { setChips(B.chips.filter(function (c) { return norm(c) !== norm(it.label); }).slice(0, 5)); });
       return;
     }
-    botSay(rich(it.answer) + discHtml(it) + linkHtml(it.links, it.id === "apply" || it.id === "urgent" || it.id === "area" || it.id === "drain" || it.id === "bedbug" || it.id === "smell" || it.id === "hello"), function () {
+    botSay(rich(fill(it.answer)) + discHtml(it) + linkHtml(it.links, it.contact || it.id === "apply" || it.id === "urgent" || it.id === "area" || it.id === "drain" || it.id === "bedbug" || it.id === "smell" || it.id === "hello"), function () {
       setChips(B.chips.filter(function (c) { return norm(c) !== norm(it.label); }).slice(0, 5));
     });
   }

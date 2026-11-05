@@ -457,7 +457,7 @@ def build_rss():
 
 
 def build_bot_data():
-    data = {"phone": S["phone"], "kakaoUrl": S.get("kakaoUrl", ""), "inquiryEndpoint": S.get("inquiryEndpoint", ""), "social": S.get("social") or {}, "bot": S.get("bot")}
+    data = {"phone": S["phone"], "kakaoUrl": S.get("kakaoUrl", ""), "inquiryEndpoint": S.get("inquiryEndpoint", ""), "social": S.get("social") or {}, "company": S.get("company") or {}, "owner": S.get("owner", ""), "brand": S.get("brand", ""), "hours": S.get("hours", ""), "bot": S.get("bot")}
     (ROOT / "assets").mkdir(exist_ok=True)
     (ROOT / "assets" / "bot-data.js").write_text("// build.py 가 자동으로 만드는 파일입니다. 직접 고치지 마세요.\nwindow.SITE_BOT=%s;\n" % json.dumps(data, ensure_ascii=False), encoding="utf-8")
 
