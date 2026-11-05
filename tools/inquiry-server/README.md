@@ -25,6 +25,7 @@
 6. 나온 **웹 앱 URL**(`https://script.google.com/macros/s/…/exec`)을 복사한다.
 7. `content.js` 의 `inquiryEndpoint: ""` 안에 그 URL을 넣고 `python3 build.py` 를 실행한 뒤 사이트를 다시 올린다.
 8. `/admin/` 에 접속해 비밀번호로 로그인한다.
+9. **(강력 추천)** 2단계 인증 켜기: Apps Script 에서 `setupTotp` 함수를 실행 → 실행 로그의 키를 인증 앱에 등록 (`보안-안내.md` 참고).
 
 ## 알아둘 점
 - **보안:** 자세한 내용과 사장님이 꼭 하실 일은 `보안-안내.md` 를 읽어 주세요(구글 계정 2단계 인증 필수 권장).

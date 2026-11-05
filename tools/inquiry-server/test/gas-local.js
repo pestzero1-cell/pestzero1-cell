@@ -21,12 +21,17 @@ function mkSheet(name) {
   return sh;
 }
 const ctx = {
+  Logger: { log: (m) => console.log("[Logger]", m) },
   console, Date, JSON, Math, Number, String, Array, Error, Object,
   SpreadsheetApp: { getActive: () => ({ getSheetByName: (n) => sheets[n] || null, insertSheet: (n) => (sheets[n] = mkSheet(n)) }) },
-  PropertiesService: { getScriptProperties: () => ({ getProperty: (k) => props[k] ?? null, setProperty: (k, v) => { props[k] = v; } }) },
+  PropertiesService: { getScriptProperties: () => ({ getProperty: (k) => props[k] ?? null, setProperty: (k, v) => { props[k] = v; }, deleteProperty: (k) => { delete props[k]; } }) },
   CacheService: { getScriptCache: () => ({ get: (k) => (cacheData[k] && cacheData[k].exp > Date.now() ? cacheData[k].v : null), put: (k, v, s) => { cacheData[k] = { v, exp: Date.now() + s * 1000 }; }, remove: (k) => { delete cacheData[k]; } }) },
   LockService: { getScriptLock: () => ({ waitLock() {}, releaseLock() {} }) },
-  Utilities: { sleep: (ms) => { sleepLog.push(ms); }, getUuid: () => crypto.randomUUID(), base64Decode: (s) => Array.from(Buffer.from(s, "base64")), newBlob: (bytes, mime, name) => ({ bytes, mime, name }) },
+  Utilities: { DigestAlgorithm: { SHA_256: "sha256" }, Charset: { UTF_8: "utf8" },
+    computeDigest: (alg, s) => Array.from(crypto.createHash("sha256").update(typeof s === "string" ? Buffer.from(s, "utf8") : Buffer.from(s)).digest()).map((b) => (b > 127 ? b - 256 : b)),
+    computeHmacSha256Signature: (v, k) => Array.from(crypto.createHmac("sha256", typeof k === "string" ? Buffer.from(k, "utf8") : Buffer.from(k.map((b) => b & 255))).update(typeof v === "string" ? Buffer.from(v, "utf8") : Buffer.from(v.map((b) => b & 255))).digest()).map((b) => (b > 127 ? b - 256 : b)),
+    computeHmacSha1Signature: (v, k) => Array.from(crypto.createHmac("sha1", Buffer.from(k.map((b) => b & 255))).update(Buffer.from(v.map((b) => b & 255))).digest()).map((b) => (b > 127 ? b - 256 : b)),
+    sleep: (ms) => { sleepLog.push(ms); }, getUuid: () => crypto.randomUUID(), base64Decode: (s) => Array.from(Buffer.from(s, "base64")), newBlob: (bytes, mime, name) => ({ bytes, mime, name }) },
   MailApp: { sendEmail: (...a) => { sentMail.push(a); } },
   ContentService: { MimeType: { JSON: "json" }, createTextOutput: (t) => ({ t, setMimeType() { return this; } }) },
   DriveApp: { Access: { ANYONE_WITH_LINK: 1 }, Permission: { VIEW: 1 },
@@ -42,6 +47,7 @@ http.createServer((req, res) => {
   let body = "";
   req.on("data", (d) => (body += d));
   req.on("end", () => {
+    if (u.pathname === "/_run") { const fn = u.searchParams.get("fn"); res.writeHead(200, cors); return res.end(JSON.stringify({ r: ctx[fn] ? ctx[fn]() : null, props })); }
     if (u.pathname === "/_debug") { res.writeHead(200, cors); return res.end(JSON.stringify({ sleepLog, sentMail, props: Object.keys(props), logs: (sheets["기록"] ? sheets["기록"]._rows : []) })); }
     const out = req.method === "POST" ? ctx.doPost({ postData: { contents: body } }) : ctx.doGet({ parameter: Object.fromEntries(u.searchParams) });
     res.writeHead(200, { ...cors, "Content-Type": "text/plain;charset=utf-8" });

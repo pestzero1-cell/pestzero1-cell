@@ -12,12 +12,16 @@ var STATUSES = ["신규", "상담중", "완료", "보류"];
 var INQ_HEAD = ["접수번호", "접수시각", "종류", "서비스", "성함", "연락처", "내용", "페이지", "상태", "메모", "처리시각"];
 var REV_HEAD = ["번호", "접수시각", "성함", "연락처", "별점", "내용", "상태"];
 var LOG_HEAD = ["시각", "구분", "내용"];
+var POW_BITS = 15;                // 스팸 방지 퀴즈 난이도(접수 1건당 휴대폰에서 약 0.3~1초). 올리면 스팸 비용이 커집니다.
+var TICKET_MIN_MS = 2500, TICKET_MAX_MS = 2 * 3600 * 1000;   // 접수 표는 발급 2.5초 후~2시간 안에 한 번만 사용 가능
 var MAX_ROWS = 20000;             // 시트가 이 이상 쌓이면 새 접수를 막습니다(폭주 방지)
-var LIMITS = { inq: [40, 600], rev: [10, 600] };   // [최대 건수, 기준 시간(초)] — 이 시간 안에 이 건수를 넘으면 접수 거절
+var LIMITS = { inq: [40, 600], rev: [10, 600], tk: [200, 600] };   // [최대 건수, 기준 시간(초)] — 이 시간 안에 이 건수를 넘으면 접수 거절
 
 function doGet(e) {
   var a = e && e.parameter && e.parameter.action;
   if (a === "public") return json(publicData());
+  if (a === "ticket") return json(newTicket());
+  if (a === "info") return json(info());
   return text("홈로취케어 서버 작동 중");
 }
 
@@ -29,6 +33,8 @@ function doPost(e) {
     var act = p.action || (p.type ? "inquiry" : "");
     switch (act) {
       case "public": return json(publicData());
+      case "ticket": return json(newTicket());
+      case "info": return json(info());
       case "inquiry": return json(addInquiry(p));
       case "review_submit": return json(addReview(p));
       case "login": return json(login(p));
@@ -79,6 +85,77 @@ function allow(kind) {
 }
 function audit(kind, note) { try { sheet(SHEET_LOG, LOG_HEAD).appendRow([new Date(), kind, cell(note, 300)]); } catch (e) {} }
 
+// ---------- 스팸 방지: 접수 표(서명) + 간단한 계산 퀴즈 ----------
+// 접수하려면 ① 서버가 발급한 표(서명됨)를 먼저 받고 ② 휴대폰·PC가 짧은 계산 퀴즈를 풀어야 합니다. 표는 한 번만, 발급 2.5초 후부터 쓸 수 있습니다.
+// 사람에게는 눈에 띄지 않지만, 자동 프로그램이 대량으로 보내려면 건마다 시간과 계산이 듭니다.
+function secret() {
+  var p = PropertiesService.getScriptProperties(), s = p.getProperty("TICKET_SECRET");
+  if (!s) { s = Utilities.getUuid() + Utilities.getUuid(); p.setProperty("TICKET_SECRET", s); }
+  return s;
+}
+function hexOf(bytes) { var o = ""; for (var i = 0; i < bytes.length; i++) o += ("0" + (bytes[i] & 255).toString(16)).slice(-2); return o; }
+function sha256hex(s) { return hexOf(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, s, Utilities.Charset.UTF_8)); }
+function ticketSig(t) { return hexOf(Utilities.computeHmacSha256Signature(String(t), secret())); }
+function newTicket() {
+  if (!allow("tk")) return { ok: false, error: "busy" };
+  var t = Date.now();
+  return { ok: true, t: t, sig: ticketSig(t), bits: POW_BITS };
+}
+function zeroBits(h) { var n = 0; for (var i = 0; i < h.length; i++) { var v = parseInt(h.charAt(i), 16); if (v === 0) { n += 4; continue; } n += v < 2 ? 3 : v < 4 ? 2 : v < 8 ? 1 : 0; break; } return n; }
+function checkTicket(tk) {
+  tk = tk || {};
+  var t = Number(tk.t), age = Date.now() - t;
+  if (!(age >= TICKET_MIN_MS && age <= TICKET_MAX_MS)) return false;
+  if (String(tk.sig || "") !== ticketSig(t)) return false;
+  var c = CacheService.getScriptCache();
+  if (c.get("u_" + tk.sig)) return false;                                  // 한 번 쓴 표는 다시 못 씀
+  if (zeroBits(sha256hex(t + ":" + tk.sig + ":" + String(tk.n == null ? "" : tk.n))) < POW_BITS) return false;
+  c.put("u_" + tk.sig, "1", 7200);
+  return true;
+}
+
+// ---------- 관리자 2단계 인증(선택): 구글 OTP 같은 인증 앱의 6자리 코드 ----------
+function b32dec(s) {
+  var al = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567", bits = "", out = [];
+  s = String(s || "").replace(/[\s=]/g, "").toUpperCase();
+  for (var i = 0; i < s.length; i++) { var x = al.indexOf(s.charAt(i)); if (x >= 0) bits += ("00000" + x.toString(2)).slice(-5); }
+  for (var j = 0; j + 8 <= bits.length; j += 8) { var b = parseInt(bits.substr(j, 8), 2); out.push(b > 127 ? b - 256 : b); }
+  return out;
+}
+function totpAt(secretB32, counter) {
+  var sg = function (b) { return b > 127 ? b - 256 : b; };
+  var msg = [0, 0, 0, 0, sg((counter >>> 24) & 255), sg((counter >>> 16) & 255), sg((counter >>> 8) & 255), sg(counter & 255)];
+  var sig = Utilities.computeHmacSha1Signature(msg, b32dec(secretB32));
+  var off = sig[19] & 15;
+  var bin = ((sig[off] & 127) << 24) | ((sig[off + 1] & 255) << 16) | ((sig[off + 2] & 255) << 8) | (sig[off + 3] & 255);
+  return ("000000" + (bin % 1000000)).slice(-6);
+}
+function checkTotp(code) {
+  var s = PropertiesService.getScriptProperties().getProperty("TOTP_SECRET");
+  if (!s) return true;                                                     // 설정 전에는 비밀번호만
+  code = String(code || "").replace(/\s/g, "");
+  if (!/^\d{6}$/.test(code)) return false;
+  var step = Math.floor(Date.now() / 30000), c = CacheService.getScriptCache();
+  for (var d = -1; d <= 1; d++) {
+    if (totpAt(s, step + d) === code) {
+      if (c.get("tu_" + (step + d) + code)) return false;                  // 같은 코드 재사용 금지
+      c.put("tu_" + (step + d) + code, "1", 180);
+      return true;
+    }
+  }
+  return false;
+}
+function info() { return { ok: true, totp: !!PropertiesService.getScriptProperties().getProperty("TOTP_SECRET") }; }
+// Apps Script 편집기에서 직접 한 번 실행하세요: 2단계 인증 켜기. (실행 후 [실행 로그]에 나오는 키를 인증 앱에 등록)
+function setupTotp() {
+  var h = (Utilities.getUuid() + Utilities.getUuid()).replace(/-/g, "").slice(0, 40), al = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567", bits = "", s = "";
+  for (var i = 0; i < h.length; i += 2) bits += ("00000000" + parseInt(h.substr(i, 2), 16).toString(2)).slice(-8);
+  for (var j = 0; j + 5 <= bits.length; j += 5) s += al.charAt(parseInt(bits.substr(j, 5), 2));
+  PropertiesService.getScriptProperties().setProperty("TOTP_SECRET", s);
+  Logger.log("2단계 인증이 켜졌습니다.\n인증 앱(구글 OTP, Microsoft Authenticator 등)에서 [키 직접 입력]으로 아래 키를 등록하세요.\n키: " + s + "\n이 키는 다른 사람에게 보여주지 마세요. 등록 후 이 로그는 닫으세요.");
+}
+function disableTotp() { PropertiesService.getScriptProperties().deleteProperty("TOTP_SECRET"); Logger.log("2단계 인증을 껐습니다."); }
+
 // ---------- 로그인 ----------
 // 틀릴 때마다 응답을 늦추고(무차별 대입 방지), 5회 이상 틀리면 메일로 알립니다. 정상 사용자는 잠기지 않습니다.
 function login(p) {
@@ -86,7 +163,7 @@ function login(p) {
   var fails = Number(cache.get("fails") || 0);
   var pw = props.getProperty("ADMIN_PASSWORD");
   if (!pw) return { ok: false, error: "no_password" };
-  if (!p.password || String(p.password) !== pw) {
+  if (!p.password || String(p.password) !== pw || !checkTotp(p.code)) {
     cache.put("fails", String(fails + 1), 900);
     Utilities.sleep(fails >= 4 ? 4000 : 1500);
     if (fails + 1 === 5 && !cache.get("alerted")) { cache.put("alerted", "1", 3600); mail("[홈페이지] 관리자 로그인 실패가 반복되고 있습니다", "최근 15분간 로그인 실패가 5회 이상 있었습니다. 본인이 아니라면 ADMIN_PASSWORD 를 바꾸세요."); }
@@ -114,14 +191,17 @@ function passwordChange(p) {
 }
 
 // ---------- 문의 ----------
-function addInquiry(p) {
+function addInquiry(p, skipTicket) {
   var d = p.data || {};
   if (d.website) return { ok: true };                                    // 숨은 칸이 채워져 있으면 자동 스팸 → 조용히 무시
-  if (!d.consent) return { ok: false, error: "consent" };               // 개인정보 수집·이용 동의 없으면 접수하지 않음
+  if (!d.consent) return { ok: false, error: "consent" };
+  if (!skipTicket && !checkTicket(p.tk)) return { ok: false, error: "ticket" };               // 개인정보 수집·이용 동의 없으면 접수하지 않음
   var msg = cut(d.msg || d.content), phone = cut(d.phone, 40);
   if (!msg.trim() && !phone.trim()) return { ok: false, error: "empty" };
   var c = CacheService.getScriptCache(), dk = "d_" + hash(phone + "|" + msg);
   if (c.get(dk)) return { ok: true };                                    // 같은 내용을 연달아 보내면 한 번만
+  var pk = "p_" + hash(phone.replace(/\D/g, "")), pn = Number(c.get(pk) || 0);
+  if (phone.replace(/\D/g, "").length >= 7) { if (pn >= 5) return { ok: false, error: "busy" }; c.put(pk, String(pn + 1), 3600); }   // 같은 번호로 1시간에 5건까지
   if (!allow("inq")) return { ok: false, error: "busy" };
   var sh = sheet(SHEET_INQ, INQ_HEAD);
   if (sh.getLastRow() > MAX_ROWS) return { ok: false, error: "full" };
@@ -177,10 +257,11 @@ function inqPurge(p) {
 }
 
 // ---------- 후기 (고객 제출 → 사장님 승인 → 홈페이지 게시) ----------
-function addReview(p) {
+function addReview(p, skipTicket) {
   var d = p.data || p;
   if (d.website) return { ok: true };
   if (!d.consent) return { ok: false, error: "consent" };
+  if (!skipTicket && !checkTicket(p.tk || d.tk)) return { ok: false, error: "ticket" };
   var text = cut(d.text, 600).trim(), name = cut(d.name, 20).trim();
   if (!text || !name) return { ok: false, error: "empty" };
   var c = CacheService.getScriptCache(), dk = "d_" + hash(name + "|" + text);

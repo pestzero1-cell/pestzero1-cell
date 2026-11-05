@@ -752,12 +752,41 @@ def build_admin_demo():
     (ROOT / "admin" / "demo.html").write_text(h, encoding="utf-8")
 
 
+def csp_script_hashes(h):
+    """페이지 안에 직접 쓴 스크립트의 해시 목록(CSP 용). src 가 있는 파일·JSON-LD 는 제외."""
+    import hashlib, base64
+    out = []
+    for m in re.finditer(r"<script(?P<a>[^>]*)>(?P<b>.*?)</script>", h, re.S):
+        a = m.group("a")
+        if re.search(r"\bsrc\s*=", a) or re.search(r"type\s*=\s*[\"']application/ld\+json", a):
+            continue
+        tok = "'sha256-%s'" % base64.b64encode(hashlib.sha256(m.group("b").encode("utf-8")).digest()).decode()
+        if tok not in out:
+            out.append(tok)
+    return out
+
+
+def apply_csp_hashes():
+    """'unsafe-inline' 을 없애고, 우리가 쓴 스크립트의 해시만 실행을 허용합니다. 누군가 페이지에 스크립트를 몰래 끼워 넣어도 실행되지 않습니다."""
+    for p in ROOT.rglob("*.html"):
+        rel = p.relative_to(ROOT)
+        if rel.parts[0] in ("tools", ".git", "node_modules") or str(rel) == "admin/demo.html":
+            continue
+        h = p.read_text(encoding="utf-8")
+        if "Content-Security-Policy" not in h:
+            continue
+        new = "script-src 'self' " + " ".join(csp_script_hashes(h)) if csp_script_hashes(h) else "script-src 'self'"
+        h2 = re.sub(r"script-src 'self'(?: 'unsafe-inline'| 'sha256-[A-Za-z0-9+/=]+')*", lambda m: new, h, count=1)
+        if h2 != h:
+            p.write_text(h2, encoding="utf-8")
+
+
 # ---------------------------------------------------------------- 실행
 def main():
-    prerender_home()
     inject_admin_csp()
     build_admin_demo()
     inject_home()
+    prerender_home()
     build_css()
     build_pwa()
     build_headers()
@@ -782,6 +811,7 @@ def main():
         "<url><loc>%s/%s</loc><lastmod>%s</lastmod><priority>%s</priority></url>\n" % (SITE_URL, u, TODAY, pr) for u, pr in urls)
     (ROOT / "sitemap.xml").write_text(sm, encoding="utf-8")
     (ROOT / "robots.txt").write_text("User-agent: *\nAllow: /\nDisallow: /tools/\nDisallow: /admin/\n\nSitemap: %s/sitemap.xml\n" % SITE_URL, encoding="utf-8")
+    apply_csp_hashes()
     print("완료: 페이지 %d개, 글 %d개, sitemap.xml · robots.txt · posts/rss.xml 생성" % (len(urls), len(posts)))
 
 

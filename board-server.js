@@ -38,8 +38,8 @@
       }
     }
     function send(btn, fn, okMsg) {
-      btn.disabled = true;
-      fn().then(function () { st.msg = okMsg; st.err = false; view(); }).catch(function () { st.msg = "전송에 실패했습니다. 전화 " + S.phone + " 로 문의해 주세요."; st.err = true; view(); }).then(function () { btn.disabled = false; });
+      btn.disabled = true; var old = btn.textContent; btn.textContent = "보내는 중…";
+      fn().then(function () { st.msg = okMsg; st.err = false; view(); }).catch(function (er) { st.msg = (er && er.message === "busy" ? "지금 접수가 많아 잠시 후 다시 시도해 주세요. 급하시면 " : "전송에 실패했습니다. ") + "전화 " + S.phone + " 로 문의해 주세요."; st.err = true; view(); }).then(function () { btn.disabled = false; btn.textContent = old; });
     }
     root.addEventListener("click", function (ev) {
       var t = ev.target.closest("[data-b]"); if (t) { st.tab = t.getAttribute("data-b"); st.open = -1; draw(); return; }

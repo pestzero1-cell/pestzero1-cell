@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <!--CSP-->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self'; manifest-src 'self'; frame-src https://www.youtube-nocookie.com">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-BceaLiU9Uj7sd0j91DE9MeGrBeWJWSE3Xr9Cg6PXzGw='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self'; manifest-src 'self'; frame-src https://www.youtube-nocookie.com">
 <meta name="referrer" content="no-referrer">
 <!--/CSP-->
 <title>관리자 | 홈로취케어</title>
@@ -55,6 +55,7 @@ a{color:var(--brand)}
     <h1 style="margin:0 0 4px;font-size:1.3rem">관리자 로그인</h1>
     <p class="muted" style="margin:0 0 12px">홈로취케어 홈페이지 관리</p>
     <form id="lf"><label>비밀번호<input type="password" id="pw" autocomplete="current-password" required></label>
+    <label id="codeRow" hidden style="margin-top:10px">인증 코드 (인증 앱의 6자리)<input id="code" inputmode="numeric" pattern="[0-9 ]*" maxlength="7" autocomplete="one-time-code"></label>
     <div id="lmsg"></div><button class="btn" style="width:100%;margin-top:10px" type="submit">로그인</button></form>
     <p class="muted" id="noapi" hidden style="margin-top:12px">서버가 아직 연결되지 않았습니다. <code>content.js</code> 의 <code>inquiryEndpoint</code> 에 주소를 넣어 주세요. (tools/inquiry-server/README.md)</p>
   </div>
@@ -91,12 +92,12 @@ function flash(t,kind){var m=$("#msg");m.innerHTML='<div class="msg '+(kind||"ok
 function fail(){flash("서버와 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.","err")}
 
 /* ---------- 로그인 ---------- */
-function showLogin(msg){$("#app").hidden=true;$("#login").hidden=false;$("#noapi").hidden=!!API;$("#lmsg").innerHTML=msg?'<div class="msg err">'+esc(msg)+'</div>':"";$("#pw").value=""}
+function showLogin(msg){$("#app").hidden=true;$("#login").hidden=false;$("#noapi").hidden=!!API;$("#lmsg").innerHTML=msg?'<div class="msg err">'+esc(msg)+'</div>':"";$("#pw").value="";$("#code").value=""}
 function logoutUI(msg){token=null;try{sessionStorage.removeItem("hrc_admin")}catch(e){}state.loaded=false;showLogin(msg)}
 $("#lf").addEventListener("submit",function(ev){ev.preventDefault();if(!API)return;var b=ev.target.querySelector("button");b.disabled=true;
-  call("login",{password:$("#pw").value}).then(function(j){b.disabled=false;
+  call("login",{password:$("#pw").value,code:$("#code").value}).then(function(j){b.disabled=false;
     if(j.ok){token=j.token;try{sessionStorage.setItem("hrc_admin",token)}catch(e){}start()}
-    else showLogin(j.error==="locked"?"비밀번호를 여러 번 틀려 10분간 잠겼습니다.":j.error==="no_password"?"서버에 관리자 비밀번호(ADMIN_PASSWORD)가 설정되지 않았습니다.":"비밀번호가 맞지 않습니다.")}).catch(function(){b.disabled=false;showLogin("서버와 연결하지 못했습니다.")})});
+    else showLogin(j.error==="locked"?"비밀번호를 여러 번 틀려 10분간 잠겼습니다.":j.error==="no_password"?"서버에 관리자 비밀번호(ADMIN_PASSWORD)가 설정되지 않았습니다.":"비밀번호 또는 인증 코드가 맞지 않습니다.")}).catch(function(){b.disabled=false;showLogin("서버와 연결하지 못했습니다.")})});
 $("#logout").addEventListener("click",function(){call("logout").catch(function(){});logoutUI("")});
 
 /* ---------- 자리를 비우면 자동 로그아웃(30분) ---------- */
@@ -306,6 +307,7 @@ function vSec(v){v.innerHTML='<div class="card"><h2 style="margin:0 0 8px">비�
       ;$("#lmsg").innerHTML='<div class="msg ok">비밀번호를 바꿨습니다. 새 비밀번호로 다시 로그인해 주세요.</div>'}else flash(j.error==="bad_password"?"현재 비밀번호가 맞지 않습니다.":"새 비밀번호는 12자 이상이어야 합니다.","err")}).catch(function(e){if(e.message!=="auth")fail()})})}
 
 /* ---------- 진입 ---------- */
+if(API)fetch(API+(API.indexOf("?")<0?"?":"&")+"action=info",{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(j&&j.totp)$("#codeRow").hidden=false}).catch(function(){});
 if(!API)showLogin();else if(token)start();else showLogin();
 })();
 </script>

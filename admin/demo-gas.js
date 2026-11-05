@@ -29,7 +29,8 @@
   function cacheLoad() { try { return JSON.parse(sessionStorage.getItem(cacheKey) || "{}"); } catch (e) { return {}; } }
   var services = {
     SpreadsheetApp: { getActive: function () { return { getSheetByName: function (n) { return db.sheets[n] ? sheetObj(n) : null; }, insertSheet: function (n) { db.sheets[n] = []; save(); return sheetObj(n); } }; } },
-    PropertiesService: { getScriptProperties: function () { return { getProperty: function (k) { var v = db.props[k]; return v == null ? null : v; }, setProperty: function (k, v) { db.props[k] = v; save(); } }; } },
+    PropertiesService: { getScriptProperties: function () { return { getProperty: function (k) { var v = db.props[k]; return v == null ? null : v; }, setProperty: function (k, v) { db.props[k] = v; save(); }, deleteProperty: function (k) { delete db.props[k]; save(); } }; } },
+    Logger: { log: function () {} },
     CacheService: { getScriptCache: function () { return {
       get: function (k) { var c = cacheLoad(), e = c[k]; return e && e.exp > Date.now() ? e.v : null; },
       put: function (k, v, sec) { var c = cacheLoad(); c[k] = { v: v, exp: Date.now() + sec * 1000 }; try { sessionStorage.setItem(cacheKey, JSON.stringify(c)); } catch (e) {} },
@@ -52,8 +53,8 @@
       createFolder: function () { return {}; } }
   };
   var names = Object.keys(services);
-  var gas = new Function(names.join(","), window.HRC_GAS_SRC + "\n;return {doGet:doGet,doPost:doPost};").apply(null, names.map(function (n) { return services[n]; }));
-  function post(o) { gas.doPost({ postData: { contents: JSON.stringify(o) } }); }
+  var gas = new Function(names.join(","), window.HRC_GAS_SRC + "\n;return {doGet:doGet,doPost:doPost,addInquiry:addInquiry,addReview:addReview};").apply(null, names.map(function (n) { return services[n]; }));
+  function post(o) { if (o.action === "review_submit") gas.addReview(o, true); else gas.addInquiry(o, true); }   // 체험용 샘플은 스팸 방지 표 없이 바로 넣습니다.
   if (fresh) { // 처음 열면 보기용 샘플을 넣어 둡니다.
     [["문의", { svc: "방역 (홈로취케어)", name: "김민수", phone: "010-1234-5678", msg: "구로구 빌라인데 주방에서 바퀴벌레가 계속 나와요. 이번 주 방문 가능한 날짜 알려주세요.", consent: 1 }],
      ["문의", { svc: "배관·하수구 (헬로하수구)", name: "이영희", phone: "010-2222-3333", msg: "싱크대 물이 잘 안 내려가요. 비용이 궁금합니다.", consent: 1 }],
