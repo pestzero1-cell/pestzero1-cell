@@ -109,12 +109,12 @@ function start(){$("#login").hidden=true;$("#app").hidden=false;
   Promise.all([call("inq_list"),call("rev_pending"),call("content_get")]).then(function(r){
     state.inq=r[0].items||[];state.pending=r[1].items||[];state.content=r[2].content||{};state.hasBackup=!!r[2].hasBackup;state.loaded=true;idle();render()}).catch(function(e){if(e.message!=="auth")fail()})}
 
-var TABS=[["inq","📩 문의"],["home","🏠 메인 화면"],["rev","⭐ 후기"],["gal","🖼 현장갤러리"],["set","📢 공지·설정"],["sns","📺 SNS·영상"],["dsg","🎨 디자인"],["sec","🔑 보안"]];
+var TABS=[["inq","📩 문의"],["home","🏠 메인 화면"],["info","📝 기본 정보"],["rev","⭐ 후기"],["gal","🖼 현장갤러리"],["set","📢 공지·설정"],["sns","📺 SNS·영상"],["dsg","🎨 디자인"],["sec","🔑 보안"]];
 function render(){
   var nNew=state.inq.filter(function(x){return x.status==="신규"}).length;
   $("#tabs").innerHTML=TABS.map(function(t){var b=t[0]==="inq"&&nNew?'<span class="badge">'+nNew+'</span>':t[0]==="rev"&&state.pending.length?'<span class="badge">'+state.pending.length+'</span>':"";
     return '<button type="button" role="tab" data-t="'+t[0]+'" aria-selected="'+(state.tab===t[0])+'">'+t[1]+b+'</button>'}).join("");
-  var v=$("#view");({inq:vInq,home:vHome,rev:vRev,gal:vGal,set:vSet,sns:vSns,dsg:vDsg,sec:vSec})[state.tab](v)}
+  var v=$("#view");({inq:vInq,home:vHome,info:vInfo,rev:vRev,gal:vGal,set:vSet,sns:vSns,dsg:vDsg,sec:vSec})[state.tab](v)}
 $("#tabs").addEventListener("click",function(ev){var b=ev.target.closest("button[data-t]");if(!b)return;state.tab=b.dataset.t;render()});
 
 /* ---------- 문의 ---------- */
@@ -193,6 +193,39 @@ function vHome(v){var c=state.content||{},D=function(o){return JSON.parse(JSON.s
     if(!h.h.title.trim())return flash("첫 소개의 큰 제목을 입력해 주세요.","err");
     saveContent({slider:{slides:slides},hero:{badge:h.h.badge,kicker:h.h.kicker,deal:h.h.deal,title:h.h.title,highlight:h.h.highlight,bullets:h.h.bullets,button1:h.h.button1,button2:h.h.button2,tiles:h.h.tiles.filter(function(t){return t.label.trim()||t.image})},why:h.w.filter(function(w){return w.title.trim()})},function(){render()})};
   $("#hreset").onclick=function(){if(!confirm("슬라이드·첫 소개·왜 저희일까요를 처음 기본 내용으로 되돌립니다. (올려 둔 사진 파일은 지워지지 않습니다)"))return;saveContent({slider:null,hero:null,why:null},function(){render()})};
+}
+
+/* ---------- 기본 정보: 신뢰 띠 · 서비스 소개 · 자주 묻는 질문 · 상담시간 ---------- */
+function vInfo(v){var c=state.content||{},D=function(o){return JSON.parse(JSON.stringify(o))};
+  var m={t:D(c.trust&&c.trust.length?c.trust:(S.trust||[])),s:D(c.services&&c.services.length?c.services:(S.services||[])),f:D(c.faq&&c.faq.length?c.faq:(S.faq||[])),h:c.hours!=null?c.hours:(S.hours||"")};state.mi=m;
+  var src=function(p){if(window.HRC_DEMO_IMG)p=window.HRC_DEMO_IMG(p);return !p?"":/^(https?:|data:)/.test(p)?p:"../"+p};
+  var inp=function(path,label,val,ml,ph){return '<label>'+label+'<input data-f="'+path+'" value="'+esc(val)+'"'+(ml?' maxlength="'+ml+'"':'')+(ph?' placeholder="'+esc(ph)+'"':'')+'></label>'};
+  var get=function(p){var a=p.split("."),o=state.mi;for(var i=0;i<a.length;i++){if(o==null)return;o=o[a[i]]}return o};
+  var set=function(p,val){var a=p.split("."),o=state.mi;for(var i=0;i<a.length-1;i++)o=o[a[i]];o[a[a.length-1]]=val};
+  v.innerHTML='<div class="card"><h2 style="margin:0 0 4px">홈 맨 위 신뢰 띠 (최대 6개)</h2><p class="muted" style="margin:0 0 8px">첫 화면 아래에 한 줄로 보이는 핵심 문구입니다. 근거 없는 수치는 넣지 마세요.</p><div id="tr"></div><button class="btn ghost sm" id="tradd" type="button">+ 항목 추가</button></div>'+
+    '<div class="card"><h2 style="margin:0 0 4px">서비스 소개 카드</h2><p class="muted" style="margin:0 0 8px">홈의 “서비스” 칸입니다. 사진과 설명 줄을 실제 내용으로 바꾸세요. (블로그 링크는 content.js 에서 바꿉니다)</p><div id="sv"></div></div>'+
+    '<div class="card"><h2 style="margin:0 0 4px">자주 묻는 질문 (최대 30개)</h2><div id="fq"></div><button class="btn ghost sm" id="fqadd" type="button">+ 질문 추가</button></div>'+
+    '<div class="card"><h2 style="margin:0 0 4px">상담 가능 시간</h2><p class="muted" style="margin:0 0 8px">“문의하기” 칸의 전화 상담 아래에 표시됩니다. 비우면 보이지 않습니다.</p>'+inp("h","문구",m.h,80,"예: 상담시간 평일 09:00~18:00 · 긴급 방문은 전화로 문의")+'</div>'+
+    '<div class="sticky-save"><button class="btn" id="isave" type="button">홈페이지에 반영</button><button class="btn ghost" id="ireset" type="button">기본 내용으로 되돌리기</button></div>';
+  var draw=function(){
+    $("#tr").innerHTML=state.mi.t.map(function(x,i){return '<div class="card" style="margin:6px 0;padding:10px 14px"><div class="row c2">'+inp("t."+i+".value","강조 글자(예: 10년 이상)",x.value,20)+inp("t."+i+".label","설명(예: 현장 노하우)",x.label,30)+'</div><div class="act"><button class="btn warn sm" data-trm="'+i+'" type="button">삭제</button></div></div>'}).join("");
+    $("#sv").innerHTML=state.mi.s.map(function(x,i){return '<div class="card" style="margin:8px 0"><div class="gi"><div>'+(x.image?'<img class="thumb" alt="" src="'+esc(src(x.image))+'">':'<div class="thumb muted" style="display:grid;place-items:center;font-size:.8rem">사진 없음</div>')+'<label class="btn ghost sm" style="display:inline-block;margin-top:6px;text-align:center">사진 선택<input type="file" accept="image/*" data-up="s.'+i+'.image" hidden></label></div><div><div class="row c2">'+inp("s."+i+".name","이름",x.name,30)+inp("s."+i+".tag","분류 이름표",x.tag,10)+'</div><label style="margin-top:8px">설명 줄 (한 줄에 하나, 최대 6줄)<textarea data-f="s.'+i+'.itemsText">'+esc((x.items||[]).join("\n"))+'</textarea></label></div></div></div>'}).join("");
+    $("#fq").innerHTML=state.mi.f.map(function(x,i){return '<div class="card" style="margin:8px 0;padding:12px"><label>질문<input data-f="f.'+i+'.q" value="'+esc(x.q)+'" maxlength="120"></label><label style="margin-top:8px">답변<textarea data-f="f.'+i+'.a" maxlength="800">'+esc(x.a)+'</textarea></label><div class="act"><button class="btn ghost sm" data-fmv="-1:'+i+'" type="button">↑</button><button class="btn ghost sm" data-fmv="1:'+i+'" type="button">↓</button><button class="btn warn sm" data-frm="'+i+'" type="button">삭제</button></div></div>'}).join("")||'<p class="muted">질문이 없습니다.</p>'};
+  var sync=function(){$$("[data-f]",v).forEach(function(f){var p=f.dataset.f;if(/\.itemsText$/.test(p)){set(p.replace("itemsText","items"),f.value.split(/\n/).map(function(x){return x.trim()}).filter(Boolean).slice(0,6))}else set(p,f.value)})};
+  draw();
+  v.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;var d=b.dataset;
+    if(d.trm!=null){sync();state.mi.t.splice(+d.trm,1);draw()}
+    else if(d.frm!=null){sync();state.mi.f.splice(+d.frm,1);draw()}
+    else if(d.fmv){sync();var p=d.fmv.split(":"),i=+p[1],j=i+ +p[0];if(j>=0&&j<state.mi.f.length){state.mi.f.splice(j,0,state.mi.f.splice(i,1)[0]);draw()}}});
+  $("#tradd").onclick=function(){sync();if(state.mi.t.length>=6)return flash("6개까지입니다.","err");state.mi.t.push({value:"",label:""});draw()};
+  $("#fqadd").onclick=function(){sync();if(state.mi.f.length>=30)return flash("30개까지입니다.","err");state.mi.f.push({q:"",a:""});draw()};
+  v.addEventListener("change",function(e){var f=e.target.closest("input[type=file]");if(!f||!f.files[0])return;sync();var path=f.dataset.up;flash("사진을 올리는 중입니다…");
+    shrink(f.files[0],1280).then(function(o){return call("upload",{mime:o.mime,b64:o.b64})}).then(function(j){if(j.ok){set(path,j.url);draw();flash("사진을 올렸습니다. 아래 ‘홈페이지에 반영’을 눌러야 적용됩니다.")}else flash("사진을 올리지 못했습니다.","err")}).catch(function(err){if(err.message!=="auth")flash("사진을 올리지 못했습니다.","err")})});
+  $("#isave").onclick=function(){sync();var m=state.mi;
+    var t=m.t.filter(function(x){return x.value.trim()}),f=m.f.filter(function(x){return x.q.trim()&&x.a.trim()});
+    if(!t.length)return flash("신뢰 띠는 하나 이상 있어야 합니다.","err");
+    saveContent({trust:t,services:m.s.map(function(x){return{tag:x.tag,name:x.name,image:x.image||"",items:x.items||[]}}),faq:f,hours:m.h.trim()},function(){render()})};
+  $("#ireset").onclick=function(){if(!confirm("신뢰 띠·서비스 소개·자주 묻는 질문·상담시간을 처음 기본 내용으로 되돌립니다."))return;saveContent({trust:null,services:null,faq:null,hours:null},function(){render()})};
 }
 
 /* ---------- 후기 ---------- */

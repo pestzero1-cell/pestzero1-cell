@@ -29,6 +29,10 @@
     if (has(d.shorts)) window.SITE.shorts = d.shorts;
     if (d.slider && (d.slider.slides || []).length) window.SITE.slider = Object.assign({}, window.SITE.slider, { slides: d.slider.slides.map(function (s) { return Object.assign({}, s, { images: (s.images || []).filter(okImg).map(demoImg) }); }) });
     if (d.hero) window.SITE.hero = Object.assign({}, window.SITE.hero, d.hero, { tiles: (d.hero.tiles || []).map(function (t) { return Object.assign({}, t, { image: okImg(t.image) ? demoImg(t.image) : "" }); }) });
+    if (has(d.faq) && d.faq.length) window.SITE.faq = d.faq;
+    if (has(d.trust) && d.trust.length) window.SITE.trust = d.trust;
+    if (has(d.services) && d.services.length) window.SITE.services = d.services.map(function (x, i) { return Object.assign({}, (window.SITE.services || [])[i] || {}, x, { image: okImg(x.image) ? demoImg(x.image) : ((window.SITE.services || [])[i] || {}).image || "" }); });
+    if (d.hours != null) window.SITE.hours = d.hours;
     if (has(d.why) && d.why.length) window.SITE.why = d.why.map(function (w) { return Object.assign({}, w, { image: okImg(w.image) ? demoImg(w.image) : "" }); });
   }
   apply(cache);
@@ -38,7 +42,7 @@
     if (fetching) return fetching;
     var src = DEMO ? new Promise(function (res) {
       var c = {}; try { var rows = (JSON.parse(localStorage.getItem("hrc_demo_db")).sheets["콘텐츠"] || []); c = JSON.parse((rows[0] || [])[0] || "{}"); } catch (e) {}
-      res({ ok: true, version: c.version || 0, reviews: c.reviews || null, gallery: c.gallery || null, areas: c.areas || null, banner: c.banner || null, notices: c.notices || [], theme: c.theme || null, layout: c.layout || null, social: c.social || null, shorts: c.shorts || null, slider: c.slider || null, hero: c.hero || null, why: c.why || null });
+      res({ ok: true, version: c.version || 0, reviews: c.reviews || null, gallery: c.gallery || null, areas: c.areas || null, banner: c.banner || null, notices: c.notices || [], theme: c.theme || null, layout: c.layout || null, social: c.social || null, shorts: c.shorts || null, slider: c.slider || null, hero: c.hero || null, why: c.why || null, faq: c.faq || null, trust: c.trust || null, services: c.services || null, hours: c.hours == null ? null : c.hours });
     }) : fetch(url + (url.indexOf("?") < 0 ? "?" : "&") + "action=public", { cache: "no-store" }).then(function (r) { return r.json(); });
     fetching = src.then(function (j) {
       fetching = null;

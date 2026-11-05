@@ -529,7 +529,7 @@ def inject_home():
     for key, sec_title, d, items in SECTIONS:
         lis += "<h2>%s</h2><ul>%s</ul>" % (e(sec_title), "".join('<li><a href="%s/%s/">%s</a></li>' % (d, it["slug"], e(it["label"])) for it in items))
     lis += '<h2>현장일지</h2><ul><li><a href="posts/">현장일지 전체</a></li>%s</ul>' % "".join('<li><a href="posts/%s/">%s</a></li>' % (e(p["slug"]), e(p["title"])) for p in posts)
-    bodyseo = '<noscript><div class="wrap" style="padding:24px 16px"><h1>%s</h1><p>%s</p><p>전화 %s</p>%s<p>자바스크립트를 켜면 전체 화면을 볼 수 있습니다.</p></div></noscript>' % (e(BRAND), e(desc), e(S["phone"]), lis)
+    bodyseo = '<noscript><div class="wrap" style="padding:24px 16px"><h2>%s</h2><p>%s</p><p>전화 %s</p>%s<p>자바스크립트를 켜면 전체 화면을 볼 수 있습니다.</p></div></noscript>' % (e(BRAND), e(desc), e(S["phone"]), lis)
     h = re.sub(r"<!--BODY-SEO-START-->.*?<!--BODY-SEO-END-->", lambda m: "<!--BODY-SEO-START-->\n" + bodyseo + "\n<!--BODY-SEO-END-->", h, flags=re.S)
     p.write_text(h, encoding="utf-8")
 
@@ -782,6 +782,23 @@ def apply_csp_hashes():
             p.write_text(h2, encoding="utf-8")
 
 
+def build_404():
+    """404.html: 없는 주소로 들어왔을 때 보이는 안내 페이지(Cloudflare Pages·Netlify 등이 자동으로 사용). 사이트가 도메인 최상위에 있다고 가정합니다."""
+    depth = 0
+    top, foot = header_footer(depth, "")
+    page = head("페이지를 찾을 수 없습니다 | %s" % BRAND, "요청하신 페이지를 찾을 수 없습니다.", "404.html", depth, extra='<meta name="robots" content="noindex">\n') + "<body>\n" + top + """
+<main><div class="wrap" style="padding-block:48px 72px;text-align:center"><p style="font-size:3rem;margin:0">🐾</p><h1 style="margin:8px 0">페이지를 찾을 수 없습니다</h1>
+<p class="sub">주소가 바뀌었거나 없어진 페이지예요. 아래에서 원하는 곳으로 이동하거나 전화로 문의해 주세요.</p>
+<p style="margin-top:22px"><a class="btn" href="/index.html">홈으로</a> <a class="btn ghost" href="/price/roach/index.html">서비스단가표</a> <a class="btn ghost" href="tel:%s">📞 %s</a></p></div></main>
+%s
+</body>
+</html>
+""" % (re.sub(r"[^0-9]", "", S["phone"]), e(S["phone"]), foot)
+    page = page.replace("<head>", '<head>\n<base href="/">', 1)
+    page = page.replace("</body>", bot_scripts(depth) + "\n</body>")
+    (ROOT / "404.html").write_text(page, encoding="utf-8")
+
+
 # ---------------------------------------------------------------- 실행
 def main():
     inject_admin_csp()
@@ -791,6 +808,7 @@ def main():
     build_css()
     build_pwa()
     build_headers()
+    build_404()
     urls = [("", "1.0")]
     for key, sec_title, d, items in SECTIONS:
         for i in range(len(items)):

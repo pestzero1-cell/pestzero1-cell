@@ -467,7 +467,7 @@ function clean(arr, fields, max) {
 }
 function publicData() {
   var c = readContent();
-  return { ok: true, version: c.version || 0, reviews: c.reviews || null, gallery: c.gallery || null, areas: c.areas || null, banner: c.banner || null, notices: c.notices || [], theme: c.theme || null, layout: c.layout || null, social: c.social || null, shorts: c.shorts || null, slider: c.slider || null, hero: c.hero || null, why: c.why || null };
+  return { ok: true, version: c.version || 0, reviews: c.reviews || null, gallery: c.gallery || null, areas: c.areas || null, banner: c.banner || null, notices: c.notices || [], theme: c.theme || null, layout: c.layout || null, social: c.social || null, shorts: c.shorts || null, slider: c.slider || null, hero: c.hero || null, why: c.why || null, faq: c.faq || null, trust: c.trust || null, services: c.services || null, hours: c.hours == null ? null : c.hours };
 }
 function contentSet(p) {
   var lock = LockService.getScriptLock(); lock.waitLock(10000);
@@ -481,6 +481,10 @@ function contentSet(p) {
     if ("theme" in n) c.theme = n.theme && okColor(n.theme.brand) && okColor(n.theme.accent) ? { brand: n.theme.brand, accent: n.theme.accent } : null;
     if ("social" in n) { var s = n.social || {}; c.social = { instagram: okIg(s.instagram) ? cut(s.instagram, 250) : "", youtube: okYt(s.youtube) ? cut(s.youtube, 250) : "" }; }
     if ("shorts" in n) c.shorts = (Array.isArray(n.shorts) ? n.shorts : []).slice(0, 12).filter(function (v) { return v && /^[A-Za-z0-9_-]{11}$/.test(String(v.id || "")); }).map(function (v) { return { id: String(v.id), title: cut(v.title, 60) }; });
+    if ("faq" in n) c.faq = n.faq ? (Array.isArray(n.faq) ? n.faq : []).slice(0, 30).filter(function (x) { return x && x.q; }).map(function (x) { return { q: cut(x.q, 120), a: cut(x.a, 800) }; }) : null;
+    if ("trust" in n) c.trust = n.trust ? (Array.isArray(n.trust) ? n.trust : []).slice(0, 6).filter(function (x) { return x && x.value; }).map(function (x) { return { value: cut(x.value, 20), label: cut(x.label, 30) }; }) : null;
+    if ("services" in n) c.services = n.services ? (Array.isArray(n.services) ? n.services : []).slice(0, 4).filter(Boolean).map(function (x) { return { tag: cut(x.tag, 10), name: cut(x.name, 30), image: okImg(x.image) ? cut(x.image, 250) : "", items: (Array.isArray(x.items) ? x.items : []).slice(0, 6).map(function (i) { return cut(i, 60); }).filter(String) }; }) : null;
+    if ("hours" in n) c.hours = n.hours == null ? null : cut(n.hours, 80);
     if ("slider" in n) c.slider = n.slider ? cleanSlider(n.slider) : null;
     if ("hero" in n) c.hero = n.hero ? cleanHero(n.hero) : null;
     if ("why" in n) c.why = n.why ? cleanWhy(n.why) : null;
