@@ -89,7 +89,8 @@ function sheet(name, head) {
 }
 function newId(prefix) { return prefix + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36); }
 function hash(s) { var h = 5381; s = String(s); for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return String(h); }
-function mail(subject, body) { if (NOTIFY_EMAIL) { try { MailApp.sendEmail(NOTIFY_EMAIL, subject, body); } catch (x) {} } }
+function notifyEmail() { return NOTIFY_EMAIL || PropertiesService.getScriptProperties().getProperty("NOTIFY_EMAIL") || ""; }   // 코드에 적거나, 스크립트 속성 NOTIFY_EMAIL 에 넣어도 됩니다(속성이 공개 저장소에 안 남아 권장)
+function mail(subject, body) { var to = notifyEmail(); if (to) { try { MailApp.sendEmail(to, subject, body); } catch (x) {} } }
 // 일정 시간 안에 너무 많이 들어오면 막기 (스팸·도배 방지)
 function allow(kind) {
   var c = CacheService.getScriptCache(), k = "rl_" + kind, n = Number(c.get(k) || 0), lim = LIMITS[kind];
@@ -185,7 +186,7 @@ function notifyInquiry(kind, name, svc, phone, msg, ip) {
 }
 function notifyStatus() {
   var c = smsConfig(), n = Number(PropertiesService.getScriptProperties().getProperty(smsDayKey()) || 0);
-  return { ok: true, email: !!NOTIFY_EMAIL, sms: c.ok, smsToday: n, smsMax: c.max, smsLong: c.long, smsTo: c.ok ? c.to.slice(0, 3) + "****" + c.to.slice(-4) : "" };
+  return { ok: true, email: !!notifyEmail(), sms: c.ok, smsToday: n, smsMax: c.max, smsLong: c.long, smsTo: c.ok ? c.to.slice(0, 3) + "****" + c.to.slice(-4) : "" };
 }
 function notifyTest() {
   var cache = CacheService.getScriptCache(), k = "nt", n = Number(cache.get(k) || 0);
@@ -193,8 +194,8 @@ function notifyTest() {
   cache.put(k, String(n + 1), 3600);
   mail("[홈페이지] 알림 시험", "이 메일이 보이면 이메일 알림이 정상입니다.");
   var r = sendSms("[홈페이지] 문자 알림 시험입니다.", true);
-  audit("알림 시험", "이메일 " + (NOTIFY_EMAIL ? "발송" : "미설정") + " / 문자 " + (r.ok ? "발송" : (r.error || "실패")));
-  return { ok: true, email: !!NOTIFY_EMAIL, sms: r };
+  audit("알림 시험", "이메일 " + (notifyEmail() ? "발송" : "미설정") + " / 문자 " + (r.ok ? "발송" : (r.error || "실패")));
+  return { ok: true, email: !!notifyEmail(), sms: r };
 }
 
 // ---------- 접속 IP 확인(게이트웨이를 쓸 때) · 차단 목록 ----------
