@@ -84,45 +84,48 @@ def cell(c, depth, boldcol=False):
     return "<td%s>%s</td>" % (attrs, t)
 
 
-def table(t, depth):
+def table(t, depth, si=None):
     if not t:
         return ""
     cap = '<tr><th colspan="%d">%s</th></tr>' % (len(t["head"]), e(t["caption"])) if t.get("caption") else ""
     head = "".join("<th>%s</th>" % e(h) for h in t["head"])
     bc = t.get("boldCols") or []
     rows = "".join("<tr>%s</tr>" % "".join(cell(c, depth, i in bc) for i, c in enumerate(r)) for r in t["rows"])
-    return '<div class="tbl"><table><thead>%s<tr>%s</tr></thead><tbody>%s</tbody></table></div>' % (cap, head, rows)
+    mk = ' data-s="%d" data-g="table"' % si if si is not None else ""
+    return '<div class="tbl"%s><table><thead>%s<tr>%s</tr></thead><tbody>%s</tbody></table></div>' % (mk, cap, head, rows)
 
 
-def bullets(b):
-    return '<ul class="bl">%s</ul>' % "".join("<li>%s</li>" % e(x) for x in b) if b else ""
+def bullets(b, si=None):
+    mk = ' data-s="%d" data-g="bullets"' % si if si is not None else ""
+    return '<ul class="bl"%s>%s</ul>' % (mk, "".join("<li>%s</li>" % e(x) for x in b)) if b else ""
 
 
-def section_html(s, depth):
+def section_html(s, depth, si=None):
     out = []
+    mk = lambda g: (' data-s="%d" data-g="%s"' % (si, g)) if si is not None else ""
     if s.get("imageTop"):
         out.append('<img class="pimg" loading="lazy" src="%s" alt="">' % e(img_src(s["imageTop"], depth)))
     if s.get("heading"):
-        out.append('<h2 class="ph">%s</h2>' % e(s["heading"]))
+        out.append('<h2 class="ph"%s>%s</h2>' % (mk("heading"), e(s["heading"])))
     if s.get("intro"):
         out.append('<p class="introbox">%s</p>' % br(s["intro"]))
     if s.get("lead"):
-        out.append('<p class="safe" style="margin:8px 0 14px">◆ %s</p>' % e(s["lead"]))
+        out.append('<p class="safe" style="margin:8px 0 14px"%s>◆ %s</p>' % (mk("lead"), e(s["lead"])))
     for n in s.get("notes") or []:
-        out.append('<p class="red">※ %s</p>' % e(n))
+        out.append('<p class="red"%s>※ %s</p>' % (mk("note"), e(n)))
     if s.get("bulletsFirst"):
-        out.append(bullets(s.get("bullets")))
-    out.append(table(s.get("table"), depth))
+        out.append(bullets(s.get("bullets"), si))
+    out.append(table(s.get("table"), depth, si))
     if s.get("afterNote"):
-        out.append('<p class="red">※ %s</p>' % e(s["afterNote"]))
+        out.append('<p class="red"%s>※ %s</p>' % (mk("afterNote"), e(s["afterNote"])))
     if not s.get("bulletsFirst"):
-        out.append(bullets(s.get("bullets")))
+        out.append(bullets(s.get("bullets"), si))
     if s.get("images"):
         out.append('<div class="pgrid">%s</div>' % "".join('<img loading="lazy" src="%s" alt="">' % e(img_src(x, depth)) for x in s["images"]))
     if s.get("image"):
         out.append('<img class="pimg" loading="lazy" src="%s" alt="">' % e(img_src(s["image"], depth)))
     if s.get("footer"):
-        out.append('<p class="safe">◆ %s</p>' % e(s["footer"]))
+        out.append('<p class="safe"%s>◆ %s</p>' % (mk("footer"), e(s["footer"])))
     if s.get("steps"):
         out.append('<div class="sysSteps">%s</div>' % "".join(
             '<div><b>0%d</b>%s<p>%s</p></div>' % (i + 1, ICONS.get(x.get("icon"), ""), bold(x["text"])) for i, x in enumerate(s["steps"])))
@@ -247,7 +250,7 @@ def build_section_page(key, sec_title, d, items, idx):
         body, d_text = it["custom"]
     else:
         secs = it.get("sections") or []
-        body = "".join(section_html(s, depth) for s in secs) or '<p class="soon">내용 준비 중입니다. 전화 %s 로 문의해 주세요.</p>' % e(S["phone"])
+        body = "".join(section_html(s, depth, si) for si, s in enumerate(secs)) or '<p class="soon">내용 준비 중입니다. 전화 %s 로 문의해 주세요.</p>' % e(S["phone"])
         d_text = next((text_of_section(s) for s in secs if text_of_section(s)), "")
     label = it["label"]
     title = "%s | %s | %s" % (label, sec_title, BRAND)

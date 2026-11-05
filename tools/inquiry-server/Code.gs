@@ -5,7 +5,7 @@
  * 비밀번호는 코드에 적지 않고 [프로젝트 설정 → 스크립트 속성]의 ADMIN_PASSWORD 에 넣습니다.
  */
 var NOTIFY_EMAIL = "";            // 새 문의·보안 경고를 메일로 받을 본인 메일 주소(권장). 비우면 시트에만 쌓입니다.
-var SHEET_INQ = "문의", SHEET_REV = "후기대기", SHEET_CONTENT = "콘텐츠", SHEET_LOG = "기록", SHEET_BLOCK = "차단목록";
+var SHEET_INQ = "문의", SHEET_REV = "후기대기", SHEET_CONTENT = "콘텐츠", SHEET_LOG = "기록", SHEET_BLOCK = "차단목록", SHEET_PRICE = "가격표";
 var MAX = 2000;                   // 글자 수 제한
 var SESSION_SEC = 6 * 3600;       // 로그인 유지 시간(6시간)
 var STATUSES = ["신규", "상담중", "완료", "보류", "스팸"];
@@ -23,6 +23,7 @@ function doGet(e) {
   var a = e && e.parameter && e.parameter.action;
   if (a === "public") return json(publicData());
   if (a === "ticket") return json(newTicket());
+  if (a === "price") return json(publicPrice());
   if (a === "info") return json(info());
   if (a === "blocklist") return json(blocklistFor(e));
   return text("홈로취케어 서버 작동 중");
@@ -37,6 +38,7 @@ function doPost(e) {
     switch (act) {
       case "public": return json(publicData());
       case "ticket": return json(newTicket());
+      case "price": return json(publicPrice());
       case "info": return json(info());
       case "inquiry": return json(addInquiry(p));
       case "review_submit": return json(addReview(p));
@@ -57,6 +59,8 @@ function doPost(e) {
       case "upload": return json(upload(p));
       case "password_change": return json(passwordChange(p));
       case "audit_list": return json(auditList());
+      case "price_set": return json(priceSet(p));
+      case "price_reset": return json(priceReset(p));
       case "ip_block": return json(ipBlock(p));
       case "ip_unblock": return json(ipUnblock(p));
       case "ip_list": return json(ipList());
@@ -496,6 +500,60 @@ function contentSet(p) {
     audit("내용 저장", Object.keys(n).join(", "));
     return { ok: true, version: c.version };
   } finally { lock.releaseLock(); }
+}
+
+// ---------- 가격표(서비스단가표) 수정 ----------
+// 페이지(slug)별로 바뀐 칸만 저장합니다. 방문자 화면에서는 기본 내용 위에 덧씌워 보입니다.
+function readPrice() {
+  var v = sheet(SHEET_PRICE).getRange(1, 1).getValue();
+  try { return v ? JSON.parse(v) : { items: {} }; } catch (e) { return { items: {} }; }
+}
+function writePrice(d) {
+  d.version = Date.now();
+  var s = JSON.stringify(d);
+  if (s.length > 45000) throw new Error("too big");
+  sheet(SHEET_PRICE).getRange(1, 1).setValue(s);
+}
+function publicPrice() { var d = readPrice(); return { ok: true, version: d.version || 0, items: d.items || {} }; }
+function cleanCell(c) {
+  if (c && typeof c === "object") {
+    var o = { t: cut(c.t, 400) };
+    if (c.b) o.b = true;
+    if (c.rs && Number(c.rs) > 1) o.rs = Math.min(9, Math.floor(Number(c.rs)));
+    if (c.cs && Number(c.cs) > 1) o.cs = Math.min(9, Math.floor(Number(c.cs)));
+    if (c.img && okImg(c.img)) o.img = String(c.img);
+    return o;
+  }
+  return cut(c, 400);
+}
+function cleanPriceSection(s) {
+  var o = { i: Math.max(0, Math.min(11, Math.floor(Number(s.i) || 0))) };
+  ["heading", "lead", "afterNote", "footer"].forEach(function (k) { if (s[k] != null) o[k] = cut(s[k], 300); });
+  ["notes", "bullets"].forEach(function (k) { if (Array.isArray(s[k])) o[k] = s[k].slice(0, 20).map(function (x) { return cut(x, 400); }).filter(String); });
+  if (s.table && Array.isArray(s.table.head) && Array.isArray(s.table.rows)) {
+    var t = { head: s.table.head.slice(0, 8).map(function (h) { return cut(h, 60); }), rows: s.table.rows.slice(0, 40).map(function (r) { return (Array.isArray(r) ? r : []).slice(0, 8).map(cleanCell); }) };
+    if (s.table.caption != null) t.caption = cut(s.table.caption, 100);
+    if (Array.isArray(s.table.boldCols)) t.boldCols = s.table.boldCols.slice(0, 8).map(function (n) { return Math.max(0, Math.min(7, Math.floor(Number(n) || 0))); });
+    o.table = t;
+  }
+  return o;
+}
+function priceSet(p) {
+  var slug = String(p.slug || "");
+  if (!/^[a-z0-9-]{2,40}$/.test(slug)) return { ok: false, error: "slug" };
+  var lock = LockService.getScriptLock(); lock.waitLock(10000);
+  try {
+    var d = readPrice(); d.items = d.items || {};
+    d.items[slug] = { sections: (Array.isArray(p.sections) ? p.sections : []).slice(0, 12).filter(Boolean).map(cleanPriceSection) };
+    writePrice(d);
+    audit("가격표 저장", slug);
+    return { ok: true, version: d.version };
+  } catch (e) { return { ok: false, error: "too_big" }; } finally { lock.releaseLock(); }
+}
+function priceReset(p) {
+  var slug = String(p.slug || "");
+  var lock = LockService.getScriptLock(); lock.waitLock(10000);
+  try { var d = readPrice(); if (d.items) delete d.items[slug]; writePrice(d); audit("가격표 기본값 복원", slug); return { ok: true }; } finally { lock.releaseLock(); }
 }
 
 // ---------- 사진 업로드 (구글 드라이브 폴더에 저장, 링크로 보기 가능) ----------

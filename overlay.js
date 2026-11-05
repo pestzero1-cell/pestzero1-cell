@@ -128,6 +128,60 @@
     Object.keys(els).forEach(function (k) { els[k].hidden = (l.hidden || []).indexOf(k) >= 0; });
   }
 
+
+  // ---- 서비스단가표(price/<주소>/) 수정 반영: 관리자 화면 > 💰 가격표에서 바꾼 칸을 기본 내용 위에 덧씌웁니다 ----
+  var PMATCH = location.pathname.match(/\/price\/([a-z0-9-]+)\/(?:index\.html)?$/);
+  var PKEY = DEMO ? "hrc_price_demo" : "hrc_price";
+  function brHtml(t) { return esc(t).replace(/\n/g, "<br>"); }
+  function renderTable(t) {
+    var base = (window.SITE_BASE != null ? window.SITE_BASE : "../../");
+    var bc = t.boldCols || [], cap = t.caption ? '<tr><th colspan="' + t.head.length + '">' + esc(t.caption) + "</th></tr>" : "";
+    var rows = (t.rows || []).map(function (r) {
+      return "<tr>" + r.map(function (c, i) {
+        if (c && typeof c === "object" && c.img) return '<td style="text-align:center"><img class="cellimg" loading="lazy" src="' + esc(/^(https?:|data:)/.test(c.img) ? c.img : base + c.img) + '" alt="' + esc(c.t || "") + '"><br><span style="font-size:.85rem;color:var(--muted)">' + esc(c.t || "") + "</span></td>";
+        var obj = c && typeof c === "object", at = "";
+        if (obj && c.rs) at += ' rowspan="' + (+c.rs | 0) + '"';
+        if (obj && c.cs) at += ' colspan="' + (+c.cs | 0) + '"';
+        if (bc.indexOf(i) >= 0 || (obj && c.b)) at += ' style="font-weight:700"';
+        return "<td" + at + ">" + brHtml(obj ? c.t : c) + "</td>";
+      }).join("") + "</tr>";
+    }).join("");
+    return '<table><thead>' + cap + "<tr>" + t.head.map(function (h) { return "<th>" + esc(h) + "</th>"; }).join("") + "</tr></thead><tbody>" + rows + "</tbody></table>";
+  }
+  function applyPrice(items) {
+    var it = items && PMATCH && items[PMATCH[1]];
+    if (!it || !Array.isArray(it.sections)) return;
+    it.sections.forEach(function (s) {
+      var q = function (g) { return document.querySelectorAll('[data-s="' + s.i + '"][data-g="' + g + '"]'); };
+      var h = q("heading")[0]; if (h && s.heading != null) h.textContent = s.heading;
+      var l = q("lead")[0]; if (l && s.lead != null) l.textContent = "◆ " + s.lead;
+      var a = q("afterNote")[0]; if (a && s.afterNote != null) a.textContent = "※ " + s.afterNote;
+      var f = q("footer")[0]; if (f && s.footer != null) f.textContent = "◆ " + s.footer;
+      var ul = q("bullets")[0]; if (ul && Array.isArray(s.bullets)) ul.innerHTML = s.bullets.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("");
+      var ns = q("note");
+      if (ns.length && Array.isArray(s.notes)) {
+        var first = ns[0];
+        s.notes.forEach(function (n) { var p = document.createElement("p"); p.className = "red"; p.setAttribute("data-s", s.i); p.setAttribute("data-g", "note"); p.textContent = "※ " + n; first.parentNode.insertBefore(p, first); });
+        [].forEach.call(ns, function (n) { n.remove(); });
+      }
+      var tb = q("table")[0]; if (tb && s.table && Array.isArray(s.table.head) && Array.isArray(s.table.rows)) tb.innerHTML = renderTable(s.table);
+    });
+  }
+  function priceInit() {
+    if (!PMATCH) return;
+    var cached = null; try { cached = JSON.parse(localStorage.getItem(PKEY) || "null"); } catch (e) {}
+    if (cached) applyPrice(cached.items);
+    var src = DEMO ? new Promise(function (res) {
+      var d = {}; try { var rows = (JSON.parse(localStorage.getItem("hrc_demo_db")).sheets["가격표"] || []); d = JSON.parse((rows[0] || [])[0] || "{}"); } catch (e) {}
+      res({ ok: true, version: d.version || 0, items: d.items || {} });
+    }) : fetch(url + (url.indexOf("?") < 0 ? "?" : "&") + "action=price", { cache: "no-store" }).then(function (r) { return r.json(); });
+    src.then(function (j) {
+      if (!j || !j.ok) return;
+      try { localStorage.setItem(PKEY, JSON.stringify(j)); } catch (e) {}
+      if (!cached || cached.version !== j.version) { if (cached) location.reload(); else applyPrice(j.items); }
+    }).catch(function () {});
+  }
+
   function paint(d) { if (!d) return; banner(d.banner); if (has(d.gallery)) paintGallery(cleanG(d.gallery)); theme(d.theme || (window.SITE && window.SITE.theme)); layout(d.layout); if (window.HRC_SOCIAL) window.HRC_SOCIAL.paint(d.social || (window.SITE && window.SITE.social)); }
   function demoBar() {
     if (!DEMO) return;
@@ -138,6 +192,7 @@
   }
   var ready = function (f) { if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", f); else f(); };
   ready(function () {
+    priceInit();
     demoBar();
     paint(cache);
     fresh().then(function (d) {
