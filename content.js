@@ -30,6 +30,12 @@ window.SITE = {
     instagram: "https://www.instagram.com/homeroachcare/",   // 예: "https://www.instagram.com/내계정/"
     youtube: "https://www.youtube.com/@%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD1"      // 예: "https://www.youtube.com/@내채널"
   },
+  // 메인 영상(16:9, 최대 3개): 유튜브 영상 주소의 11자리 ID. 첫 화면 아래 “영상으로 보는 홈로취케어”에 썸네일로 항상 보이고, 누르면 그 자리에서 재생됩니다.
+  // 관리자 > 📺 SNS·영상 > “메인 영상”에서 주소만 붙여 넣어도 됩니다.   예: https://youtu.be/AbCdEfGhIjK → id: "AbCdEfGhIjK"
+  videos: [
+    // { id: "유튜브영상ID(11자리)", title: "영상 제목" }
+  ],
+  homeReviews: false,   // true 로 바꾸면 첫 화면에 “고객 후기” 칸을 보여줍니다(고객센터의 이용후기·1:1 문의와 별개). 지금은 숨김
   shorts: [
     // { id: "유튜브영상ID(11자리)", title: "영상 제목" }   예: https://youtube.com/shorts/AbCdEfGhIjK → id: "AbCdEfGhIjK"
   ],
