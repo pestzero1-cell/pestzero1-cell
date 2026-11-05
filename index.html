@@ -9,7 +9,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
 <link rel="apple-touch-icon" href="images/favicon.png">
 <link rel="manifest" href="manifest.webmanifest">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-GbK/8q5PdpgaVfQmVMlu5Lv1CmzwdtdKY/9no4Tbedk='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self'; manifest-src 'self'; frame-src https://www.youtube-nocookie.com">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SpGYmW4U2f0SkO6v5xT9uhwSoS28dnxIiZePquwpnQY='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self'; manifest-src 'self'; frame-src https://www.youtube-nocookie.com">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#12408f">
 <link rel="canonical" href="https://YOUR-DOMAIN.example/">
@@ -492,7 +492,7 @@ footer{border-top:1px solid var(--line);padding:32px 0 calc(96px + env(safe-area
     var d=new FormData(ev.target);
     if(window.HRC_INQUIRY&&window.HRC_INQUIRY.enabled){
       var nt=document.getElementById("note"),bt=ev.target.querySelector("button[type=submit]");bt.disabled=true;nt.textContent="보내는 중입니다…";
-      window.HRC_INQUIRY.send("문의",{svc:d.get("svc"),name:d.get("name"),phone:d.get("phone"),msg:d.get("msg"),website:d.get("website"),consent:d.get("consent")?1:0}).then(function(){ev.target.reset();nt.textContent="문의가 접수되었습니다. 확인 후 연락드리겠습니다.";bt.disabled=false}).catch(function(er){nt.innerHTML=(er&&er.message==="busy"?"지금 접수가 많아 잠시 후 다시 시도해 주세요. 급하시면 ":er&&er.message==="content"?"링크나 광고성 문구가 포함되어 접수되지 않았습니다. 내용을 확인해 주세요. 급하시면 ":er&&er.message==="human"?"사람 확인에 실패했습니다. 새로고침 후 다시 시도해 주세요. 급하시면 ":"전송에 실패했습니다. ")+"전화 <b>"+e(S.phone)+"</b> 로 문의해 주세요.";bt.disabled=false});
+      window.HRC_INQUIRY.send("문의",{svc:d.get("svc"),name:d.get("name"),phone:d.get("phone"),msg:d.get("msg"),website:d.get("website"),consent:d.get("consent")?1:0}).then(function(){ev.target.reset();nt.textContent="문의가 접수되었습니다. 확인 후 연락드리겠습니다.";bt.disabled=false}).catch(function(er){nt.innerHTML=(er&&er.message==="busy"?"지금 접수가 많아 잠시 후 다시 시도해 주세요. 급하시면 ":er&&er.message==="content"?"링크나 광고성 문구가 포함되어 접수되지 않았습니다. 내용을 확인해 주세요. 급하시면 ":er&&er.message==="human"?"사람 확인에 실패했습니다. 새로고침 후 다시 시도해 주세요. 급하시면 ":er&&er.message==="geo"?"해외에서는 온라인 문의가 제한됩니다. ":"전송에 실패했습니다. ")+"전화 <b>"+e(S.phone)+"</b> 로 문의해 주세요.";bt.disabled=false});
       return}
     var body="["+d.get("svc")+"]\n성함: "+d.get("name")+"\n연락처: "+d.get("phone")+"\n"+(d.get("msg")||"");
     var mobile=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&innerWidth<900);

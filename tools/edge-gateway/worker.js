@@ -4,6 +4,7 @@
 //
 // 필요한 설정 — 변수/시크릿:  APPS_SCRIPT_URL(구글 웹앱 주소), GATEWAY_SECRET(시크릿, 구글 스크립트 속성의 GATEWAY_SECRET 과 같은 값),
 //                           ALLOWED_ORIGIN(내 사이트 주소, 쉼표로 여러 개 가능), TURNSTILE_SECRET(시크릿, 선택)
+//                           ALLOWED_COUNTRIES(문의·후기를 받을 국가 코드, 기본 KR. 예: "KR,JP,US" / 모든 국가 허용은 "*")
 //            KV 연결:       RL  (IP별 접수 횟수 저장용 KV 네임스페이스)
 const LIMITS = { hour: 5, day: 15 };          // IP 하나가 1시간 5건, 하루 15건까지 (가정·사무실 공용 IP를 고려해 넉넉하게)
 const BAN_AFTER = 12;                          // 하루에 이만큼 거절당하면 24시간 자동 차단
@@ -69,6 +70,11 @@ export default {
     try { p = JSON.parse(raw); } catch (e) { return reply({ ok: false, error: "json" }, origin, 400); }
     const d = p.data || {};
     if (d.website) return reply({ ok: true }, origin);                                   // 숨은 칸(봇)은 조용히 성공처럼 응답
+
+    // 0) 해외 접속 차단: 허용 국가(기본 한국)가 아니면 문의·후기를 받지 않습니다. (사이트 구경 자체는 막지 않음 — 검색엔진·해외 거주 고객 보호)
+    const cc = String((req.cf && req.cf.country) || "").toUpperCase();
+    const allow = String(env.ALLOWED_COUNTRIES == null ? "KR" : env.ALLOWED_COUNTRIES).toUpperCase().split(",").map((s) => s.trim()).filter(Boolean);
+    if (cc && !allow.includes("*") && !allow.includes(cc)) return reply({ ok: false, error: "geo" }, origin, 403);
 
     // 1) 차단된 IP
     if (await env.RL.get(`ban:${ip}`) || (await blocklist(env)).has(ip)) return reply({ ok: true }, origin);   // 차단됐다는 걸 알려주지 않음

@@ -11,9 +11,11 @@ globalThis.fetch = (u, o) => {                                   // 사람 확�
 };
 const kv = () => { const m = new Map(); return { get: async (k) => m.get(k) ?? null, put: async (k, v) => { m.set(k, String(v)); } }; };
 const mod = async (tag) => (await import(`../worker.js?${tag}`)).default;
-const call = (w, env, body, { ip = "9.9.9.9", origin = ORIGIN } = {}) => {
+const call = (w, env, body, { ip = "9.9.9.9", origin = ORIGIN, cc } = {}) => {
   const h = { "Content-Type": "text/plain" }; if (origin) h.Origin = origin; if (ip) h["CF-Connecting-IP"] = ip;
-  return w.fetch(new Request("https://gw.example.workers.dev/submit", { method: "POST", headers: h, body: JSON.stringify(body) }), env).then(async (r) => ({ status: r.status, ...(await r.json()) }));
+  const rq = new Request("https://gw.example.workers.dev/submit", { method: "POST", headers: h, body: JSON.stringify(body) });
+  if (cc) Object.defineProperty(rq, "cf", { value: { country: cc } });          // Cloudflare 가 붙여 주는 접속 국가를 흉내
+  return w.fetch(rq, env).then(async (r) => ({ status: r.status, ...(await r.json()) }));
 };
 const mk = (extra = {}) => ({ RL: kv(), APPS_SCRIPT_URL: A, GATEWAY_SECRET: SECRET, ALLOWED_ORIGIN: ORIGIN, ...extra });
 const inq = (n, msg, phone) => ({ type: "문의", data: { name: n, phone: phone || "010-1234-" + String(Math.floor(Math.random() * 9000) + 1000), msg, consent: 1 }, page: "/" });
@@ -83,5 +85,21 @@ ok(r.ok === true, "후기도 게이트웨이를 거쳐 접수");
 r = await call(w, env, { action: "review_submit", data: { name: "광고", stars: 5, text: "카지노 토토 사이트 http://a.com http://b.com", consent: 1 } }, { ip: "8.8.4.4" });
 ok(r.error === "content", "광고 후기 거절");
 ok((await api({ action: "rev_pending", token: t })).items.some((x) => x.ip === "8.8.8.8"), "대기 후기에도 접속 IP 기록");
+// 해외 IP 차단
+{
+  const wg = await mod("geo"), eg = mk();
+  let g = await call(wg, eg, inq("해외", "미국에서 보낸 문의입니다 " + Math.random()), { ip: "11.1.1.1", cc: "US" });
+  ok(g.error === "geo" && g.status === 403, "해외(US) 접속은 문의 거절");
+  g = await call(wg, eg, inq("국내", "한국에서 보낸 정상 문의입니다 " + Math.random()), { ip: "11.1.1.2", cc: "KR" });
+  ok(g.ok === true, "국내(KR) 접속은 접수");
+  g = await call(wg, eg, inq("모름", "국가를 알 수 없는 정상 문의 " + Math.random()), { ip: "11.1.1.3" });
+  ok(g.ok === true, "국가 정보가 없으면 접수(시험·내부 환경)");
+  g = await call(wg, mk({ ALLOWED_COUNTRIES: "KR,JP" }), inq("일본", "일본에서 보낸 문의입니다 " + Math.random()), { ip: "11.1.1.4", cc: "JP" });
+  ok(g.ok === true, "허용 국가 목록(KR,JP)에 있으면 접수");
+  g = await call(wg, mk({ ALLOWED_COUNTRIES: "*" }), inq("전체", "모든 국가 허용 설정 문의 " + Math.random()), { ip: "11.1.1.5", cc: "US" });
+  ok(g.ok === true, "ALLOWED_COUNTRIES=* 이면 모든 국가 허용");
+  g = await call(wg, eg, inq("토르", "토르망 접속 문의입니다 " + Math.random()), { ip: "11.1.1.6", cc: "T1" });
+  ok(g.error === "geo", "Tor 망(T1) 접속 거절");
+}
 console.log(fails ? "FAILURES " + fails : "ALL PASS");
 process.exit(fails ? 1 : 0);

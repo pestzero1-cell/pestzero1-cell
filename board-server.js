@@ -39,7 +39,7 @@
     }
     function send(btn, fn, okMsg) {
       btn.disabled = true; var old = btn.textContent; btn.textContent = "보내는 중…";
-      fn().then(function () { st.msg = okMsg; st.err = false; view(); }).catch(function (er) { st.msg = (er && er.message === "busy" ? "지금 접수가 많아 잠시 후 다시 시도해 주세요. 급하시면 " : er && er.message === "content" ? "링크나 광고성 문구가 포함되어 접수되지 않았습니다. 내용을 확인해 주세요. 급하시면 " : er && er.message === "human" ? "사람 확인에 실패했습니다. 새로고침 후 다시 시도해 주세요. 급하시면 " : "전송에 실패했습니다. ") + "전화 " + S.phone + " 로 문의해 주세요."; st.err = true; view(); }).then(function () { btn.disabled = false; btn.textContent = old; });
+      fn().then(function () { st.msg = okMsg; st.err = false; view(); }).catch(function (er) { st.msg = (er && er.message === "busy" ? "지금 접수가 많아 잠시 후 다시 시도해 주세요. 급하시면 " : er && er.message === "content" ? "링크나 광고성 문구가 포함되어 접수되지 않았습니다. 내용을 확인해 주세요. 급하시면 " : er && er.message === "human" ? "사람 확인에 실패했습니다. 새로고침 후 다시 시도해 주세요. 급하시면 " : er && er.message === "geo" ? "해외에서는 온라인 문의가 제한됩니다. " : "전송에 실패했습니다. ") + "전화 " + S.phone + " 로 문의해 주세요."; st.err = true; view(); }).then(function () { btn.disabled = false; btn.textContent = old; });
     }
     root.addEventListener("click", function (ev) {
       var t = ev.target.closest("[data-b]"); if (t) { st.tab = t.getAttribute("data-b"); st.open = -1; draw(); return; }
