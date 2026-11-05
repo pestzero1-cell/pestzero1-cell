@@ -10,7 +10,7 @@
     if (cur && cur.parentNode.scrollWidth > cur.parentNode.clientWidth) cur.parentNode.scrollLeft = Math.max(0, cur.offsetLeft - 16);
   }
   var S = window.SITE || window.SITE_BOT || {};
-  var tel = String(S.phone || "").replace(/[^0-9]/g, "");
+  var tel = String(S.callPhone || S.phone || "").replace(/[^0-9+]/g, "");
   if (!tel) return;
   var esc = function (t) { return String(t == null ? "" : t).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   var kk = /^https?:\/\//.test(S.kakaoUrl || "") ? S.kakaoUrl : "";

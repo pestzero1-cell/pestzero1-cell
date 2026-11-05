@@ -29,6 +29,7 @@ e = lambda t: html.escape(str(t if t is not None else ""), quote=True)
 br = lambda t: e(t).replace("\n", "<br>")
 bold = lambda t: re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", e(t)).replace("\n", "<br>")
 BRAND = S.get("brand", "홈로취케어")
+DIAL = re.sub(r"[^0-9+]", "", S.get("callPhone") or S["phone"])   # 전화 버튼이 실제로 거는 번호
 
 ICONS = {
     "monitor": '<svg viewBox="0 0 64 64" width="72" height="72" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><rect x="8" y="10" width="48" height="34" rx="4"/><path d="M22 54h20M32 44v10"/></svg>',
@@ -213,11 +214,11 @@ def header_footer(depth, current_key=None):
     logo = ('<img class="logo-img" src="%s%s" alt="%s — %s">' % (rel(depth), e(S["logo"]), e(BRAND), e(S.get("tagline", "")))) if S.get("logo") else '<span class="mark">H</span><span><b>%s</b></span>' % e(BRAND)
     top = ('<header><div class="wrap top"><a class="logo" href="%sindex.html" aria-label="%s 홈">%s</a><a class="tel" href="tel:%s">☎ %s</a></div>'
            '<nav class="bar" aria-label="주 메뉴"><div class="wrap">%s</div></nav></header>') % (
-        rel(depth), e(BRAND), logo, e(re.sub(r"[^0-9+]", "", S["phone"])), e(S["phone"]), nav_html(depth, current_key))
+        rel(depth), e(BRAND), logo, e(DIAL), e(S["phone"]), nav_html(depth, current_key))
     c = S.get("company") or {}
     blogs = " · ".join('<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>' % (e(b["url"]), e(b["label"])) for b in S.get("blogs", []))
     foot = ('<footer><div class="wrap"><b>%s</b><br>대표 %s · 전화 <a href="tel:%s">%s</a><br>사업자등록번호 %s · 통신판매업신고번호 %s<br>%s<br>%s<br><a href="' + rel(depth) + 'privacy/">개인정보처리방침</a> · © %s All rights reserved.</div></footer>') % (
-        e(S["pageTitle"]), e(S["owner"]), e(re.sub(r"[^0-9]", "", S["phone"])), e(S["phone"]), e(c.get("bizNo", "")), e(c.get("mailOrderNo", "")), e(c.get("address", "")), blogs, datetime.date.today().year)
+        e(S["pageTitle"]), e(S["owner"]), e(DIAL), e(S["phone"]), e(c.get("bizNo", "")), e(c.get("mailOrderNo", "")), e(c.get("address", "")), blogs, datetime.date.today().year)
     return top, foot
 
 
@@ -276,7 +277,7 @@ def build_section_page(key, sec_title, d, items, idx):
 </body>
 </html>
 """ % (crumbs([(BRAND, "index.html"), (sec_title, None), (label, None)], depth), e(sec_title), e(sec_title), side, e(label), body, foot,
-       kakao_fab(), e(re.sub(r"[^0-9]", "", S["phone"])), e(S["phone"]))
+       kakao_fab(), e(DIAL), e(S["phone"]))
     page = page.replace("</body>", bot_scripts(depth) + "\n</body>")
     out = ROOT / d / it["slug"]
     out.mkdir(parents=True, exist_ok=True)
@@ -394,7 +395,7 @@ def build_post(i, p):
 </html>
 """ % (crumbs([(BRAND, "index.html"), ("현장일지", "posts/"), (p["title"], None)], depth), e(p["title"]), sample, e(p["date"]), e(p["date"].replace("-", ".")), mins, tags,
        ('<img class="phero" src="%s" alt="%s">' % (e(img_src(p["image"], depth)), e(p["title"]))) if p["image"] else "", body,
-       e(BRAND), e(re.sub(r"[^0-9]", "", S["phone"])), e(S["phone"]), kakao_fab().replace("kkfab", ""), blogs, related, pn, foot)
+       e(BRAND), e(DIAL), e(S["phone"]), kakao_fab().replace("kkfab", ""), blogs, related, pn, foot)
     page = page.replace("</body>", bot_scripts(depth) + "\n</body>")
     out = ROOT / "posts" / p["slug"]
     out.mkdir(parents=True, exist_ok=True)
@@ -457,7 +458,7 @@ def build_rss():
 
 
 def build_bot_data():
-    data = {"phone": S["phone"], "kakaoUrl": S.get("kakaoUrl", ""), "inquiryEndpoint": S.get("inquiryEndpoint", ""), "social": S.get("social") or {}, "company": S.get("company") or {}, "owner": S.get("owner", ""), "brand": S.get("brand", ""), "hours": S.get("hours", ""), "bot": S.get("bot")}
+    data = {"phone": S["phone"], "kakaoUrl": S.get("kakaoUrl", ""), "inquiryEndpoint": S.get("inquiryEndpoint", ""), "callPhone": S.get("callPhone", ""), "social": S.get("social") or {}, "company": S.get("company") or {}, "owner": S.get("owner", ""), "brand": S.get("brand", ""), "hours": S.get("hours", ""), "bot": S.get("bot")}
     (ROOT / "assets").mkdir(exist_ok=True)
     (ROOT / "assets" / "bot-data.js").write_text("// build.py 가 자동으로 만드는 파일입니다. 직접 고치지 마세요.\nwindow.SITE_BOT=%s;\n" % json.dumps(data, ensure_ascii=False), encoding="utf-8")
 
@@ -590,7 +591,7 @@ def build_gallery():
 <script>(function(){var w=document.querySelector('.gfilter');if(!w)return;w.addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b)return;w.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b)});var t=b.getAttribute('data-t');document.querySelectorAll('.gcard').forEach(function(c){c.hidden=!!t&&c.getAttribute('data-t')!==t})})})();</script>
 </body>
 </html>
-""" % (crumbs([(BRAND, "index.html"), ("현장갤러리", None)], depth), chips, cards, e(re.sub(r"[^0-9]", "", S["phone"])), e(S["phone"]), foot)
+""" % (crumbs([(BRAND, "index.html"), ("현장갤러리", None)], depth), chips, cards, e(DIAL), e(S["phone"]), foot)
     page = page.replace("</body>", bot_scripts(depth) + "\n</body>")
     out = ROOT / "gallery"
     out.mkdir(parents=True, exist_ok=True)
@@ -625,7 +626,7 @@ def build_smell():
 %s
 </body>
 </html>
-""" % (crumbs([(BRAND, "index.html"), ("하수구 냄새차단", None)], depth), e(sm.get("title", "하수구 냄새차단")), e(sm.get("sub", "")), ul(sm.get("symptoms", [])), ul(sm.get("causes", [])), ul(trap) if trap else "", ('<p class="meta">자세한 설치 위치별 단가는 <a href="../price/drain-trap/">하수구트랩 단가표</a>에서 확인하세요.</p>'), steps, e(re.sub(r"[^0-9]", "", S["phone"])), e(S["phone"]), foot)
+""" % (crumbs([(BRAND, "index.html"), ("하수구 냄새차단", None)], depth), e(sm.get("title", "하수구 냄새차단")), e(sm.get("sub", "")), ul(sm.get("symptoms", [])), ul(sm.get("causes", [])), ul(trap) if trap else "", ('<p class="meta">자세한 설치 위치별 단가는 <a href="../price/drain-trap/">하수구트랩 단가표</a>에서 확인하세요.</p>'), steps, e(DIAL), e(S["phone"]), foot)
     page = page.replace("</body>", bot_scripts(depth) + "\n</body>")
     out = ROOT / "smell"
     out.mkdir(parents=True, exist_ok=True)
@@ -822,7 +823,7 @@ def build_404():
 %s
 </body>
 </html>
-""" % (re.sub(r"[^0-9]", "", S["phone"]), e(S["phone"]), foot)
+""" % (DIAL, e(S["phone"]), foot)
     page = page.replace("<head>", '<head>\n<base href="/">', 1)
     page = page.replace("</body>", bot_scripts(depth) + "\n</body>")
     (ROOT / "404.html").write_text(page, encoding="utf-8")

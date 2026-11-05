@@ -7,7 +7,7 @@
   if (!B || B.enabled === false) return;
   var BASE = window.SITE_BASE || "";
   var PHONE = S.phone || "";
-  var TEL = "tel:" + String(PHONE).replace(/[^0-9+]/g, "");
+  var TEL = "tel:" + String(S.callPhone || PHONE).replace(/[^0-9+]/g, "");
   var KAKAO = /^https?:\/\//.test(S.kakaoUrl || "") ? S.kakaoUrl : "";
   var PREVIEW = !!window.SITE_PREVIEW;
   // 답변 안의 {{phone}} {{address}} {{owner}} {{bizNo}} {{mailOrderNo}} {{brand}} {{hours}} 를 홈페이지 값으로 바꿉니다.
