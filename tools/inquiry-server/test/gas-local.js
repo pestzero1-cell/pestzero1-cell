@@ -3,7 +3,7 @@
 const fs = require("fs"), vm = require("vm"), http = require("http"), path = require("path"), crypto = require("crypto");
 const port = Number(process.argv[2] || 8787), PW = process.argv[3] || "test-password-1";
 const sleepLog = [], sentMail = [];
-const sheets = {}, props = { ADMIN_PASSWORD: PW }, cacheData = {}, files = {};
+const sheets = {}, props = { ADMIN_PASSWORD: PW, ...(process.env.GATEWAY_SECRET ? { GATEWAY_SECRET: process.env.GATEWAY_SECRET } : {}) }, cacheData = {}, files = {};
 function mkSheet(name) {
   const rows = [];
   const sh = {

@@ -661,9 +661,9 @@ def build_privacy():
     ret = pv.get("retention", "문의 처리 완료 후 1년")
     eff = pv.get("effective", TODAY)
     items = [
-        ("1. 수집하는 개인정보 항목", "이름, 연락처(전화번호), 문의·후기 내용(고객이 직접 입력한 내용). 서비스 이용 과정에서 방문 주소가 추가로 확인될 수 있습니다."),
+        ("1. 수집하는 개인정보 항목", "이름, 연락처(전화번호), 문의·후기 내용(고객이 직접 입력한 내용)" + (", 접속 IP 주소와 접속 국가(스팸·부정 이용 방지 목적, 자동 수집)" if S.get("gatewayUrl") else "") + ". 서비스 이용 과정에서 방문 주소가 추가로 확인될 수 있습니다."),
         ("2. 수집·이용 목적", "방역·하수구 서비스 상담 및 견적 안내, 문의에 대한 답변, 서비스 일정 협의와 사후 관리, 이용후기 게시 확인."),
-        ("3. 보유 및 이용 기간", "%s까지 보관한 뒤 지체 없이 파기합니다. 다만 관계 법령에서 보존을 요구하는 경우 해당 기간 동안 보관합니다." % ret),
+        ("3. 보유 및 이용 기간", ("%s까지 보관한 뒤 지체 없이 파기합니다. 접속 IP 주소는 접수일로부터 90일 뒤 삭제합니다. 다만 관계 법령에서 보존을 요구하는 경우 해당 기간 동안 보관합니다." if S.get("gatewayUrl") else "%s까지 보관한 뒤 지체 없이 파기합니다. 다만 관계 법령에서 보존을 요구하는 경우 해당 기간 동안 보관합니다.") % ret),
         ("4. 제3자 제공", "고객의 개인정보를 동의 없이 제3자에게 제공하지 않습니다."),
         ("5. 처리 위탁 및 국외 이전", ("문의·후기 접수 내용은 Google LLC(미국)의 Google 스프레드시트·드라이브에 저장됩니다. 이전 항목: 위 1항의 정보, 이전 시기·방법: 문의 등록 시 암호화된 통신으로 전송, 이용 목적: 접수 내용의 저장·보관, 보유 기간: 위 3항과 같음. 동의하지 않으실 수 있으며, 이 경우 전화 %s 로 문의해 주세요." % phone) if srv else "현재 문의는 고객의 휴대폰 문자 앱 또는 전화로 직접 접수되며 별도 서버에 저장하지 않습니다."),
         ("6. 파기 절차 및 방법", "보유 기간이 지난 정보는 시트에서 삭제하는 방식으로 파기합니다."),
@@ -690,15 +690,16 @@ def csp_meta():
     """브라우저 보안 규칙(CSP). 이 사이트가 불러올 수 있는 곳을 제한해서, 악성 스크립트가 끼어들거나 정보를 밖으로 보내는 것을 막습니다."""
     from urllib.parse import urlparse
     origins = ["https://script.google.com", "https://script.googleusercontent.com"]
-    for u in (S.get("inquiryEndpoint"), (S.get("bot") or {}).get("aiEndpoint")):
+    for u in (S.get("inquiryEndpoint"), S.get("gatewayUrl"), (S.get("bot") or {}).get("aiEndpoint")):
         if u:
             p = urlparse(u)
             if p.scheme and p.netloc:
                 o = "%s://%s" % (p.scheme, p.netloc)
                 if o not in origins:
                     origins.append(o)
-    pol = ("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; "
-           "connect-src 'self' %s; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self'; manifest-src 'self'; frame-src https://www.youtube-nocookie.com") % " ".join(origins)
+    ts = bool(S.get("turnstileSiteKey"))
+    pol = ("default-src 'self'; script-src 'self' 'unsafe-inline'" + (" https://challenges.cloudflare.com" if ts else "") + "; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; "
+           "connect-src 'self' %s; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self'; manifest-src 'self'; frame-src https://www.youtube-nocookie.com" + (" https://challenges.cloudflare.com" if ts else "")) % " ".join(origins)
     return ('<meta http-equiv="Content-Security-Policy" content="%s">\n<meta name="referrer" content="strict-origin-when-cross-origin">\n' % pol)
 
 

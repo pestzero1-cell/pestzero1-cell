@@ -33,6 +33,10 @@ window.SITE = {
     // { id: "유튜브영상ID(11자리)", title: "영상 제목" }   예: https://youtube.com/shorts/AbCdEfGhIjK → id: "AbCdEfGhIjK"
   ],
 
+  // 스팸 차단 관문(게이트웨이): 접속 IP 확인·사람 확인(Turnstile)·IP별 한도. 설정 방법: tools/edge-gateway/README.md (비우면 사용 안 함)
+  gatewayUrl: "",         // 예: "https://homeroach-gw.내계정.workers.dev"
+  turnstileSiteKey: "",   // Cloudflare Turnstile 사이트 키(선택). 사람 확인을 켜려면 게이트웨이에 TURNSTILE_SECRET 도 설정
+
   // 개인정보처리방침(privacy/) 내용. 실제 운영 전에 꼭 확인하세요(기본 양식).
   privacy: {
     retention: "문의 처리 완료 후 1년",   // 보유 기간 (관리자 화면 > 보안에서 오래된 문의를 지울 수 있습니다)

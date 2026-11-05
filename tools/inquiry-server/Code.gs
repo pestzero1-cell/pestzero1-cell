@@ -5,15 +5,17 @@
  * 비밀번호는 코드에 적지 않고 [프로젝트 설정 → 스크립트 속성]의 ADMIN_PASSWORD 에 넣습니다.
  */
 var NOTIFY_EMAIL = "";            // 새 문의·보안 경고를 메일로 받을 본인 메일 주소(권장). 비우면 시트에만 쌓입니다.
-var SHEET_INQ = "문의", SHEET_REV = "후기대기", SHEET_CONTENT = "콘텐츠", SHEET_LOG = "기록";
+var SHEET_INQ = "문의", SHEET_REV = "후기대기", SHEET_CONTENT = "콘텐츠", SHEET_LOG = "기록", SHEET_BLOCK = "차단목록";
 var MAX = 2000;                   // 글자 수 제한
 var SESSION_SEC = 6 * 3600;       // 로그인 유지 시간(6시간)
-var STATUSES = ["신규", "상담중", "완료", "보류"];
-var INQ_HEAD = ["접수번호", "접수시각", "종류", "서비스", "성함", "연락처", "내용", "페이지", "상태", "메모", "처리시각"];
-var REV_HEAD = ["번호", "접수시각", "성함", "연락처", "별점", "내용", "상태"];
+var STATUSES = ["신규", "상담중", "완료", "보류", "스팸"];
+var INQ_HEAD = ["접수번호", "접수시각", "종류", "서비스", "성함", "연락처", "내용", "페이지", "상태", "메모", "처리시각", "IP"];
+var REV_HEAD = ["번호", "접수시각", "성함", "연락처", "별점", "내용", "상태", "IP"];
+var BLOCK_HEAD = ["IP", "차단시각", "사유"];
 var LOG_HEAD = ["시각", "구분", "내용"];
 var POW_BITS = 15;                // 스팸 방지 퀴즈 난이도(접수 1건당 휴대폰에서 약 0.3~1초). 올리면 스팸 비용이 커집니다.
 var TICKET_MIN_MS = 2500, TICKET_MAX_MS = 2 * 3600 * 1000;   // 접수 표는 발급 2.5초 후~2시간 안에 한 번만 사용 가능
+var SPAM_WORDS = /카지노|바카라|토토|먹튀|도박|슬롯\s*머신|불법\s*대출|대출\s*상담|비아그라|시알리스|야동|성인\s*용품|출장\s*안마|주식\s*리딩|코인\s*리딩|리딩방|텔레그램|텔레\s*@|톡방\s*입장|casino|viagra|cialis|backlink|seo\s*service|loan\s*offer|crypto\s*invest/i;   // 광고·사기 글에 자주 나오는 단어(필요하면 추가)
 var MAX_ROWS = 20000;             // 시트가 이 이상 쌓이면 새 접수를 막습니다(폭주 방지)
 var LIMITS = { inq: [40, 600], rev: [10, 600], tk: [200, 600] };   // [최대 건수, 기준 시간(초)] — 이 시간 안에 이 건수를 넘으면 접수 거절
 
@@ -22,6 +24,7 @@ function doGet(e) {
   if (a === "public") return json(publicData());
   if (a === "ticket") return json(newTicket());
   if (a === "info") return json(info());
+  if (a === "blocklist") return json(blocklistFor(e));
   return text("홈로취케어 서버 작동 중");
 }
 
@@ -54,6 +57,10 @@ function doPost(e) {
       case "upload": return json(upload(p));
       case "password_change": return json(passwordChange(p));
       case "audit_list": return json(auditList());
+      case "ip_block": return json(ipBlock(p));
+      case "ip_unblock": return json(ipUnblock(p));
+      case "ip_list": return json(ipList());
+      case "ip_purge": return json({ ok: true, cleared: purgeIps(p.days) });
     }
     return json({ ok: false, error: "unknown" });
   } catch (err) {
@@ -71,6 +78,7 @@ function sheet(name, head) {
   var ss = SpreadsheetApp.getActive(), sh = ss.getSheetByName(name);
   if (!sh) { sh = ss.insertSheet(name); if (head) sh.appendRow(head); }
   else if (head && sh.getLastRow() === 0) sh.appendRow(head);
+  else if (head && String(sh.getRange(1, head.length).getValue() || "") !== head[head.length - 1]) sh.getRange(1, 1, 1, head.length).setValues([head]);   // 새 칸(IP 등)이 생기면 머리글 보강
   return sh;
 }
 function newId(prefix) { return prefix + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36); }
@@ -114,6 +122,82 @@ function checkTicket(tk) {
   return true;
 }
 
+// ---------- 스팸 글 걸러내기(광고·링크·사기 문구) ----------
+function spamReason(text, name) {
+  var t = String(text || "") + " " + String(name || "");
+  var urls = (t.match(/https?:\/\/|www\.|\.(com|net|kr|xyz|top|ru|cn)\b\/?/gi) || []).length;
+  if (urls >= 2) return "링크 여러 개";
+  if (SPAM_WORDS.test(t)) return "광고성 단어";
+  if (/(.)\1{11,}/.test(t)) return "같은 글자 반복";
+  if (String(text || "").length >= 20 && !/[가-힣]/.test(text)) return "한글 없음";
+  if ((t.match(/[\u0400-\u04FF\u4E00-\u9FFF\u0E00-\u0E7F]/g) || []).length >= 8) return "외국 문자 다수";
+  return "";
+}
+
+// ---------- 접속 IP 확인(게이트웨이를 쓸 때) · 차단 목록 ----------
+// 구글 앱스스크립트는 접속자 IP를 알 수 없습니다. 그래서 Cloudflare 게이트웨이(tools/edge-gateway/)가 IP를 확인해 "서명"해서 전달합니다.
+// GATEWAY_SECRET(스크립트 속성)을 설정하면 문의·후기는 게이트웨이를 통한 것만 받습니다(주소를 알아도 직접 보내는 프로그램은 거절).
+function gwSecret() { return PropertiesService.getScriptProperties().getProperty("GATEWAY_SECRET") || ""; }
+function checkGateway(gw) {
+  var s = gwSecret(); gw = gw || {};
+  var ts = Number(gw.ts), ip = String(gw.ip || "").slice(0, 64);
+  if (!s || !ip || !(Math.abs(Date.now() - ts) <= 5 * 60 * 1000)) return "";
+  if (String(gw.sig || "") !== hexOf(Utilities.computeHmacSha256Signature(ip + "|" + ts + "|" + String(gw.n || ""), s))) return "";
+  var c = CacheService.getScriptCache();
+  if (c.get("g_" + gw.sig)) return "";                                      // 한 번 쓴 서명은 재사용 불가
+  c.put("g_" + gw.sig, "1", 600);
+  return ip + (/^[A-Za-z]{2}$/.test(String(gw.cc || "")) ? " (" + String(gw.cc).toUpperCase() + ")" : "");
+}
+function blockedMap() {
+  var c = CacheService.getScriptCache(), raw = c.get("blk");
+  if (raw) { try { return JSON.parse(raw); } catch (e) {} }
+  var sh = sheet(SHEET_BLOCK, BLOCK_HEAD), n = sh.getLastRow(), m = {};
+  if (n >= 2) sh.getRange(2, 1, n - 1, 1).getValues().forEach(function (r) { if (r[0]) m[String(r[0])] = 1; });
+  c.put("blk", JSON.stringify(m), 60);
+  return m;
+}
+function ipOnly(s) { return String(s || "").split(" ")[0]; }
+function ipBlock(p) {
+  var ip = ipOnly(p.ip).slice(0, 64);
+  if (!/^[0-9a-fA-F:.]{3,64}$/.test(ip)) return { ok: false, error: "ip" };
+  var sh = sheet(SHEET_BLOCK, BLOCK_HEAD);
+  if (findRow(sh, ip) < 0) sh.appendRow([ip, new Date(), cell(p.reason || "수동 차단", 100)]);
+  CacheService.getScriptCache().remove("blk");
+  audit("IP 차단", ip);
+  return { ok: true };
+}
+function ipUnblock(p) {
+  var sh = sheet(SHEET_BLOCK, BLOCK_HEAD), r = findRow(sh, ipOnly(p.ip));
+  if (r > 0) sh.deleteRow(r);
+  CacheService.getScriptCache().remove("blk");
+  audit("IP 차단 해제", ipOnly(p.ip));
+  return { ok: true };
+}
+function ipList() {
+  var sh = sheet(SHEET_BLOCK, BLOCK_HEAD), n = sh.getLastRow(), out = [];
+  if (n >= 2) sh.getRange(2, 1, n - 1, 3).getValues().forEach(function (r) { out.push({ ip: r[0], at: r[1] instanceof Date ? r[1].toISOString() : String(r[1]), reason: r[2] }); });
+  return { ok: true, items: out.reverse(), gateway: !!gwSecret() };
+}
+// 게이트웨이가 차단 목록을 받아 갈 때 쓰는 주소(서명 필요)
+function blocklistFor(e) {
+  var s = gwSecret(), ts = Number(e.parameter.ts || 0);
+  if (!s || !(Math.abs(Date.now() - ts) <= 5 * 60 * 1000) || String(e.parameter.sig || "") !== hexOf(Utilities.computeHmacSha256Signature("blocklist|" + ts, s))) return { ok: false };
+  return { ok: true, ips: Object.keys(blockedMap()) };
+}
+// 개인정보 보관기간: 지정한 일수가 지난 접수의 IP 기록을 지웁니다. (트리거로 매일 실행하거나 관리자 화면에서 실행)
+function purgeIps(days) {
+  var cutoff = new Date(Date.now() - Math.max(1, Number(days) || 90) * 86400000), cleared = 0;
+  [[SHEET_INQ, INQ_HEAD], [SHEET_REV, REV_HEAD]].forEach(function (x) {
+    var sh = sheet(x[0], x[1]), n = sh.getLastRow(), col = x[1].length;
+    if (n < 2) return;
+    var v = sh.getRange(2, 1, n - 1, col).getValues();
+    for (var i = 0; i < v.length; i++) if (v[i][1] instanceof Date && v[i][1] < cutoff && v[i][col - 1]) { sh.getRange(i + 2, col).setValue(""); cleared++; }
+  });
+  audit("IP 기록 정리", cleared + "건");
+  return cleared;
+}
+function purgeIpsDaily() { purgeIps(90); }
+
 // ---------- 관리자 2단계 인증(선택): 구글 OTP 같은 인증 앱의 6자리 코드 ----------
 function b32dec(s) {
   var al = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567", bits = "", out = [];
@@ -145,7 +229,7 @@ function checkTotp(code) {
   }
   return false;
 }
-function info() { return { ok: true, totp: !!PropertiesService.getScriptProperties().getProperty("TOTP_SECRET") }; }
+function info() { var pr = PropertiesService.getScriptProperties(); return { ok: true, totp: !!pr.getProperty("TOTP_SECRET"), gateway: !!pr.getProperty("GATEWAY_SECRET") }; }
 // Apps Script 편집기에서 직접 한 번 실행하세요: 2단계 인증 켜기. (실행 후 [실행 로그]에 나오는 키를 인증 앱에 등록)
 function setupTotp() {
   var h = (Utilities.getUuid() + Utilities.getUuid()).replace(/-/g, "").slice(0, 40), al = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567", bits = "", s = "";
@@ -191,13 +275,28 @@ function passwordChange(p) {
 }
 
 // ---------- 문의 ----------
+function gate(p, skipTicket) {           // 접수 자격 확인: 게이트웨이를 쓰면 게이트웨이 서명, 아니면 접수 표+계산 퀴즈. 통과하면 { ip } 반환
+  if (skipTicket) return { ip: "" };
+  if (gwSecret()) {
+    var ip = checkGateway(p.gw);
+    if (!ip) return { error: "gateway" };
+    if (blockedMap()[ipOnly(ip)]) return { error: "blocked" };
+    return { ip: ip };
+  }
+  return checkTicket(p.tk) ? { ip: "" } : { error: "ticket" };
+}
 function addInquiry(p, skipTicket) {
   var d = p.data || {};
   if (d.website) return { ok: true };                                    // 숨은 칸이 채워져 있으면 자동 스팸 → 조용히 무시
   if (!d.consent) return { ok: false, error: "consent" };
-  if (!skipTicket && !checkTicket(p.tk)) return { ok: false, error: "ticket" };               // 개인정보 수집·이용 동의 없으면 접수하지 않음
+  var gt = gate(p, skipTicket);
+  if (gt.error) return gt.error === "blocked" ? { ok: true } : { ok: false, error: gt.error };
   var msg = cut(d.msg || d.content), phone = cut(d.phone, 40);
   if (!msg.trim() && !phone.trim()) return { ok: false, error: "empty" };
+  if (!skipTicket) {
+    var why = spamReason(msg, (d.name || "") + " " + (d.svc || ""));
+    if (why) { audit("스팸 차단", why + " " + gt.ip); return { ok: false, error: "content" }; }
+  }
   var c = CacheService.getScriptCache(), dk = "d_" + hash(phone + "|" + msg);
   if (c.get(dk)) return { ok: true };                                    // 같은 내용을 연달아 보내면 한 번만
   var pk = "p_" + hash(phone.replace(/\D/g, "")), pn = Number(c.get(pk) || 0);
@@ -207,7 +306,7 @@ function addInquiry(p, skipTicket) {
   if (sh.getLastRow() > MAX_ROWS) return { ok: false, error: "full" };
   c.put(dk, "1", 600);
   var id = newId("Q");
-  sh.appendRow([id, new Date(), cell(p.type, 40), cell(d.svc || d.title, 100), cell(d.name || d.author, 40), cell(phone, 40), cell(msg), cell(p.page, 200), "신규", "", ""]);
+  sh.appendRow([id, new Date(), cell(p.type, 40), cell(d.svc || d.title, 100), cell(d.name || d.author, 40), cell(phone, 40), cell(msg), cell(p.page, 200), "신규", "", "", cell(gt.ip, 70)]);
   mail("[홈페이지 문의] " + cut(p.type, 20) + " " + cut(d.name, 20), cut(d.svc, 60) + "\n" + cut(d.name, 40) + " " + phone + "\n" + cut(msg, 500));
   return { ok: true };
 }
@@ -217,7 +316,7 @@ function inqList() {
   var vals = sh.getRange(2, 1, n - 1, INQ_HEAD.length).getValues(), out = [];
   for (var i = vals.length - 1; i >= 0; i--) {
     var r = vals[i];
-    out.push({ id: r[0], at: r[1] instanceof Date ? r[1].toISOString() : String(r[1]), type: r[2], svc: r[3], name: r[4], phone: r[5], msg: r[6], page: r[7], status: r[8] || "신규", memo: r[9], doneAt: r[10] instanceof Date ? r[10].toISOString() : String(r[10] || "") });
+    out.push({ id: r[0], at: r[1] instanceof Date ? r[1].toISOString() : String(r[1]), type: r[2], svc: r[3], name: r[4], phone: r[5], msg: r[6], page: r[7], status: r[8] || "신규", memo: r[9], doneAt: r[10] instanceof Date ? r[10].toISOString() : String(r[10] || ""), ip: r[11] || "" });
   }
   return { ok: true, items: out };
 }
@@ -261,9 +360,14 @@ function addReview(p, skipTicket) {
   var d = p.data || p;
   if (d.website) return { ok: true };
   if (!d.consent) return { ok: false, error: "consent" };
-  if (!skipTicket && !checkTicket(p.tk || d.tk)) return { ok: false, error: "ticket" };
+  var gt = gate(p, skipTicket);
+  if (gt.error) return gt.error === "blocked" ? { ok: true } : { ok: false, error: gt.error };
   var text = cut(d.text, 600).trim(), name = cut(d.name, 20).trim();
   if (!text || !name) return { ok: false, error: "empty" };
+  if (!skipTicket) {
+    var why = spamReason(text, name);
+    if (why) { audit("스팸 차단(후기)", why + " " + gt.ip); return { ok: false, error: "content" }; }
+  }
   var c = CacheService.getScriptCache(), dk = "d_" + hash(name + "|" + text);
   if (c.get(dk)) return { ok: true };
   if (!allow("rev")) return { ok: false, error: "busy" };
@@ -271,7 +375,7 @@ function addReview(p, skipTicket) {
   if (sh.getLastRow() > MAX_ROWS) return { ok: false, error: "full" };
   c.put(dk, "1", 600);
   var stars = Math.max(1, Math.min(5, Number(d.stars) || 5));
-  sh.appendRow([newId("R"), new Date(), cell(name, 20), cell(d.phone, 40), stars, cell(text, 600), "대기"]);
+  sh.appendRow([newId("R"), new Date(), cell(name, 20), cell(d.phone, 40), stars, cell(text, 600), "대기", cell(gt.ip, 70)]);
   mail("[홈페이지] 새 후기가 도착했습니다", name + "\n" + text);
   return { ok: true };
 }
@@ -279,7 +383,7 @@ function revPending() {
   var sh = sheet(SHEET_REV, REV_HEAD), n = sh.getLastRow(), out = [];
   if (n >= 2) {
     var v = sh.getRange(2, 1, n - 1, REV_HEAD.length).getValues();
-    for (var i = v.length - 1; i >= 0; i--) if (v[i][6] === "대기") out.push({ id: v[i][0], at: v[i][1] instanceof Date ? v[i][1].toISOString() : String(v[i][1]), name: v[i][2], phone: v[i][3], stars: v[i][4], text: v[i][5] });
+    for (var i = v.length - 1; i >= 0; i--) if (v[i][6] === "대기") out.push({ id: v[i][0], at: v[i][1] instanceof Date ? v[i][1].toISOString() : String(v[i][1]), name: v[i][2], phone: v[i][3], stars: v[i][4], text: v[i][5], ip: v[i][7] || "" });
   }
   return { ok: true, items: out };
 }

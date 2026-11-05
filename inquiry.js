@@ -4,7 +4,46 @@
 (function () {
   var S = window.SITE || window.SITE_BOT || {};
   var url = /^https:\/\//.test(S.inquiryEndpoint || "") || /^http:\/\/localhost[:/]/.test(S.inquiryEndpoint || "") ? S.inquiryEndpoint : "";
+  var gw = /^https:\/\//.test(S.gatewayUrl || "") || /^http:\/\/localhost[:/]/.test(S.gatewayUrl || "") ? String(S.gatewayUrl).replace(/\/+$/, "") : "";
+  var siteKey = /^[0-9A-Za-z_-]{10,80}$/.test(S.turnstileSiteKey || "") ? S.turnstileSiteKey : "";
   var ready = null; // 미리 받아 둔 표(한 번 쓰면 새로 받음)
+  var tokP = null;  // 미리 받아 둔 사람 확인 토큰(게이트웨이 모드)
+
+  // ---- 게이트웨이 모드: 사람 확인(Turnstile, 선택) 후 게이트웨이로 전송 ----
+  function loadTs() {
+    return new Promise(function (res, rej) {
+      if (window.turnstile) return res();
+      var s = document.createElement("script");
+      s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+      s.async = true; s.onload = res; s.onerror = function () { rej(new Error("human")); };
+      document.head.appendChild(s);
+    });
+  }
+  function humanToken() {
+    if (!siteKey) return Promise.resolve("");
+    if (tokP) return tokP;
+    tokP = loadTs().then(function () {
+      return new Promise(function (res, rej) {
+        var box = document.createElement("div");
+        box.style.cssText = "position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:300";
+        document.body.appendChild(box);
+        var done = function () { setTimeout(function () { box.remove(); }, 400); };
+        window.turnstile.render(box, { sitekey: siteKey, appearance: "interaction-only", callback: function (t) { done(); res(t); }, "error-callback": function () { done(); rej(new Error("human")); } });
+        setTimeout(function () { rej(new Error("human")); }, 90000);
+      });
+    }).catch(function (e) { tokP = null; throw e; });
+    return tokP;
+  }
+  function postGw(payload) {
+    return humanToken().then(function (tok) {
+      tokP = null;                                                  // 토큰은 한 번만
+      if (tok) payload.ts_token = tok;
+      return fetch(gw + "/submit", { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j || !j.ok) throw new Error((j && j.error) || "fail");
+      return j;
+    });
+  }
 
   function lead(u8) { var c = 0; for (var i = 0; i < u8.length; i++) { if (u8[i] === 0) { c += 8; continue; } c += Math.clz32(u8[i]) - 24; break; } return c; }
   function solve(tk) {
@@ -24,6 +63,7 @@
     });
   }
   function prepare() {
+    if (gw) return humanToken().catch(function () {});
     if (!url) return Promise.reject(new Error("no endpoint"));
     if (ready) return ready;
     ready = fetch(url + (url.indexOf("?") < 0 ? "?" : "&") + "action=ticket", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
@@ -34,6 +74,7 @@
     return ready;
   }
   function post(payload) {
+    if (gw) return postGw(payload);
     return prepare().then(function (tk) {
       ready = null;                                                  // 표는 한 번만 쓸 수 있음
       var wait = Math.max(0, 2800 - (Date.now() - tk.got));          // 서버는 발급 2.5초 뒤부터 받습니다
@@ -47,11 +88,11 @@
     });
   }
   window.HRC_INQUIRY = {
-    enabled: !!url,
+    enabled: !!(url || gw),
     prepare: function () { return prepare().catch(function () {}); },
     sendAction: function (action, data) { return post({ action: action, data: data, page: location.pathname }); },
     send: function (type, data) { return post({ type: type, data: data, page: location.pathname, at: new Date().toISOString() }); }
   };
   // 양식에 손을 대는 순간 미리 표를 받아 두어, 보내기 버튼을 눌렀을 때 기다리지 않게 합니다.
-  if (url) document.addEventListener("focusin", function (e) { if (e.target && e.target.closest && e.target.closest("form")) window.HRC_INQUIRY.prepare(); });
+  if (url || gw) document.addEventListener("focusin", function (e) { if (e.target && e.target.closest && e.target.closest("form")) window.HRC_INQUIRY.prepare(); });
 })();
