@@ -349,4 +349,5 @@ footer{border-top:1px solid var(--line);padding:32px 0 calc(96px + env(safe-area
 .ptabs.side a[aria-current]{background:var(--brand);color:var(--on);border-color:var(--brand);font-weight:700}
 .about-main{padding-top:20px}
 }
+.prel{margin:26px 0;padding:14px 18px;border:1px solid var(--line);border-radius:12px;background:var(--card)}.prel ul{margin:8px 0 0;padding-left:1.1em;line-height:1.9}.prel a{color:var(--brand);font-weight:700}
 .pcard h2{font-size:1.1rem;margin:12px 16px 4px;line-height:1.35}.pcard p{margin:0 16px 8px;color:var(--muted);font-size:.92rem}.pcard .pmeta{margin:0 16px 14px}

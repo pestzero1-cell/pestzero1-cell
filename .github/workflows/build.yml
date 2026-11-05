@@ -1,0 +1,43 @@
+# 글 파일(posts/*.md)이나 content.js 를 GitHub 웹에서 올리면, 자동으로 python3 build.py 를 실행해 페이지·목록·RSS·사이트맵을 만들어 저장합니다.
+# (컴퓨터에 파이썬이 없어도 됩니다) 사용법: 현장일지-작성법.md
+name: 홈페이지 자동 빌드
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "posts/**"
+      - "content.js"
+      - "index.html"
+      - "build.py"
+      - "tools/prerender.js"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    # 자동 빌드가 만든 저장(커밋)이 다시 빌드를 부르지 않게 합니다.
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: 홈 미리그리기 도구 설치
+        run: |
+          npm install -g playwright
+          npx playwright install --with-deps chromium
+      - name: 빌드 (페이지·사이트맵·RSS 생성)
+        run: python3 build.py
+      - name: 바뀐 파일 저장
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || (git commit -m "자동 빌드: 페이지·사이트맵·RSS 갱신" && git push)

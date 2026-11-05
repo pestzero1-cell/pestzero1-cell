@@ -181,7 +181,7 @@ def head(title, desc, path, depth, og_image=None, extra="", jsonld=None):
         verify += '<meta name="naver-site-verification" content="%s">\n' % e(S["naverVerification"])
     if S.get("googleVerification"):
         verify += '<meta name="google-site-verification" content="%s">\n' % e(S["googleVerification"])
-    ld = '<script type="application/ld+json">%s</script>\n' % json.dumps(jsonld, ensure_ascii=False) if jsonld else ""
+    ld = "".join('<script type="application/ld+json">%s</script>\n' % json.dumps(x, ensure_ascii=False) for x in (jsonld if isinstance(jsonld, list) else [jsonld] if jsonld else []))
     return """<!doctype html>
 <html lang="ko">
 <head>
@@ -334,7 +334,8 @@ def parse_post(p):
     slug = meta.get("slug") or re.sub(r"[^a-z0-9가-힣]+", "-", p.stem.lower()).strip("-")
     return {"slug": slug, "title": meta.get("title", p.stem), "date": meta.get("date", TODAY), "description": meta.get("description", ""),
             "image": meta.get("image", ""), "tags": [t.strip() for t in meta.get("tags", "").split(",") if t.strip()],
-            "sample": meta.get("sample", "").lower() == "true", "body": body}
+            "sample": meta.get("sample", "").lower() == "true", "body": body,
+            "keyword": meta.get("keyword") or ([t.strip() for t in meta.get("tags", "").split(",") if t.strip()] or [""])[0]}
 
 
 posts = []
@@ -362,25 +363,35 @@ def build_post(i, p):
     pn = "".join('<a href="../%s/"><small>%s</small><br>%s</a>' % (e(x["slug"]), lab, e(x["title"])) for lab, x in (("이전 글", prev_), ("다음 글", next_)) if x)
     tags = "".join('<span class="tagchip">#%s</span>' % e(t) for t in p["tags"])
     blogs = "".join('<a class="btn ghost" href="%s" target="_blank" rel="noopener noreferrer">%s ↗</a>' % (e(b["url"]), e(b["label"])) for b in S.get("blogs", []))
+    words = len(plain(p["body"]).replace(" ", ""))
     ld = {"@context": "https://schema.org", "@type": "BlogPosting", "headline": p["title"], "datePublished": p["date"], "dateModified": p["date"],
-          "description": desc, "author": {"@type": "Organization", "name": BRAND}, "publisher": {"@type": "Organization", "name": BRAND},
+          "description": desc, "inLanguage": "ko-KR", "wordCount": words, "keywords": ", ".join(p["tags"]),
+          "author": {"@type": "Organization", "name": BRAND}, "publisher": {"@type": "Organization", "name": BRAND, "logo": {"@type": "ImageObject", "url": "%s/%s" % (SITE_URL, S.get("logo", ""))}},
           "mainEntityOfPage": "%s/%s" % (SITE_URL, path)}
     if p["image"]:
         ld["image"] = "%s/%s" % (SITE_URL, p["image"])
+    crumb_ld = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": BRAND, "item": SITE_URL + "/"},
+        {"@type": "ListItem", "position": 2, "name": "현장일지", "item": SITE_URL + "/posts/"},
+        {"@type": "ListItem", "position": 3, "name": p["title"], "item": "%s/%s" % (SITE_URL, path)}]}
+    mins = max(1, round(words / 500))
+    cand = [x for x in posts if x["slug"] != p["slug"] and set(x["tags"]) & set(p["tags"])]
+    rel_posts = sorted(cand, key=lambda x: (len(set(x["tags"]) & set(p["tags"])), x["date"]), reverse=True)[:3]
+    related = ('<aside class="prel"><b>함께 보면 좋은 글</b><ul>%s</ul></aside>' % "".join('<li><a href="../%s/">%s</a></li>' % (e(x["slug"]), e(x["title"])) for x in rel_posts)) if rel_posts else ""
     sample = '<p class="sampletag">예시 글입니다 — posts/%s.md 를 실제 내용으로 바꿔 주세요</p>' % e(p["slug"]) if p["sample"] else ""
-    page = head("%s | 현장일지 | %s" % (p["title"], BRAND), desc, path, depth, og_image=p["image"] or None, jsonld=ld) + "<body>\n" + top + """
+    page = head("%s | 현장일지 | %s" % (p["title"], BRAND), desc, path, depth, og_image=p["image"] or None, jsonld=[ld, crumb_ld]) + "<body>\n" + top + """
 <main><div class="wrap">%s</div>
-<article class="wrap post"><h1>%s</h1>%s<p class="pmeta"><time datetime="%s">%s</time> %s</p>
+<article class="wrap post"><h1>%s</h1>%s<p class="pmeta"><time datetime="%s">%s</time> <span>읽는 시간 약 %d분</span> %s</p>
 %s<div class="pbody">%s</div>
 <aside class="pcta"><b>%s 상담</b><p>증상과 지역을 알려 주시면 빠르게 안내해 드립니다.</p><a class="btn" href="tel:%s">☎ %s</a> %s%s</aside>
-<nav class="pn" aria-label="이전 다음 글">%s</nav>
+%s<nav class="pn" aria-label="이전 다음 글">%s</nav>
 <p><a class="bbtn" href="../">← 현장일지 목록</a></p></article></main>
 %s
 </body>
 </html>
-""" % (crumbs([(BRAND, "index.html"), ("현장일지", "posts/"), (p["title"], None)], depth), e(p["title"]), sample, e(p["date"]), e(p["date"].replace("-", ".")), tags,
+""" % (crumbs([(BRAND, "index.html"), ("현장일지", "posts/"), (p["title"], None)], depth), e(p["title"]), sample, e(p["date"]), e(p["date"].replace("-", ".")), mins, tags,
        ('<img class="phero" src="%s" alt="%s">' % (e(img_src(p["image"], depth)), e(p["title"]))) if p["image"] else "", body,
-       e(BRAND), e(re.sub(r"[^0-9]", "", S["phone"])), e(S["phone"]), kakao_fab().replace("kkfab", ""), blogs, pn, foot)
+       e(BRAND), e(re.sub(r"[^0-9]", "", S["phone"])), e(S["phone"]), kakao_fab().replace("kkfab", ""), blogs, related, pn, foot)
     page = page.replace("</body>", bot_scripts(depth) + "\n</body>")
     out = ROOT / "posts" / p["slug"]
     out.mkdir(parents=True, exist_ok=True)
@@ -497,6 +508,7 @@ def build_css():
 .ptabs.side a[aria-current]{background:var(--brand);color:var(--on);border-color:var(--brand);font-weight:700}
 .about-main{padding-top:20px}
 }
+.prel{margin:26px 0;padding:14px 18px;border:1px solid var(--line);border-radius:12px;background:var(--card)}.prel ul{margin:8px 0 0;padding-left:1.1em;line-height:1.9}.prel a{color:var(--brand);font-weight:700}
 .pcard h2{font-size:1.1rem;margin:12px 16px 4px;line-height:1.35}.pcard p{margin:0 16px 8px;color:var(--muted);font-size:.92rem}.pcard .pmeta{margin:0 16px 14px}
 """
     (ROOT / "assets").mkdir(exist_ok=True)
@@ -799,6 +811,45 @@ def build_404():
     (ROOT / "404.html").write_text(page, encoding="utf-8")
 
 
+def seo_report():
+    """현장일지 글마다 검색 노출용 점검 결과(글자 수, 핵심 키워드 횟수 등)를 출력합니다. 기준에 못 미치면 보완할 점을 알려 줍니다."""
+    real = [p for p in posts if not p["sample"]]
+    if not posts:
+        return
+    print("\n[현장일지 SEO 점검]  기준: 제목 20~45자 · 설명 70~160자 · 본문 1,200자↑ · 소제목 2개↑ · 핵심키워드 본문 5~12회(밀도 0.4~2.5%) · 제목·첫문단 포함 · 사진 대체글 · 내부링크")
+    for p in posts:
+        body = p["body"]
+        text = plain(body)
+        chars = len(text.replace(" ", "").replace("\n", ""))
+        kw = p["keyword"]
+        cnt = text.count(kw) if kw else 0
+        dens = (cnt * len(kw) / chars * 100) if chars and kw else 0
+        h2 = len(re.findall(r"^##\s", body, re.M))
+        imgs = re.findall(r"!\[([^\]]*)\]\(", body)
+        noalt = sum(1 for a in imgs if not a.strip())
+        first = text.strip().split("\n")[0] if text.strip() else ""
+        links = len(re.findall(r"\]\((?!https?://)[^)]+\)", body)) + len(re.findall(r"\]\(https?://[^)]*\)", body))
+        issues = []
+        if not 20 <= len(p["title"]) <= 45: issues.append("제목 %d자(20~45자 권장)" % len(p["title"]))
+        if not 70 <= len(p["description"]) <= 160: issues.append("설명 %d자(70~160자 권장)" % len(p["description"]))
+        if chars < 1200: issues.append("본문 %d자(1,200자 이상 권장)" % chars)
+        if h2 < 2: issues.append("소제목(##) %d개(2개 이상)" % h2)
+        if not kw: issues.append("핵심 키워드 없음(keyword: 또는 tags 첫 항목)")
+        else:
+            if not 5 <= cnt <= 12: issues.append("키워드 '%s' %d회(5~12회 권장)" % (kw, cnt))
+            if not (0.4 <= dens <= 2.5): issues.append("키워드 밀도 %.1f%%" % dens)
+            if kw not in p["title"]: issues.append("제목에 키워드 없음")
+            if kw not in first: issues.append("첫 문단에 키워드 없음")
+        if not p["image"]: issues.append("대표 사진 없음")
+        if noalt: issues.append("사진 대체글 없음 %d개" % noalt)
+        if links < 1: issues.append("링크 없음(내부 페이지·블로그 링크 1개 이상)")
+        mark = "✅" if not issues else "⚠"
+        print(" %s %-34s 글자 %5d · 키워드 '%s' %2d회(%.1f%%) · 소제목 %d · 사진 %d%s" % (mark, p["slug"][:34], chars, kw, cnt, dens, h2, len(imgs), "  [예시 글]" if p["sample"] else ""))
+        for i in issues:
+            print("      - 보완: " + i)
+    print("")
+
+
 # ---------------------------------------------------------------- 실행
 def main():
     inject_admin_csp()
@@ -831,6 +882,7 @@ def main():
     (ROOT / "sitemap.xml").write_text(sm, encoding="utf-8")
     (ROOT / "robots.txt").write_text("User-agent: *\nAllow: /\nDisallow: /tools/\nDisallow: /admin/\n\nSitemap: %s/sitemap.xml\n" % SITE_URL, encoding="utf-8")
     apply_csp_hashes()
+    seo_report()
     print("완료: 페이지 %d개, 글 %d개, sitemap.xml · robots.txt · posts/rss.xml 생성" % (len(urls), len(posts)))
 
 
