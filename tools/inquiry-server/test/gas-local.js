@@ -2,9 +2,9 @@
 // 사용: node gas-local.js [포트] [관리자비밀번호]   → http://localhost:포트/exec
 const fs = require("fs"), vm = require("vm"), http = require("http"), path = require("path"), crypto = require("crypto");
 const port = Number(process.argv[2] || 8787), PW = process.argv[3] || "test-password-1";
-const sleepLog = [], sentMail = [], fetches = [];
+const sleepLog = [], sentMail = [], fetches = [], ghFiles = {};
 let fetchStatus = 200;
-const sheets = {}, props = { ADMIN_PASSWORD: PW, ...(process.env.SMS_TEST ? { SMS_API_KEY: "NCSTESTKEY", SMS_API_SECRET: "testsecret", SMS_FROM: "010-9999-8888", SMS_TO: "010-1234-5678", SMS_DAILY_MAX: process.env.SMS_DAILY_MAX || "30" } : {}), ...(process.env.GATEWAY_SECRET ? { GATEWAY_SECRET: process.env.GATEWAY_SECRET } : {}) }, cacheData = {}, files = {};
+const sheets = {}, props = { ADMIN_PASSWORD: PW, ...(process.env.SMS_TEST ? { SMS_API_KEY: "NCSTESTKEY", SMS_API_SECRET: "testsecret", SMS_FROM: "010-9999-8888", SMS_TO: "010-1234-5678", SMS_DAILY_MAX: process.env.SMS_DAILY_MAX || "30" } : {}), ...(process.env.GH_TEST ? { GITHUB_TOKEN: "TESTTOKEN", GITHUB_REPO: "me/site", GITHUB_BRANCH: "main" } : {}), ...(process.env.GATEWAY_SECRET ? { GATEWAY_SECRET: process.env.GATEWAY_SECRET } : {}) }, cacheData = {}, files = {};
 function mkSheet(name) {
   const rows = [];
   const sh = {
@@ -32,8 +32,24 @@ const ctx = {
     computeDigest: (alg, s) => Array.from(crypto.createHash("sha256").update(typeof s === "string" ? Buffer.from(s, "utf8") : Buffer.from(s)).digest()).map((b) => (b > 127 ? b - 256 : b)),
     computeHmacSha256Signature: (v, k) => Array.from(crypto.createHmac("sha256", typeof k === "string" ? Buffer.from(k, "utf8") : Buffer.from(k.map((b) => b & 255))).update(typeof v === "string" ? Buffer.from(v, "utf8") : Buffer.from(v.map((b) => b & 255))).digest()).map((b) => (b > 127 ? b - 256 : b)),
     computeHmacSha1Signature: (v, k) => Array.from(crypto.createHmac("sha1", Buffer.from(k.map((b) => b & 255))).update(Buffer.from(v.map((b) => b & 255))).digest()).map((b) => (b > 127 ? b - 256 : b)),
-    sleep: (ms) => { sleepLog.push(ms); }, getUuid: () => crypto.randomUUID(), base64Decode: (s) => Array.from(Buffer.from(s, "base64")), newBlob: (bytes, mime, name) => ({ bytes, mime, name }) },
-  UrlFetchApp: { fetch: (u, o) => { fetches.push({ u, o }); return { getResponseCode: () => fetchStatus, getContentText: () => "{}" }; } },
+    sleep: (ms) => { sleepLog.push(ms); }, getUuid: () => crypto.randomUUID(), base64Decode: (s) => Array.from(Buffer.from(s, "base64")), base64Encode: (x, cs) => (typeof x === "string" ? Buffer.from(x, "utf8") : Buffer.from(x.map((b) => b & 255))).toString("base64"), newBlob: (bytes, mime, name) => ({ bytes, mime, name, getDataAsString: () => Buffer.from(bytes.map((b) => b & 255)).toString("utf8") }) },
+  UrlFetchApp: { fetch: (u, o) => {
+    fetches.push({ u, o });
+    const m = /^https:\/\/api\.github\.com\/repos\/([^/]+\/[^/]+)\/contents\/([^?]*)(\?.*)?$/.exec(u);
+    if (m) {   // 모의 GitHub 저장소(contents API)
+      const path = decodeURIComponent(m[2]).replace(/\/$/, ""), meth = String(o.method || "get").toLowerCase(), R = (c, j) => ({ getResponseCode: () => c, getContentText: () => JSON.stringify(j) });
+      if ((o.headers || {}).Authorization !== "Bearer TESTTOKEN") return R(401, { message: "Bad credentials" });
+      if (meth === "get") {
+        if (ghFiles[path] !== undefined) return R(200, { type: "file", sha: "sha" + ghFiles[path].length, content: ghFiles[path].replace(/(.{60})/g, "$1\n"), encoding: "base64" });
+        const kids = Object.keys(ghFiles).filter((k) => k.startsWith(path + "/") && !k.slice(path.length + 1).includes("/"));
+        return kids.length ? R(200, kids.map((k) => ({ type: "file", name: k.slice(path.length + 1), path: k }))) : R(404, { message: "Not Found" });
+      }
+      const body = JSON.parse(o.payload || "{}");
+      if (meth === "put") { if (ghFiles[path] !== undefined && body.sha !== "sha" + ghFiles[path].length) return R(409, { message: "sha mismatch" }); const had = ghFiles[path] !== undefined; ghFiles[path] = body.content; return R(had ? 200 : 201, { content: { path } }); }
+      if (meth === "delete") { if (ghFiles[path] === undefined || body.sha !== "sha" + ghFiles[path].length) return R(409, {}); delete ghFiles[path]; return R(200, {}); }
+    }
+    return { getResponseCode: () => fetchStatus, getContentText: () => "{}" };
+  } },
   MailApp: { sendEmail: (...a) => { sentMail.push(a); } },
   ContentService: { MimeType: { JSON: "json" }, createTextOutput: (t) => ({ t, setMimeType() { return this; } }) },
   DriveApp: { Access: { ANYONE_WITH_LINK: 1 }, Permission: { VIEW: 1 },
@@ -49,6 +65,7 @@ http.createServer((req, res) => {
   let body = "";
   req.on("data", (d) => (body += d));
   req.on("end", () => {
+    if (u.pathname === "/_repo") { res.writeHead(200, cors); return res.end(JSON.stringify(ghFiles)); }
     if (u.pathname === "/_fetch") { if (u.searchParams.get("status")) fetchStatus = Number(u.searchParams.get("status")); res.writeHead(200, cors); return res.end(JSON.stringify({ fetches, props })); }
     if (u.pathname === "/_run") { const fn = u.searchParams.get("fn"); res.writeHead(200, cors); return res.end(JSON.stringify({ r: ctx[fn] ? ctx[fn]() : null, props })); }
     if (u.pathname === "/_debug") { res.writeHead(200, cors); return res.end(JSON.stringify({ sleepLog, sentMail, props: Object.keys(props), logs: (sheets["기록"] ? sheets["기록"]._rows : []) })); }

@@ -2,10 +2,11 @@
  * 실제 홈페이지·구글 시트에는 아무 영향이 없습니다. (admin/demo.html 에서만 쓰입니다) */
 (function () {
   var KEY = "hrc_demo_db", DEMO_URL = "https://demo.invalid/exec", PW = "demo1234demo";
-  var db = { sheets: {}, props: { ADMIN_PASSWORD: PW, EPOCH: "0" }, files: {} };
+  var db = { sheets: {}, props: { ADMIN_PASSWORD: PW, EPOCH: "0", GITHUB_TOKEN: "demo", GITHUB_REPO: "demo/site", GITHUB_BRANCH: "main" }, files: {}, gh: {} };
   function rep(k, v) { var o = this[k]; return o instanceof Date ? { $d: o.toISOString() } : v; }
   function rev(k, v) { return v && typeof v === "object" && v.$d ? new Date(v.$d) : v; }
   try { var s = localStorage.getItem(KEY); if (s) db = JSON.parse(s, rev); } catch (e) {}
+  db.props = db.props || {}; db.props.GITHUB_TOKEN = db.props.GITHUB_TOKEN || "demo"; db.props.GITHUB_REPO = db.props.GITHUB_REPO || "demo/site"; db.props.GITHUB_BRANCH = db.props.GITHUB_BRANCH || "main"; db.gh = db.gh || {};
   var fresh = !Object.keys(db.sheets).length;
   function save() { try { localStorage.setItem(KEY, JSON.stringify(db, rep)); } catch (e) { alert("저장 공간이 부족합니다. 체험 데이터를 초기화해 주세요."); } }
   function sheetObj(name) {
@@ -31,7 +32,21 @@
     SpreadsheetApp: { getActive: function () { return { getSheetByName: function (n) { return db.sheets[n] ? sheetObj(n) : null; }, insertSheet: function (n) { db.sheets[n] = []; save(); return sheetObj(n); } }; } },
     PropertiesService: { getScriptProperties: function () { return { getProperty: function (k) { var v = db.props[k]; return v == null ? null : v; }, setProperty: function (k, v) { db.props[k] = v; save(); }, deleteProperty: function (k) { delete db.props[k]; save(); }, getProperties: function () { var o = {}; for (var k in db.props) o[k] = db.props[k]; return o; } }; } },
     Logger: { log: function () {} },
-    UrlFetchApp: { fetch: function () { return { getResponseCode: function () { return 200; }, getContentText: function () { return "{}"; } }; } },
+    UrlFetchApp: { fetch: function (u, o) {   // 체험용 가짜 저장소(GitHub contents API 흉내): 이 브라우저에만 저장됩니다
+      var R = function (c, j) { return { getResponseCode: function () { return c; }, getContentText: function () { return JSON.stringify(j); } }; };
+      var m = /^https:\/\/api\.github\.com\/repos\/[^/]+\/[^/]+\/contents\/([^?]*)/.exec(u);
+      if (!m) return R(200, {});
+      db.gh = db.gh || {}; var path = decodeURIComponent(m[1]).replace(/\/$/, ""), meth = String((o && o.method) || "get").toLowerCase(), sha = function (k) { return "sha" + db.gh[k].length; };
+      if (meth === "get") {
+        if (db.gh[path] !== undefined) return R(200, { type: "file", sha: sha(path), content: db.gh[path], encoding: "base64" });
+        var kids = Object.keys(db.gh).filter(function (k) { return k.indexOf(path + "/") === 0 && k.slice(path.length + 1).indexOf("/") < 0; });
+        return kids.length ? R(200, kids.map(function (k) { return { type: "file", name: k.slice(path.length + 1), path: k }; })) : R(404, { message: "Not Found" });
+      }
+      var body = JSON.parse((o && o.payload) || "{}");
+      if (meth === "put") { var had = db.gh[path] !== undefined; db.gh[path] = body.content; save(); return R(had ? 200 : 201, { content: { path: path } }); }
+      if (meth === "delete") { delete db.gh[path]; save(); return R(200, {}); }
+      return R(400, {});
+    } },
     CacheService: { getScriptCache: function () { return {
       get: function (k) { var c = cacheLoad(), e = c[k]; return e && e.exp > Date.now() ? e.v : null; },
       put: function (k, v, sec) { var c = cacheLoad(); c[k] = { v: v, exp: Date.now() + sec * 1000 }; try { sessionStorage.setItem(cacheKey, JSON.stringify(c)); } catch (e) {} },
@@ -40,8 +55,10 @@
     Utilities: {
       sleep: function () {},
       getUuid: function () { return (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()); },
+      Charset: { UTF_8: "utf8" },
+      base64Encode: function (x, cs) { if (typeof x === "string") { var u = unescape(encodeURIComponent(x)); return btoa(u); } var bin = ""; for (var i = 0; i < x.length; i++) bin += String.fromCharCode(x[i] & 255); return btoa(bin); },
       base64Decode: function (s) { var b = atob(s), a = []; for (var i = 0; i < b.length; i++) a.push(b.charCodeAt(i)); return a; },
-      newBlob: function (bytes, mime, name) { return { bytes: bytes, mime: mime, name: name }; }
+      newBlob: function (bytes, mime, name) { return { bytes: bytes, mime: mime, name: name, getDataAsString: function () { var s = ""; for (var i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i] & 255); try { return decodeURIComponent(escape(s)); } catch (e) { return s; } } }; }
     },
     MailApp: { sendEmail: function () {} },
     ContentService: { MimeType: { JSON: "json" }, createTextOutput: function (t) { return { t: t, setMimeType: function () { return this; } }; } },

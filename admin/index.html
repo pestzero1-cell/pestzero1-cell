@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <!--CSP-->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-4PZX6adDMgNiNj3+swqEcLUy5Px2WSXY7aS6qmDCco8='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self'; manifest-src 'self'; frame-src https://www.youtube-nocookie.com">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Ab0/Nt5gfUbyXQvclbxG7giSgUpRr9qHA8gX8w0p1DY='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self'; manifest-src 'self'; frame-src https://www.youtube-nocookie.com">
 <meta name="referrer" content="no-referrer">
 <!--/CSP-->
 <title>관리자 | 홈로취케어</title>
@@ -109,13 +109,85 @@ function start(){$("#login").hidden=true;$("#app").hidden=false;
   Promise.all([call("inq_list"),call("rev_pending"),call("content_get")]).then(function(r){
     state.inq=r[0].items||[];state.pending=r[1].items||[];state.content=r[2].content||{};state.hasBackup=!!r[2].hasBackup;state.loaded=true;idle();render()}).catch(function(e){if(e.message!=="auth")fail()})}
 
-var TABS=[["inq","📩 문의"],["home","🏠 메인 화면"],["info","📝 기본 정보"],["price","💰 가격표"],["rev","⭐ 후기"],["gal","🖼 현장갤러리"],["set","📢 공지·설정"],["sns","📺 SNS·영상"],["dsg","🎨 디자인"],["sec","🔑 보안"]];
+var TABS=[["inq","📩 문의"],["home","🏠 메인 화면"],["info","📝 기본 정보"],["price","💰 가격표"],["rev","⭐ 후기"],["gal","🖼 현장갤러리"],["post","✍ 현장일지"],["set","📢 공지·설정"],["sns","📺 SNS·영상"],["dsg","🎨 디자인"],["sec","🔑 보안"]];
 function render(){
   var nNew=state.inq.filter(function(x){return x.status==="신규"}).length;
   $("#tabs").innerHTML=TABS.map(function(t){var b=t[0]==="inq"&&nNew?'<span class="badge">'+nNew+'</span>':t[0]==="rev"&&state.pending.length?'<span class="badge">'+state.pending.length+'</span>':"";
     return '<button type="button" role="tab" data-t="'+t[0]+'" aria-selected="'+(state.tab===t[0])+'">'+t[1]+b+'</button>'}).join("");
-  var v=$("#view");({inq:vInq,home:vHome,info:vInfo,price:vPrice,rev:vRev,gal:vGal,set:vSet,sns:vSns,dsg:vDsg,sec:vSec})[state.tab](v)}
+  var v=$("#view");({inq:vInq,home:vHome,info:vInfo,price:vPrice,rev:vRev,gal:vGal,post:vPost,set:vSet,sns:vSns,dsg:vDsg,sec:vSec})[state.tab](v)}
 $("#tabs").addEventListener("click",function(ev){var b=ev.target.closest("button[data-t]");if(!b)return;state.tab=b.dataset.t;render()});
+
+
+/* ---------- 현장일지(글쓰기): 저장하면 GitHub 저장소에 올라가고, 자동 빌드가 검색용 글 페이지를 만듭니다 ---------- */
+function vPost(v){
+  var P=state.pst=state.pst||{};
+  if(P.edit){return pEdit(v)}
+  v.innerHTML='<div class="card muted">불러오는 중…</div>';
+  call("post_status").then(function(s){
+    if(!s.ok){return v.innerHTML='<div class="card muted">상태를 불러오지 못했습니다.</div>'}
+    if(!s.ready){v.innerHTML='<div class="card"><h2 style="margin:0 0 8px">현장일지 글쓰기 연결이 필요합니다</h2><p class="muted" style="margin:0 0 10px">관리자 화면에서 쓴 글을 홈페이지 저장소(GitHub)에 올리려면 한 번만 연결하면 됩니다.</p><ol style="margin:0;padding-left:1.3em;line-height:1.9"><li>GitHub → Settings → Developer settings → <b>Fine-grained personal access tokens</b> → 새 토큰 만들기</li><li>Repository access: <b>이 홈페이지 저장소 하나만</b>, 권한은 <b>Contents: Read and write</b> 만 허용</li><li>Apps Script → ⚙ 프로젝트 설정 → 스크립트 속성에 <code>GITHUB_TOKEN</code>(토큰), <code>GITHUB_REPO</code>(예: 내아이디/저장소이름), <code>GITHUB_BRANCH</code>(기본 main) 추가</li><li>새 버전으로 배포 후 이 화면을 새로고침</li></ol><p class="muted" style="margin:10px 0 0">자세한 설명: tools/inquiry-server/README.md “현장일지 글쓰기”</p></div>';return}
+    call("post_list").then(function(l){
+      if(!l.ok){return v.innerHTML='<div class="card muted">글 목록을 불러오지 못했습니다. (저장소 이름·토큰 권한을 확인해 주세요)</div>'}
+      P.items=l.items;
+      v.innerHTML='<div class="card"><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="btn" id="pnew" type="button">+ 새 글 쓰기</button><span class="muted">저장하면 보통 1~3분 뒤 홈페이지에 공개됩니다. (저장소: '+esc(s.repo)+')</span></div></div>'+
+        (l.items.length?l.items.map(function(x){return '<div class="card"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><div style="flex:1;min-width:200px"><b>'+esc(x.title)+'</b>'+(x.sample?' <span class="muted">[예시 글]</span>':'')+'<div class="muted">'+esc(x.date)+' · '+esc(x.slug)+'</div></div><button class="btn ghost sm" data-pe="'+esc(x.slug)+'" type="button">수정</button><button class="btn ghost sm" data-pd="'+esc(x.slug)+'" type="button">삭제</button></div></div>'}).join(""):'<div class="card muted">아직 글이 없습니다. “새 글 쓰기”로 첫 현장일지를 올려 보세요.</div>');
+      $("#pnew").onclick=function(){var d=new Date(),ds=d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2),r=Math.random().toString(36).slice(2,6).replace(/[^a-z0-9]/g,"x");
+        P.edit={isNew:true,slug:ds+"-"+r,title:"",date:ds,description:"",tags:"",keyword:"",image:"",body:"",imgs:[]};render()};
+      $$("[data-pe]",v).forEach(function(b){b.onclick=function(){b.disabled=true;call("post_get",{slug:b.dataset.pe}).then(function(j){b.disabled=false;if(!j.ok)return flash("글을 불러오지 못했습니다.","err");var p=j.post;p.imgs=[];p.isNew=false;P.edit=p;render()}).catch(function(e){b.disabled=false;if(e.message!=="auth")fail()})}});
+      $$("[data-pd]",v).forEach(function(b){b.onclick=function(){if(!confirm("이 글을 삭제할까요? 홈페이지에서도 몇 분 뒤 사라집니다. (저장소 기록에는 남아 되돌릴 수 있습니다)"))return;call("post_delete",{slug:b.dataset.pd}).then(function(j){if(j.ok){flash("삭제했습니다. 1~3분 뒤 홈페이지에서 사라집니다.");render()}else flash("삭제하지 못했습니다.","err")}).catch(function(e){if(e.message!=="auth")fail()})}});
+    }).catch(function(e){if(e.message!=="auth")fail()});
+  }).catch(function(e){if(e.message!=="auth")fail()});
+}
+function pPlain(md){return md.replace(/!\[[^\]]*\]\([^)]*\)/g,"").replace(/[#*`>\[\]!()\-]/g,"").replace(/\s+/g,"")}
+function pChecks(p){
+  var body=p.body||"",kw=(p.keyword||"").trim(),txt=body,n=0,i=0,first=(body.split(/\n\s*\n/).filter(function(x){return x.trim()&&x.trim().charAt(0)!=="#"})[0]||"");
+  if(kw){while((i=txt.indexOf(kw,i))>=0){n++;i+=kw.length}}
+  var imgs=body.match(/!\[[^\]]*\]\([^)]*\)/g)||[],noAlt=imgs.filter(function(x){return/^!\[\s*\]/.test(x)}).length,h2=(body.match(/^##\s/mg)||[]).length;
+  var L=function(ok,t){return{ok:ok,t:t}};
+  return[L(p.title.length>=20&&p.title.length<=45,"제목 20~45자 (지금 "+p.title.length+"자)"),
+    L(p.description.length>=70&&p.description.length<=160,"설명 70~160자 (지금 "+p.description.length+"자)"),
+    L(pPlain(body).length>=1200,"본문 1,200자 이상 (지금 "+pPlain(body).length+"자)"),
+    L(h2>=2,"소제목(##) 2개 이상 (지금 "+h2+"개)"),
+    L(!!kw&&n>=5&&n<=12,"핵심 키워드 본문 5~12회 (지금 "+n+"회)"),
+    L(!!kw&&p.title.indexOf(kw)>=0,"제목에 핵심 키워드"),
+    L(!!kw&&first.indexOf(kw)>=0,"첫 문단에 핵심 키워드"),
+    L(imgs.length>=1&&!noAlt,"사진 1장 이상, 모두 설명(대체글) 입력"+(imgs.length?"":" (사진 없음)")),
+    L(/\]\((https?:|[a-z]+\/)/.test(body.replace(/!\[[^\]]*\]\([^)]*\)/g,"")),"홈페이지 내부 페이지·블로그 링크 1개 이상")]
+}
+function pEdit(v){
+  var P=state.pst,p=P.edit,esc2=esc;
+  v.innerHTML='<div class="card"><div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><h2 style="margin:0;flex:1">'+(p.isNew?"새 글":"글 수정")+'</h2><button class="btn ghost sm" id="pback" type="button">← 목록</button></div>'+
+    '<div class="row c2"><label>제목 (지역 + 증상 + 해결 형태가 좋습니다)<input id="pt" value="'+esc2(p.title)+'" maxlength="120"></label><label>핵심 키워드 (검색되길 바라는 단어 하나)<input id="pk" value="'+esc2(p.keyword)+'" maxlength="30" placeholder="예: 싱크대 막힘"></label></div>'+
+    '<label>설명 (검색 결과 아래에 보이는 요약 · 70~160자)<textarea id="pdsc" rows="2" maxlength="200">'+esc2(p.description)+'</textarea></label>'+
+    '<div class="row c3"><label>태그 (쉼표로 구분)<input id="ptg" value="'+esc2(p.tags)+'" placeholder="싱크대막힘, 구로구"></label><label>날짜<input id="pdt" type="date" value="'+esc2(p.date)+'"></label><label>글 주소 (영문·숫자·-)<input id="psl" value="'+esc2(p.slug)+'"'+(p.isNew?'':' disabled')+'></label></div></div>'+
+    '<div class="card"><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"><button class="btn ghost sm" data-ins="## |소제목" type="button">소제목</button><button class="btn ghost sm" data-ins="**|굵게**" type="button">굵게</button><button class="btn ghost sm" data-ins="- |목록" type="button">목록</button><label class="btn ghost sm" style="display:inline-block;text-align:center">📷 사진 넣기<input type="file" accept="image/*" id="pimg" multiple hidden></label></div>'+
+    '<textarea id="pbody" rows="18" style="min-height:320px" placeholder="빈 줄로 문단을 나눕니다. 순서: 상황 → 점검 결과(원인) → 작업 내용 → 결과·재발 방지 → 문의 안내">'+esc2(p.body)+'</textarea><p class="muted" id="pimgs" style="margin:6px 0 0"></p></div>'+
+    '<div class="card"><b>검색 점검표</b> <span class="muted">(빌드 때 나오는 SEO 점검과 같은 기준)</span><ul id="pck" style="margin:8px 0 0;padding-left:1.2em;line-height:1.8"></ul></div>'+
+    '<div class="sticky-save"><button class="btn ghost" id="pback2" type="button">취소</button><button class="btn" id="psave" type="button">저장해서 홈페이지에 올리기</button></div>';
+  var rd=function(){p.title=$("#pt").value.trim();p.keyword=$("#pk").value.trim();p.description=$("#pdsc").value.trim();p.tags=$("#ptg").value.trim();p.date=$("#pdt").value;p.body=$("#pbody").value;if(p.isNew)p.slug=$("#psl").value.trim().toLowerCase()};
+  var ck=function(){rd();$("#pck").innerHTML=pChecks(p).map(function(c){return '<li>'+(c.ok?"✅ ":"⚠ ")+esc2(c.t)+'</li>'}).join("");$("#pimgs").textContent=p.imgs.length?"새로 올릴 사진 "+p.imgs.length+"장: "+p.imgs.map(function(x){return x.name}).join(", "):""};
+  ["pt","pk","pdsc","ptg","pdt","pbody"].forEach(function(id){$("#"+id).addEventListener("input",ck)});ck();
+  var back=function(){rd();if((p.title||p.body)&&!confirm("저장하지 않은 내용은 사라집니다. 나갈까요?"))return;P.edit=null;render()};
+  $("#pback").onclick=back;$("#pback2").onclick=back;
+  $$("[data-ins]",v).forEach(function(b){b.onclick=function(){var t=$("#pbody"),parts=b.dataset.ins.split("|"),s=t.selectionStart,e=t.selectionEnd,sel=t.value.slice(s,e)||parts[1];var pre=parts[0],post=pre==="**"?"**":"";var add=(pre==="## "||pre==="- ")&&s>0&&t.value.charAt(s-1)!=="\n"?"\n":"";t.value=t.value.slice(0,s)+add+pre+sel+post+t.value.slice(e);t.focus();ck()}});
+  $("#pimg").onchange=function(ev){var files=[].slice.call(ev.target.files||[]);ev.target.value="";rd();
+    var seq=function(i){if(i>=files.length)return;var f=files[i];
+      if(p.imgs.length>=8){flash("사진은 한 번에 8장까지 올릴 수 있습니다.","err");return}
+      var alt=prompt("사진 설명을 적어 주세요 (검색용 · 예: 구로구 빌라 싱크대 배수관 막힘 작업 전)","");if(alt===null){return seq(i+1)}
+      shrink(f,1200).then(function(r){var all=p.body+p.imgs.map(function(x){return x.name}).join(" "),m=all.match(new RegExp(p.slug.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"-(\\d+)\\.","g"))||[],mx=0;m.forEach(function(s){var n=+s.replace(/^.*-(\d+)\.$/,"$1");if(n>mx)mx=n});
+        var nm=p.slug+"-"+(mx+1)+(r.mime==="image/webp"?".webp":".jpg");p.imgs.push({name:nm,b64:r.b64,mime:r.mime});if(!p.image)p.image="images/posts/"+nm;
+        var t=$("#pbody"),pos=t.selectionStart,md="\n\n!["+alt.replace(/[\[\]\r\n]/g," ")+"](images/posts/"+nm+")\n\n";t.value=t.value.slice(0,pos)+md+t.value.slice(pos);ck();seq(i+1)}).catch(function(){flash("사진을 처리하지 못했습니다.","err")})};
+    seq(0)};
+  $("#psave").onclick=function(){rd();
+    if(!/^[a-z0-9-]{3,70}$/.test(p.slug))return flash("글 주소는 영문 소문자·숫자·- 만 3자 이상 쓸 수 있습니다.","err");
+    if(p.title.length<5)return flash("제목을 입력해 주세요.","err");if(p.body.length<30)return flash("본문을 입력해 주세요.","err");
+    var warn=pChecks(p).filter(function(c){return!c.ok});if(warn.length&&!confirm("검색 점검표에 보완할 항목이 "+warn.length+"개 있습니다. 그래도 올릴까요?\n(나중에 수정해서 다시 올릴 수 있습니다)"))return;
+    var b=this;b.disabled=true;b.textContent="올리는 중…";
+    var imgs=p.imgs.filter(function(x){return p.body.indexOf("images/posts/"+x.name)>=0||p.image==="images/posts/"+x.name}).map(function(x){return{name:x.name,b64:x.b64}});
+    call("post_save",{post:{slug:p.slug,title:p.title,date:p.date,description:p.description,tags:p.tags,keyword:p.keyword,image:p.image,body:p.body,images:imgs}}).then(function(j){b.disabled=false;b.textContent="저장해서 홈페이지에 올리기";
+      if(!j.ok)return flash(j.error==="github"?"저장소에 올리지 못했습니다. 토큰 권한·저장소 이름을 확인해 주세요. (오류 "+(j.code||"")+")":j.error==="image"?"사진 파일을 확인해 주세요.":j.error==="body"?"본문에 사용할 수 없는 내용이 있습니다.":"저장하지 못했습니다.","err");
+      state.pst.edit=null;flash("저장했습니다. 보통 1~3분 뒤 홈페이지에 공개됩니다.");render()}).catch(function(e){b.disabled=false;b.textContent="저장해서 홈페이지에 올리기";if(e.message!=="auth")fail()})};
+}
 
 /* ---------- 문의 ---------- */
 function fmt(iso){var d=new Date(iso);return isNaN(d)?iso:d.getFullYear()+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+("0"+d.getDate()).slice(-2)+" "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2)}

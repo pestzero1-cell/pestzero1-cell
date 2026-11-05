@@ -65,6 +65,11 @@ function doPost(e) {
       case "notify_status": return json(notifyStatus());
       case "notify_test": return json(notifyTest());
       case "stats": return json(statsGet());
+      case "post_status": return json(postStatus());
+      case "post_list": return json(postList());
+      case "post_get": return json(postGet(p));
+      case "post_save": return json(postSave(p));
+      case "post_delete": return json(postDelete(p));
       case "ip_block": return json(ipBlock(p));
       case "ip_unblock": return json(ipUnblock(p));
       case "ip_list": return json(ipList());
@@ -229,6 +234,94 @@ function statsPurge() {   // 60일 지난 통계 삭제(트리거로 가끔 실�
   var pr = PropertiesService.getScriptProperties(), all = pr.getProperties(), cut = statDay(60), n = 0;
   for (var k in all) { var m = /^ev_(\d{4}-\d{2}-\d{2})_/.exec(k); if (m && m[1] < cut) { pr.deleteProperty(k); n++; } }
   return n;
+}
+
+// ---------- 현장일지 글쓰기: 관리자에서 쓴 글을 GitHub 저장소(posts/*.md)에 올립니다 ----------
+// 올리면 저장소의 자동 빌드(.github/workflows/build.yml)가 몇 분 안에 검색용 글 페이지·목록·RSS·사이트맵을 만들어 줍니다.
+// 스크립트 속성: GITHUB_TOKEN(이 저장소 하나에만 Contents 쓰기 권한을 준 개인 토큰), GITHUB_REPO(예: 내아이디/저장소이름), GITHUB_BRANCH(기본 main)
+function ghConf() {
+  var p = PropertiesService.getScriptProperties();
+  var c = { token: p.getProperty("GITHUB_TOKEN"), repo: String(p.getProperty("GITHUB_REPO") || "").trim(), branch: String(p.getProperty("GITHUB_BRANCH") || "main").trim() };
+  c.ok = !!(c.token && /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(c.repo) && /^[A-Za-z0-9_./-]+$/.test(c.branch));
+  return c;
+}
+function ghCall(method, path, body) {
+  var c = ghConf();
+  var url = "https://api.github.com/repos/" + c.repo + "/contents/" + path + (method === "get" ? "?ref=" + encodeURIComponent(c.branch) : "");
+  var opt = { method: method, muteHttpExceptions: true, headers: { Authorization: "Bearer " + c.token, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" } };
+  if (body) { body.branch = c.branch; opt.contentType = "application/json"; opt.payload = JSON.stringify(body); }
+  var res = UrlFetchApp.fetch(url, opt), code = res.getResponseCode(), txt = res.getContentText(), j = null;
+  try { j = JSON.parse(txt); } catch (e) {}
+  return { code: code, json: j };
+}
+function b64text(s) { return Utilities.base64Encode(s, Utilities.Charset.UTF_8); }
+function unb64text(b) { return Utilities.newBlob(Utilities.base64Decode(String(b).replace(/\s+/g, ""))).getDataAsString("UTF-8"); }
+function postStatus() { var c = ghConf(); return { ok: true, ready: c.ok, repo: c.ok ? c.repo : "", branch: c.branch }; }
+function parsePostMd(raw) {
+  var m = /^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/.exec(raw), meta = {}, body = raw;
+  if (m) { m[1].split("\n").forEach(function (ln) { var i = ln.indexOf(":"); if (i > 0) meta[ln.slice(0, i).trim()] = ln.slice(i + 1).trim().replace(/^"|"$/g, ""); }); body = m[2]; }
+  return { meta: meta, body: body };
+}
+function postList() {
+  var c = ghConf(); if (!c.ok) return { ok: false, error: "not_configured" };
+  var r = ghCall("get", "posts");
+  if (r.code === 404) return { ok: true, items: [] };
+  if (r.code !== 200 || !r.json || !r.json.length && r.json.length !== 0) { audit("현장일지 목록 실패", r.code); return { ok: false, error: "github", code: r.code }; }
+  var names = r.json.filter(function (f) { return f.type === "file" && /\.md$/.test(f.name) && f.name.charAt(0) !== "_"; }).map(function (f) { return f.name; }).sort().reverse().slice(0, 40), items = [];
+  names.forEach(function (n) {
+    var f = ghCall("get", "posts/" + n);
+    if (f.code !== 200 || !f.json || !f.json.content) return;
+    var pm = parsePostMd(unb64text(f.json.content));
+    items.push({ name: n, slug: n.replace(/\.md$/, ""), title: pm.meta.title || n, date: pm.meta.date || "", sample: pm.meta.sample === "true" });
+  });
+  return { ok: true, items: items };
+}
+function postGet(p) {
+  var c = ghConf(); if (!c.ok) return { ok: false, error: "not_configured" };
+  var slug = String(p.slug || ""); if (!/^[a-z0-9-]{3,70}$/.test(slug)) return { ok: false, error: "bad" };
+  var f = ghCall("get", "posts/" + slug + ".md");
+  if (f.code !== 200 || !f.json || !f.json.content) return { ok: false, error: "notfound" };
+  var pm = parsePostMd(unb64text(f.json.content)), m = pm.meta;
+  return { ok: true, post: { slug: slug, title: m.title || "", date: m.date || "", description: m.description || "", image: m.image || "", tags: m.tags || "", keyword: m.keyword || "", body: pm.body.replace(/^\n+/, "") } };
+}
+function oneLine(s, n) { return String(s == null ? "" : s).replace(/[\r\n]+/g, " ").replace(/---/g, "–").trim().slice(0, n); }
+function postSave(p) {
+  var c = ghConf(); if (!c.ok) return { ok: false, error: "not_configured" };
+  var d = p.post || {}, slug = String(d.slug || "");
+  if (!/^[a-z0-9-]{3,70}$/.test(slug)) return { ok: false, error: "slug" };
+  var title = oneLine(d.title, 120); if (title.length < 5) return { ok: false, error: "title" };
+  var date = /^\d{4}-\d{2}-\d{2}$/.test(String(d.date || "")) ? d.date : statDay(0);
+  var body = String(d.body || ""); if (body.length < 30 || body.length > 60000) return { ok: false, error: "body" };
+  if (/<script|javascript:/i.test(body)) return { ok: false, error: "body" };
+  var imgs = (d.images || []).slice(0, 8), i;
+  for (i = 0; i < imgs.length; i++) {   // 사진: images/posts/<글주소>-N.(webp|jpg) 로 올립니다
+    var im = imgs[i], nm = String(im.name || ""), bytes;
+    if (!/^[a-z0-9-]{3,70}-\d{1,2}\.(webp|jpg|png)$/.test(nm) || nm.indexOf(slug + "-") !== 0) return { ok: false, error: "image" };
+    bytes = Utilities.base64Decode(String(im.b64 || ""));
+    if (bytes.length > 2 * 1024 * 1024 || !sniff(bytes)) return { ok: false, error: "image" };
+    var ex = ghCall("get", "images/posts/" + nm), up = { message: "현장일지 사진: " + nm, content: String(im.b64) };
+    if (ex.code === 200 && ex.json && ex.json.sha) up.sha = ex.json.sha;
+    var rs = ghCall("put", "images/posts/" + nm, up);
+    if (rs.code !== 200 && rs.code !== 201) { audit("현장일지 사진 실패", rs.code + " " + nm); return { ok: false, error: "github", code: rs.code }; }
+  }
+  var image = /^images\/posts\/[a-z0-9-]+\.(webp|jpg|png)$/.test(String(d.image || "")) ? d.image : "";
+  var md = "---\ntitle: " + title + "\ndate: " + date + "\ndescription: " + oneLine(d.description, 200) + "\n" + (image ? "image: " + image + "\n" : "") + "tags: " + oneLine(d.tags, 100) + "\nkeyword: " + oneLine(d.keyword, 30) + "\nslug: " + slug + "\nsample: false\n---\n\n" + body.replace(/\r\n/g, "\n").replace(/^\n+/, "") + "\n";
+  var path = "posts/" + slug + ".md", ex2 = ghCall("get", path), put = { message: "현장일지: " + title, content: b64text(md) };
+  if (ex2.code === 200 && ex2.json && ex2.json.sha) put.sha = ex2.json.sha;
+  var r = ghCall("put", path, put);
+  if (r.code !== 200 && r.code !== 201) { audit("현장일지 저장 실패", r.code + " " + slug); return { ok: false, error: "github", code: r.code }; }
+  audit("현장일지 저장", slug);
+  return { ok: true, slug: slug, created: r.code === 201 };
+}
+function postDelete(p) {
+  var c = ghConf(); if (!c.ok) return { ok: false, error: "not_configured" };
+  var slug = String(p.slug || ""); if (!/^[a-z0-9-]{3,70}$/.test(slug)) return { ok: false, error: "bad" };
+  var path = "posts/" + slug + ".md", ex = ghCall("get", path);
+  if (ex.code !== 200 || !ex.json || !ex.json.sha) return { ok: false, error: "notfound" };
+  var r = ghCall("delete", path, { message: "현장일지 삭제: " + slug, sha: ex.json.sha });
+  if (r.code !== 200) { audit("현장일지 삭제 실패", r.code + " " + slug); return { ok: false, error: "github", code: r.code }; }
+  audit("현장일지 삭제", slug);
+  return { ok: true };
 }
 
 // ---------- 접속 IP 확인(게이트웨이를 쓸 때) · 차단 목록 ----------
