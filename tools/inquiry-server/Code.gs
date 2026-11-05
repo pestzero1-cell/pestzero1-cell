@@ -61,6 +61,8 @@ function doPost(e) {
       case "audit_list": return json(auditList());
       case "price_set": return json(priceSet(p));
       case "price_reset": return json(priceReset(p));
+      case "notify_status": return json(notifyStatus());
+      case "notify_test": return json(notifyTest());
       case "ip_block": return json(ipBlock(p));
       case "ip_unblock": return json(ipUnblock(p));
       case "ip_list": return json(ipList());
@@ -136,6 +138,63 @@ function spamReason(text, name) {
   if (String(text || "").length >= 20 && !/[가-힣]/.test(text)) return "한글 없음";
   if ((t.match(/[\u0400-\u04FF\u4E00-\u9FFF\u0E00-\u0E7F]/g) || []).length >= 8) return "외국 문자 다수";
   return "";
+}
+
+// ---------- 사장님 알림: 이메일 + 문자(SMS) ----------
+// 새 문의가 접수되면 ① 이메일(NOTIFY_EMAIL) ② 문자(솔라피 SMS 서비스, 선택)로 알려 드립니다.
+// 문자는 스크립트 속성에 SMS_API_KEY · SMS_API_SECRET · SMS_FROM(등록한 발신번호) · SMS_TO(받을 휴대폰)를 넣으면 켜집니다. (README.md 참고)
+// 요금 폭주 방지: 하루 SMS_DAILY_MAX(기본 30)건까지만 보내고, 스팸으로 걸러진 문의는 알리지 않습니다.
+function digitsOf(s) { return String(s || "").replace(/\D/g, ""); }
+function smsBytes(s) { var n = 0; s = String(s); for (var i = 0; i < s.length; i++) n += s.charCodeAt(i) > 127 ? 2 : 1; return n; }   // 한글 2바이트
+function smsTrim(s, max) { s = String(s); while (smsBytes(s) > max) s = s.slice(0, -1); return s; }
+function smsConfig() {
+  var p = PropertiesService.getScriptProperties();
+  var c = { key: p.getProperty("SMS_API_KEY"), secret: p.getProperty("SMS_API_SECRET"), from: digitsOf(p.getProperty("SMS_FROM")), to: digitsOf(p.getProperty("SMS_TO")),
+            max: Number(p.getProperty("SMS_DAILY_MAX") || 30), long: p.getProperty("SMS_LONG") === "1" };
+  c.ok = !!(c.key && c.secret && c.from && c.to);
+  return c;
+}
+function smsDayKey() { return "sms_" + new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10); }   // 한국 날짜 기준
+function smsAuth(key, secret) {
+  var date = new Date().toISOString(), salt = Utilities.getUuid().replace(/-/g, "");
+  return "HMAC-SHA256 apiKey=" + key + ", date=" + date + ", salt=" + salt + ", signature=" + hexOf(Utilities.computeHmacSha256Signature(date + salt, secret));
+}
+function sendSms(text, force) {
+  var c = smsConfig();
+  if (!c.ok) return { ok: false, error: "not_configured" };
+  var pr = PropertiesService.getScriptProperties(), dk = smsDayKey(), n = Number(pr.getProperty(dk) || 0);
+  if (!force && n >= c.max) return { ok: false, error: "daily_limit" };
+  var lng = c.long || smsBytes(text) > 90;
+  var msg = { to: c.to, from: c.from, text: smsTrim(text, lng ? 1900 : 90), type: lng ? "LMS" : "SMS" };
+  if (lng) msg.subject = "홈페이지 문의";
+  try {
+    var res = UrlFetchApp.fetch("https://api.solapi.com/messages/v4/send-many", { method: "post", contentType: "application/json", headers: { Authorization: smsAuth(c.key, c.secret) }, payload: JSON.stringify({ messages: [msg] }), muteHttpExceptions: true });
+    var code = res.getResponseCode();
+    if (code >= 200 && code < 300) { pr.setProperty(dk, String(n + 1)); return { ok: true, code: code }; }
+    audit("문자 알림 실패", code + " " + cut(res.getContentText(), 120));
+    return { ok: false, error: "provider", code: code };
+  } catch (e) { audit("문자 알림 오류", cut(e && e.message, 120)); return { ok: false, error: "exception" }; }
+}
+function notifyInquiry(kind, name, svc, phone, msg, ip) {
+  mail("[홈페이지 문의] " + cut(kind, 20) + " " + cut(name, 20), cut(svc, 60) + "\n" + cut(name, 40) + " " + phone + "\n" + cut(msg, 500) + (ip ? "\n(IP " + ip + ")" : ""));
+  var c = smsConfig();
+  if (c.ok) {
+    var head = "[문의]" + cut(name, 10) + " " + cut(phone, 14) + " ", body = String(msg).replace(/\s+/g, " ");
+    sendSms(c.long ? head + cut(body, 600) : smsTrim(head + body, 90));          // 기본은 단문(90바이트, 건당 약 18원)에 맞춰 내용 앞부분만 보냄
+  }
+}
+function notifyStatus() {
+  var c = smsConfig(), n = Number(PropertiesService.getScriptProperties().getProperty(smsDayKey()) || 0);
+  return { ok: true, email: !!NOTIFY_EMAIL, sms: c.ok, smsToday: n, smsMax: c.max, smsLong: c.long, smsTo: c.ok ? c.to.slice(0, 3) + "****" + c.to.slice(-4) : "" };
+}
+function notifyTest() {
+  var cache = CacheService.getScriptCache(), k = "nt", n = Number(cache.get(k) || 0);
+  if (n >= 3) return { ok: false, error: "busy" };
+  cache.put(k, String(n + 1), 3600);
+  mail("[홈페이지] 알림 시험", "이 메일이 보이면 이메일 알림이 정상입니다.");
+  var r = sendSms("[홈페이지] 문자 알림 시험입니다.", true);
+  audit("알림 시험", "이메일 " + (NOTIFY_EMAIL ? "발송" : "미설정") + " / 문자 " + (r.ok ? "발송" : (r.error || "실패")));
+  return { ok: true, email: !!NOTIFY_EMAIL, sms: r };
 }
 
 // ---------- 접속 IP 확인(게이트웨이를 쓸 때) · 차단 목록 ----------
@@ -311,7 +370,7 @@ function addInquiry(p, skipTicket) {
   c.put(dk, "1", 600);
   var id = newId("Q");
   sh.appendRow([id, new Date(), cell(p.type, 40), cell(d.svc || d.title, 100), cell(d.name || d.author, 40), cell(phone, 40), cell(msg), cell(p.page, 200), "신규", "", "", cell(gt.ip, 70)]);
-  mail("[홈페이지 문의] " + cut(p.type, 20) + " " + cut(d.name, 20), cut(d.svc, 60) + "\n" + cut(d.name, 40) + " " + phone + "\n" + cut(msg, 500));
+  notifyInquiry(p.type, d.name || d.author, d.svc || d.title, phone, msg, gt.ip);
   return { ok: true };
 }
 function inqList() {

@@ -31,6 +31,7 @@
     SpreadsheetApp: { getActive: function () { return { getSheetByName: function (n) { return db.sheets[n] ? sheetObj(n) : null; }, insertSheet: function (n) { db.sheets[n] = []; save(); return sheetObj(n); } }; } },
     PropertiesService: { getScriptProperties: function () { return { getProperty: function (k) { var v = db.props[k]; return v == null ? null : v; }, setProperty: function (k, v) { db.props[k] = v; save(); }, deleteProperty: function (k) { delete db.props[k]; save(); } }; } },
     Logger: { log: function () {} },
+    UrlFetchApp: { fetch: function () { return { getResponseCode: function () { return 200; }, getContentText: function () { return "{}"; } }; } },
     CacheService: { getScriptCache: function () { return {
       get: function (k) { var c = cacheLoad(), e = c[k]; return e && e.exp > Date.now() ? e.v : null; },
       put: function (k, v, sec) { var c = cacheLoad(); c[k] = { v: v, exp: Date.now() + sec * 1000 }; try { sessionStorage.setItem(cacheKey, JSON.stringify(c)); } catch (e) {} },
