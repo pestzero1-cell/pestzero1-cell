@@ -119,6 +119,8 @@ window.SITE = {
     button2: "홈로취케어 소개 바로가기",
     // 첫 화면 사진 타일(문구는 label). 내 사진을 쓰려면 images/ 폴더에 사진을 올리고 image 경로만 바꾸거나, 같은 파일명(ti-*.webp)으로 덮어쓰세요. 가로세로 비슷한 사진이 잘 어울립니다.
     tiles: [
+      { label: "싱크대 막힘", image: "images/ti-sink.webp" },
+      { label: "화장실 막힘", image: "images/ti-bath.webp" },
       { label: "세탁실 막힘", image: "images/ti-laundry.webp" },
       { label: "양변기 막힘", image: "images/ti-toilet.webp" },
       { label: "소변기 막힘", image: "images/ti-urinal.webp" },

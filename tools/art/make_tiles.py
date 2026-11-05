@@ -38,7 +38,20 @@ pipe = wrap("#e6f0ff", "#c3d8ff", f'''
 <rect x="190" y="420" width="80" height="26" rx="8" fill="#6f87b3"/></g>
 <rect x="228" y="130" width="4" height="420" fill="#fff" opacity=".35"/><rect x="568" y="130" width="4" height="420" fill="#fff" opacity=".35"/>
 {drop(400,380,1.4)}{ok(400,160,50)}{spark(120,180,1.3)}{spark(690,500,1)}''')
-items = {"ti-laundry": laundry, "ti-toilet": toilet, "ti-urinal": urinal, "ti-thaw": thaw, "ti-pipe": pipe}
+sink = wrap("#e8f6ff", "#bddcff", f'''
+<g filter="url(#sd)"><rect x="170" y="330" width="460" height="260" rx="22" fill="#d4e4fb"/><rect x="150" y="300" width="500" height="50" rx="14" fill="#fff"/>
+<rect x="230" y="320" width="340" height="30" rx="15" fill="#c9d9f5"/><path d="M230 350 H570 V400 C570 430 540 450 510 450 H290 C260 450 230 430 230 400Z" fill="#9ec3ff"/>
+<rect x="388" y="160" width="26" height="150" rx="12" fill="#8fa6cc"/><path d="M401 170 C401 110 460 100 520 120 L520 156 C470 140 440 150 428 178Z" fill="#8fa6cc"/><rect x="498" y="118" width="36" height="46" rx="10" fill="#6f87b3"/></g>
+<rect x="268" y="398" width="270" height="10" rx="5" fill="#fff" opacity=".6"/><path d="M290 372 q22-24 44 0 t44 0 t44 0 t44 0" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".8"/>
+{drop(516,214,.9)}{drop(480,520,1.1)}{ok(620,150,44)}{spark(150,160,1.3)}{spark(660,520,1)}''')
+bath = wrap("#e6f0ff", "#c3d8ff", f'''
+<g filter="url(#sd)"><rect x="150" y="260" width="500" height="330" rx="26" fill="#fff"/>
+{''.join(f'<line x1="{150+i*125}" y1="260" x2="{150+i*125}" y2="590" stroke="#dbe8ff" stroke-width="6"/>' for i in range(1,4))}{''.join(f'<line x1="150" y1="{260+i*82}" x2="650" y2="{260+i*82}" stroke="#dbe8ff" stroke-width="6"/>' for i in range(1,4))}
+<circle cx="400" cy="425" r="92" fill="#9fb4d4"/><circle cx="400" cy="425" r="74" fill="#d4e4fb"/></g>
+{''.join(f'<rect x="{352+i*24}" y="{360}" width="10" height="130" rx="5" fill="#8fa6cc"/>' for i in range(5))}<circle cx="400" cy="425" r="24" fill="#8fa6cc" opacity=".0"/>
+<g filter="url(#sd)"><ellipse cx="400" cy="130" rx="92" ry="26" fill="#8fa6cc"/><rect x="392" y="70" width="16" height="60" rx="8" fill="#6f87b3"/></g>
+{drop(360,200,.8)}{drop(440,230,.8)}{drop(400,282,.8)}{ok(620,150,44)}{spark(170,150,1.3)}{spark(660,520,1)}''')
+items = {"ti-sink": sink, "ti-bath": bath, "ti-laundry": laundry, "ti-toilet": toilet, "ti-urinal": urinal, "ti-thaw": thaw, "ti-pipe": pipe}
 for n, s in items.items(): (HERE / (n + ".svg")).write_text(s, encoding="utf-8")
 js = """const {chromium}=require('playwright');(async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});const p=await b.newPage({viewport:{width:800,height:700}});
 for(const n of %s){await p.goto('file://%s/'+n+'.svg');await p.screenshot({path:'%s/'+n+'.jpg',type:'jpeg',quality:86});}await b.close()})()""" % (list(items), HERE, OUT)
