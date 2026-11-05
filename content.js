@@ -75,7 +75,7 @@ window.SITE = {
     { label: "고객센터", href: "support/" }
   ],
 
-  // 메인 슬라이드: 몇 초마다 자동으로 넘어갑니다. images 는 오른쪽에 나오는 사진(최대 3장), theme: blue | navy | warm
+  // 메인 슬라이드: 몇 초마다 자동으로 넘어갑니다. images 는 오른쪽에 나오는 사진(최대 3장), theme: blue(파랑) | navy(남색) | warm(주황) | green(초록) | teal(청록) | purple(보라) | charcoal(차콜)
   slider: {
     interval: 5000,
     slides: [
