@@ -529,7 +529,17 @@ def inject_home():
     c = S.get("company") or {}
     ld = {"@context": "https://schema.org", "@type": "LocalBusiness", "name": BRAND, "description": desc, "telephone": S["phone"], "url": SITE_URL + "/",
           "address": {"@type": "PostalAddress", "streetAddress": c.get("address", ""), "addressCountry": "KR"},
-          "sameAs": [b["url"] for b in S.get("blogs", [])], "image": "%s/%s" % (SITE_URL, S.get("ogImage", S.get("logo", "")))}
+          "sameAs": [b["url"] for b in S.get("blogs", [])] + [u for u in ((S.get("social") or {}).get("instagram"), (S.get("social") or {}).get("youtube"), S.get("kakaoUrl")) if u],
+          "image": "%s/%s" % (SITE_URL, S.get("ogImage", S.get("logo", ""))), "logo": "%s/%s" % (SITE_URL, S.get("logo", ""))}
+    svcs = [x for x in S.get("services", []) if x.get("name")]
+    if svcs:   # 제공 서비스 목록(가격은 넣지 않음)
+        ld["hasOfferCatalog"] = {"@type": "OfferCatalog", "name": "%s 서비스" % BRAND, "itemListElement": [
+            {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "%s %s" % (x.get("name", ""), it), "provider": {"@type": "LocalBusiness", "name": BRAND}}} for x in svcs for it in (x.get("items") or [])[:6]]}
+    faq = [x for x in S.get("faq", []) if x.get("q") and x.get("a")]
+    lds = [ld]
+    if faq:
+        lds.append({"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": x["q"], "acceptedAnswer": {"@type": "Answer", "text": x["a"]}} for x in faq]})
+    # 주의: 후기(Review/AggregateRating) 구조화 정보는 일부러 넣지 않습니다. 구글은 사업자가 자기 사이트에 올린 후기를 별점으로 보여주지 않으며, 예시·가짜 후기를 표시하면 제재 대상입니다.
     verify = ""
     if S.get("naverVerification"):
         verify += '<meta name="naver-site-verification" content="%s">\n' % e(S["naverVerification"])
@@ -537,8 +547,8 @@ def inject_home():
         verify += '<meta name="google-site-verification" content="%s">\n' % e(S["googleVerification"])
     headseo = ('<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">\n<link rel="apple-touch-icon" href="images/favicon.png">\n<link rel="manifest" href="manifest.webmanifest">\n' + csp_meta() + '<meta name="theme-color" content="#12408f">\n<link rel="canonical" href="%s/">\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="%s">\n<meta property="og:title" content="%s">\n'
                '<meta property="og:description" content="%s">\n<meta property="og:url" content="%s/">\n<meta property="og:image" content="%s/%s">\n%s'
-               '<link rel="alternate" type="application/rss+xml" title="%s 현장일지" href="posts/rss.xml">\n<script type="application/ld+json">%s</script>\n') % (
-        SITE_URL, e(BRAND), e(title), e(desc), SITE_URL, SITE_URL, e(S.get("ogImage", "")), verify, e(BRAND), json.dumps(ld, ensure_ascii=False))
+               '<link rel="alternate" type="application/rss+xml" title="%s 현장일지" href="posts/rss.xml">\n%s') % (
+        SITE_URL, e(BRAND), e(title), e(desc), SITE_URL, SITE_URL, e(S.get("ogImage", "")), verify, e(BRAND), "".join('<script type="application/ld+json">%s</script>\n' % json.dumps(x, ensure_ascii=False) for x in lds))
     h = re.sub(r"<!--HEAD-SEO-START-->.*?<!--HEAD-SEO-END-->", lambda m: "<!--HEAD-SEO-START-->\n" + headseo + "<!--HEAD-SEO-END-->", h, flags=re.S)
     lis = ""
     for key, sec_title, d, items in SECTIONS:
@@ -568,7 +578,11 @@ def build_gallery():
             e(g.get("tag", "")), ('<img loading="lazy" src="%s" alt="%s">' % (e(img_src(g["image"], depth)), e(g.get("title", "")))) if g.get("image") else "사진 자리",
             e(g.get("tag", "")), e(g.get("title", "")), e(g.get("area", "")), e(g.get("text", ""))) for g in items)
     desc = "홈로취케어·헬로하수구 현장갤러리. 방역과 하수구·배관 시공 현장 기록을 사진으로 확인하세요."
-    page = head("현장갤러리 | %s" % BRAND, desc, "gallery/", depth) + "<body>\n" + top + """
+    abs_img = lambda u: u if str(u).startswith("http") else "%s/%s" % (SITE_URL, u)
+    gld = {"@context": "https://schema.org", "@type": "ImageGallery", "name": "%s 현장갤러리" % BRAND, "url": "%s/gallery/" % SITE_URL, "description": desc,
+           "image": [{"@type": "ImageObject", "contentUrl": abs_img(g["image"]), "name": g.get("title", ""), "caption": g.get("text", ""), "creditText": BRAND,
+                      "creator": {"@type": "Organization", "name": BRAND}} for g in items if g.get("image")]}
+    page = head("현장갤러리 | %s" % BRAND, desc, "gallery/", depth, jsonld=gld) + "<body>\n" + top + """
 <main><div class="wrap">%s<h1 style="margin:10px 0 6px">현장갤러리</h1><p class="sub">방역과 하수구·배관 현장 기록입니다. 사진을 누르면 크게 볼 수 있습니다.</p>%s
 <div class="grid ggrid">%s</div>
 <div class="pcta"><p><b>우리 집도 같은 증상이신가요?</b></p><p>증상과 지역을 말씀해 주시면 바로 안내해 드립니다.</p><a class="btn" href="tel:%s">📞 전화상담 %s</a> <a class="btn ghost" href="../posts/">현장일지 보기</a></div></div></main>

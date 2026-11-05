@@ -73,6 +73,17 @@
 
   // ---- 현장갤러리 페이지(gallery/) 다시 그리기 ----
   function esc(v) { return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function updateGalleryLd(list) {            // 관리자가 바꾼 갤러리에 맞춰 검색용 구조화 정보(ImageGallery)도 함께 갱신
+    var el = document.querySelector('script[type="application/ld+json"]'); if (!el) return;
+    var d; try { d = JSON.parse(el.textContent); } catch (e) { return; }
+    if (d["@type"] !== "ImageGallery") return;
+    var can = document.querySelector('link[rel="canonical"]'), origin = can ? new URL(can.href).origin : "";
+    d.image = list.filter(function (g) { return g.image; }).map(function (g) {
+      var u = /^https?:/.test(g.image) ? g.image : origin + "/" + g.image.replace(/^\//, "");
+      return { "@type": "ImageObject", contentUrl: u, name: g.title || "", caption: g.text || "", creditText: (d.name || "").replace(" 현장갤러리", ""), creator: { "@type": "Organization", name: (d.name || "").replace(" 현장갤러리", "") } };
+    });
+    el.textContent = JSON.stringify(d);
+  }
   function paintGallery(list) {
     var grid = document.querySelector(".ggrid");
     if (!grid || !Array.isArray(list)) return;
@@ -81,6 +92,7 @@
     grid.innerHTML = list.length ? list.map(function (g) {
       return '<div class="card gcard" data-t="' + esc(g.tag) + '"><div class="shot">' + (g.image ? '<img loading="lazy" src="' + esc(src(g.image)) + '" alt="' + esc(g.title) + '">' : "사진 자리") + '</div><span class="tag">' + esc(g.tag) + '</span><h2 class="gt">' + esc(g.title) + '</h2><p class="meta">' + esc(g.area) + "</p><p>" + esc(g.text) + "</p></div>";
     }).join("") : '<p class="muted">등록된 사례가 없습니다.</p>';
+    updateGalleryLd(list);
     var tags = [];
     list.forEach(function (g) { if (g.tag && tags.indexOf(g.tag) < 0) tags.push(g.tag); });
     var chips = document.querySelector(".gfilter");
@@ -182,7 +194,16 @@
     }).catch(function () {});
   }
 
-  function paint(d) { if (!d) return; banner(d.banner); if (has(d.gallery)) paintGallery(cleanG(d.gallery)); theme(d.theme || (window.SITE && window.SITE.theme)); layout(d.layout); if (window.HRC_SOCIAL) window.HRC_SOCIAL.paint(d.social || (window.SITE && window.SITE.social)); }
+  function updateFaqLd(faq) {                 // 관리자가 바꾼 자주 묻는 질문에 맞춰 FAQ 구조화 정보도 갱신
+    if (!Array.isArray(faq) || !faq.length) return;
+    [].forEach.call(document.querySelectorAll('script[type="application/ld+json"]'), function (el) {
+      var d; try { d = JSON.parse(el.textContent); } catch (e) { return; }
+      if (d["@type"] !== "FAQPage") return;
+      d.mainEntity = faq.filter(function (x) { return x.q && x.a; }).map(function (x) { return { "@type": "Question", name: x.q, acceptedAnswer: { "@type": "Answer", text: x.a } }; });
+      el.textContent = JSON.stringify(d);
+    });
+  }
+  function paint(d) { if (!d) return; banner(d.banner); if (has(d.gallery)) paintGallery(cleanG(d.gallery)); theme(d.theme || (window.SITE && window.SITE.theme)); layout(d.layout); updateFaqLd(d.faq); if (window.HRC_SOCIAL) window.HRC_SOCIAL.paint(d.social || (window.SITE && window.SITE.social)); }
   function demoBar() {
     if (!DEMO) return;
     var el = document.createElement("div");
