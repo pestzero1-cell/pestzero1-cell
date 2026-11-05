@@ -121,6 +121,7 @@ window.SITE = {
     tiles: [
       { label: "싱크대 막힘", image: "images/ti-sink.webp" },
       { label: "화장실 막힘", image: "images/ti-bath.webp" },
+      { label: "베란다 막힘", image: "images/ti-veranda.webp" },
       { label: "세탁실 막힘", image: "images/ti-laundry.webp" },
       { label: "양변기 막힘", image: "images/ti-toilet.webp" },
       { label: "소변기 막힘", image: "images/ti-urinal.webp" },

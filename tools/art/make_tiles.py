@@ -51,7 +51,13 @@ bath = wrap("#e6f0ff", "#c3d8ff", f'''
 {''.join(f'<rect x="{352+i*24}" y="{360}" width="10" height="130" rx="5" fill="#8fa6cc"/>' for i in range(5))}<circle cx="400" cy="425" r="24" fill="#8fa6cc" opacity=".0"/>
 <g filter="url(#sd)"><ellipse cx="400" cy="130" rx="92" ry="26" fill="#8fa6cc"/><rect x="392" y="70" width="16" height="60" rx="8" fill="#6f87b3"/></g>
 {drop(360,200,.8)}{drop(440,230,.8)}{drop(400,282,.8)}{ok(620,150,44)}{spark(170,150,1.3)}{spark(660,520,1)}''')
-items = {"ti-sink": sink, "ti-bath": bath, "ti-laundry": laundry, "ti-toilet": toilet, "ti-urinal": urinal, "ti-thaw": thaw, "ti-pipe": pipe}
+veranda = wrap("#e9f6ff", "#c4def9", f'''
+<g filter="url(#sd)"><rect x="140" y="110" width="520" height="300" rx="26" fill="#fff"/><rect x="170" y="140" width="460" height="240" rx="14" fill="#cfe6ff"/><rect x="396" y="140" width="8" height="240" fill="#fff"/><rect x="170" y="255" width="460" height="8" fill="#fff"/>
+<rect x="140" y="410" width="520" height="40" rx="12" fill="#8fa6cc"/>
+{''.join(f'<rect x="{170+i*66}" y="450" width="14" height="110" rx="6" fill="#8fa6cc"/>' for i in range(8))}<rect x="140" y="552" width="520" height="30" rx="12" fill="#6f87b3"/></g>
+<ellipse cx="400" cy="590" rx="96" ry="16" fill="#9fb4d4"/>{''.join(f'<rect x="{352+i*24}" y="582" width="10" height="16" rx="4" fill="#d4e4fb"/>' for i in range(5))}
+<g filter="url(#sd)"><circle cx="570" cy="215" r="30" fill="#ffd36b"/></g>{drop(250,500,.9)}{drop(560,505,.9)}{ok(640,100,44)}{spark(110,70,1.2)}{spark(690,440,1)}''')
+items = {"ti-sink": sink, "ti-bath": bath, "ti-laundry": laundry, "ti-toilet": toilet, "ti-urinal": urinal, "ti-thaw": thaw, "ti-pipe": pipe, "ti-veranda": veranda}
 for n, s in items.items(): (HERE / (n + ".svg")).write_text(s, encoding="utf-8")
 js = """const {chromium}=require('playwright');(async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});const p=await b.newPage({viewport:{width:800,height:700}});
 for(const n of %s){await p.goto('file://%s/'+n+'.svg');await p.screenshot({path:'%s/'+n+'.jpg',type:'jpeg',quality:86});}await b.close()})()""" % (list(items), HERE, OUT)
