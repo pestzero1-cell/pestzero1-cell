@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <!--CSP-->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-JqRwPeR7aOfbKQU/iHOHgOD4yCAsX5h4UeMqjnHvivc='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self'; manifest-src 'self'; frame-src https://www.youtube-nocookie.com">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-4PZX6adDMgNiNj3+swqEcLUy5Px2WSXY7aS6qmDCco8='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self'; manifest-src 'self'; frame-src https://www.youtube-nocookie.com">
 <meta name="referrer" content="no-referrer">
 <!--/CSP-->
 <title>관리자 | 홈로취케어</title>
@@ -96,7 +96,7 @@ function showLogin(msg){$("#app").hidden=true;$("#login").hidden=false;$("#noapi
 function logoutUI(msg){token=null;try{sessionStorage.removeItem("hrc_admin")}catch(e){}state.loaded=false;showLogin(msg)}
 $("#lf").addEventListener("submit",function(ev){ev.preventDefault();if(!API)return;var b=ev.target.querySelector("button");b.disabled=true;
   call("login",{password:$("#pw").value,code:$("#code").value}).then(function(j){b.disabled=false;
-    if(j.ok){token=j.token;try{sessionStorage.setItem("hrc_admin",token)}catch(e){}start()}
+    if(j.ok){token=j.token;try{sessionStorage.setItem("hrc_admin",token);localStorage.setItem("hrc_nostat","1")}catch(e){}start()}
     else showLogin(j.error==="locked"?"비밀번호를 여러 번 틀려 10분간 잠겼습니다.":j.error==="no_password"?"서버에 관리자 비밀번호(ADMIN_PASSWORD)가 설정되지 않았습니다.":"비밀번호 또는 인증 코드가 맞지 않습니다.")}).catch(function(){b.disabled=false;showLogin("서버와 연결하지 못했습니다.")})});
 $("#logout").addEventListener("click",function(){call("logout").catch(function(){});logoutUI("")});
 
@@ -122,9 +122,17 @@ function fmt(iso){var d=new Date(iso);return isNaN(d)?iso:d.getFullYear()+"."+("
 function vInq(v){
   var cnt={};STATUS.forEach(function(s){cnt[s]=state.inq.filter(function(x){return x.status===s}).length});
   var list=state.inq.filter(function(x){return(state.filter==="전체"||x.status===state.filter)&&(!state.q||(x.name+x.phone+x.msg+x.svc+x.memo).toLowerCase().indexOf(state.q.toLowerCase())>=0)});
-  v.innerHTML='<div class="card"><div class="row c2"><div><label>검색<input id="q" value="'+esc(state.q)+'" placeholder="이름·연락처·내용"></label></div><div style="display:flex;gap:8px;align-items:end"><button class="btn ghost" id="reload" type="button">새로고침</button><button class="btn ghost" id="csv" type="button">엑셀(CSV) 받기</button></div></div>'+
+  v.innerHTML='<div class="card" id="st"><b>최근 연락 버튼 클릭</b> <span class="muted">(전화·카카오톡·문자 버튼을 누른 횟수 · 개인정보 없음)</span><div id="stb" class="muted" style="margin-top:8px">불러오는 중…</div></div>'+'<div class="card"><div class="row c2"><div><label>검색<input id="q" value="'+esc(state.q)+'" placeholder="이름·연락처·내용"></label></div><div style="display:flex;gap:8px;align-items:end"><button class="btn ghost" id="reload" type="button">새로고침</button><button class="btn ghost" id="csv" type="button">엑셀(CSV) 받기</button></div></div>'+
     '<div class="chips">'+["전체"].concat(STATUS).map(function(s){return '<button type="button" data-f="'+s+'" class="'+(state.filter===s?"on":"")+'">'+s+(s==="전체"?" "+state.inq.length:" "+cnt[s])+'</button>'}).join("")+'</div></div>'+
     (list.length?list.map(inqCard).join(""):'<div class="card muted">표시할 문의가 없습니다.</div>');
+  call("stats").then(function(j){var el=$("#stb");if(!el)return;if(!j.ok){el.textContent="통계를 불러오지 못했습니다.";return}
+    var ty=Object.keys(j.types),d7=j.days.slice(0,7),sum=function(arr,t){return arr.reduce(function(s,x){return s+(x[t]||0)},0)};
+    var tot=sum(j.days,ty[0])+sum(j.days,ty[1])+sum(j.days,ty[2]);
+    if(!tot){el.textContent="아직 기록이 없습니다. 홈페이지에서 전화·카카오톡 버튼을 누르면 여기에 숫자가 쌓입니다. (이 기기는 로그인 중이라 세지 않습니다)";return}
+    el.innerHTML='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.92rem"><tr><th style="text-align:left;padding:4px 8px"></th>'+ty.map(function(t){return '<th style="padding:4px 8px">'+esc(j.types[t])+'</th>'}).join("")+'</tr>'+
+      '<tr><td style="padding:4px 8px"><b>오늘</b></td>'+ty.map(function(t){return '<td style="text-align:center;padding:4px 8px">'+j.days[0][t]+'</td>'}).join("")+'</tr>'+
+      '<tr><td style="padding:4px 8px"><b>최근 7일</b></td>'+ty.map(function(t){return '<td style="text-align:center;padding:4px 8px">'+sum(d7,t)+'</td>'}).join("")+'</tr>'+
+      '<tr><td style="padding:4px 8px"><b>최근 30일</b></td>'+ty.map(function(t){return '<td style="text-align:center;padding:4px 8px">'+sum(j.days,t)+'</td>'}).join("")+'</tr></table></div>'}).catch(function(e){if(e.message!=="auth"&&$("#stb"))$("#stb").textContent="통계를 불러오지 못했습니다."});
   $("#q").addEventListener("input",function(e){state.q=e.target.value;var pos=e.target.selectionStart;vInq(v);var q=$("#q");q.focus();q.setSelectionRange(pos,pos)});
   $("#reload").onclick=function(){call("inq_list").then(function(j){state.inq=j.items||[];render();flash("새로 불러왔습니다.")}).catch(function(e){if(e.message!=="auth")fail()})};
   $("#csv").onclick=function(){var rows=[["접수시각","종류","서비스","성함","연락처","내용","상태","메모"]].concat(list.map(function(x){return[fmt(x.at),x.type,x.svc,x.name,x.phone,x.msg,x.status,x.memo]}));

@@ -29,7 +29,7 @@
   function cacheLoad() { try { return JSON.parse(sessionStorage.getItem(cacheKey) || "{}"); } catch (e) { return {}; } }
   var services = {
     SpreadsheetApp: { getActive: function () { return { getSheetByName: function (n) { return db.sheets[n] ? sheetObj(n) : null; }, insertSheet: function (n) { db.sheets[n] = []; save(); return sheetObj(n); } }; } },
-    PropertiesService: { getScriptProperties: function () { return { getProperty: function (k) { var v = db.props[k]; return v == null ? null : v; }, setProperty: function (k, v) { db.props[k] = v; save(); }, deleteProperty: function (k) { delete db.props[k]; save(); } }; } },
+    PropertiesService: { getScriptProperties: function () { return { getProperty: function (k) { var v = db.props[k]; return v == null ? null : v; }, setProperty: function (k, v) { db.props[k] = v; save(); }, deleteProperty: function (k) { delete db.props[k]; save(); }, getProperties: function () { var o = {}; for (var k in db.props) o[k] = db.props[k]; return o; } }; } },
     Logger: { log: function () {} },
     UrlFetchApp: { fetch: function () { return { getResponseCode: function () { return 200; }, getContentText: function () { return "{}"; } }; } },
     CacheService: { getScriptCache: function () { return {

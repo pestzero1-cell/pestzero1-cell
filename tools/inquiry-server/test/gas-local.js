@@ -25,7 +25,7 @@ const ctx = {
   Logger: { log: (m) => console.log("[Logger]", m) },
   console, Date, JSON, Math, Number, String, Array, Error, Object,
   SpreadsheetApp: { getActive: () => ({ getSheetByName: (n) => sheets[n] || null, insertSheet: (n) => (sheets[n] = mkSheet(n)) }) },
-  PropertiesService: { getScriptProperties: () => ({ getProperty: (k) => props[k] ?? null, setProperty: (k, v) => { props[k] = v; }, deleteProperty: (k) => { delete props[k]; } }) },
+  PropertiesService: { getScriptProperties: () => ({ getProperty: (k) => props[k] ?? null, setProperty: (k, v) => { props[k] = v; }, deleteProperty: (k) => { delete props[k]; }, getProperties: () => ({ ...props }) }) },
   CacheService: { getScriptCache: () => ({ get: (k) => (cacheData[k] && cacheData[k].exp > Date.now() ? cacheData[k].v : null), put: (k, v, s) => { cacheData[k] = { v, exp: Date.now() + s * 1000 }; }, remove: (k) => { delete cacheData[k]; } }) },
   LockService: { getScriptLock: () => ({ waitLock() {}, releaseLock() {} }) },
   Utilities: { DigestAlgorithm: { SHA_256: "sha256" }, Charset: { UTF_8: "utf8" },

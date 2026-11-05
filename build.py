@@ -212,7 +212,7 @@ def head(title, desc, path, depth, og_image=None, extra="", jsonld=None):
 
 def header_footer(depth, current_key=None):
     logo = ('<img class="logo-img" src="%s%s" alt="%s — %s">' % (rel(depth), e(S["logo"]), e(BRAND), e(S.get("tagline", "")))) if S.get("logo") else '<span class="mark">H</span><span><b>%s</b></span>' % e(BRAND)
-    top = ('<header><div class="wrap top"><a class="logo" href="%sindex.html" aria-label="%s 홈">%s</a><a class="tel" href="tel:%s">☎ %s</a></div>'
+    top = ('<a class="skip" href="#main">본문 바로가기</a><header><div class="wrap top"><a class="logo" href="%sindex.html" aria-label="%s 홈">%s</a><a class="tel" href="tel:%s">☎ %s</a></div>'
            '<nav class="bar" aria-label="주 메뉴"><div class="wrap">%s</div></nav></header>') % (
         rel(depth), e(BRAND), logo, e(DIAL), e(S["phone"]), nav_html(depth, current_key))
     c = S.get("company") or {}
@@ -236,7 +236,7 @@ def bot_scripts(depth):
     zoom = '<script src="%szoom.js" defer></script><script src="%spwa.js" defer></script>' % (r, r)
     if not (S.get("bot") or {}).get("enabled", True) or not S.get("bot"):
         return zoom
-    return zoom + '<script>window.SITE_BASE="%s";</script><script src="%sassets/bot-data.js"></script><script src="%schatbot.js" defer></script><script src="%scallbar.js" defer></script><script src="%soverlay.js" defer></script><script src="%ssocial.js" defer></script>' % (r, r, r, r, r, r)
+    return zoom + '<script>window.SITE_BASE="%s";</script><script src="%sassets/bot-data.js"></script><script src="%schatbot.js" defer></script><script src="%scallbar.js" defer></script><script src="%sstats.js" defer></script><script src="%soverlay.js" defer></script><script src="%ssocial.js" defer></script>' % (r, r, r, r, r, r, r)
 
 
 def crumbs(items, depth):
@@ -264,7 +264,7 @@ def build_section_page(key, sec_title, d, items, idx):
         {"@type": "ListItem", "position": 2, "name": sec_title, "item": "%s/%s/%s/" % (SITE_URL, d, items[0]["slug"])},
         {"@type": "ListItem", "position": 3, "name": label, "item": "%s/%s" % (SITE_URL, path)}]}
     page = head(title, desc, path, depth, jsonld=ld) + "<body>\n" + top + """
-<main>
+<main id="main">
 <div class="wrap">%s</div>
 <div class="wrap about" style="padding-block:24px 56px">
 <aside class="about-side"><p class="h2like">%s</p><nav class="ptabs side" aria-label="%s 메뉴">%s</nav></aside>
@@ -384,7 +384,7 @@ def build_post(i, p):
     related = ('<aside class="prel"><b>함께 보면 좋은 글</b><ul>%s</ul></aside>' % "".join('<li><a href="../%s/">%s</a></li>' % (e(x["slug"]), e(x["title"])) for x in rel_posts)) if rel_posts else ""
     sample = '<p class="sampletag">예시 글입니다 — posts/%s.md 를 실제 내용으로 바꿔 주세요</p>' % e(p["slug"]) if p["sample"] else ""
     page = head("%s | 현장일지 | %s" % (p["title"], BRAND), desc, path, depth, og_image=p["image"] or None, jsonld=[ld, crumb_ld]) + "<body>\n" + top + """
-<main><div class="wrap">%s</div>
+<main id="main"><div class="wrap">%s</div>
 <article class="wrap post"><h1>%s</h1>%s<p class="pmeta"><time datetime="%s">%s</time> <span>읽는 시간 약 %d분</span> %s</p>
 %s<div class="pbody">%s</div>
 <aside class="pcta"><b>%s 상담</b><p>증상과 지역을 알려 주시면 빠르게 안내해 드립니다.</p><a class="btn" href="tel:%s">☎ %s</a> %s%s</aside>
@@ -411,7 +411,7 @@ def build_support():
     top, foot = header_footer(depth, "support")
     desc = "홈로취케어 고객센터: 공지사항, 1:1문의 및 이용후기, 온라인문의."
     page = head("고객센터 | %s" % BRAND, desc, "support/", depth, extra='<meta name="robots" content="noindex">\n') + "<body>\n" + top + """
-<main><div class="wrap">%s<h1 style="margin:10px 0 0">고객센터</h1></div>
+<main id="main"><div class="wrap">%s<h1 style="margin:10px 0 0">고객센터</h1></div>
 <div id="board-root"></div><noscript><div class="wrap"><p>자바스크립트를 켜면 게시판을 볼 수 있습니다. 문의는 전화 %s 로 연락 주세요.</p></div></noscript></main>
 %s
 <script src="../content.js"></script><script src="../inquiry.js"></script><script src="../overlay.js"></script><script src="../board-server.js"></script><script src="../board.js"></script>
@@ -435,7 +435,7 @@ def build_posts_index():
     desc = "홈로취케어·헬로하수구 현장일지. 방역, 하수구 막힘, 배관 현장에서 직접 겪은 사례와 대처법을 기록합니다."
     ld = {"@context": "https://schema.org", "@type": "Blog", "name": "%s 현장일지" % BRAND, "url": "%s/posts/" % SITE_URL}
     page = head("현장일지 | %s" % BRAND, desc, "posts/", depth, jsonld=ld) + "<body>\n" + top + """
-<main><div class="wrap">%s<h1 style="margin:10px 0 6px">현장일지</h1><p class="sub">현장에서 직접 해결한 사례와 방역·배관 정보를 기록합니다.</p>
+<main id="main"><div class="wrap">%s<h1 style="margin:10px 0 6px">현장일지</h1><p class="sub">현장에서 직접 해결한 사례와 방역·배관 정보를 기록합니다.</p>
 <div class="pgrid2">%s</div></div></main>
 %s
 </body>
@@ -584,7 +584,7 @@ def build_gallery():
            "image": [{"@type": "ImageObject", "contentUrl": abs_img(g["image"]), "name": g.get("title", ""), "caption": g.get("text", ""), "creditText": BRAND,
                       "creator": {"@type": "Organization", "name": BRAND}} for g in items if g.get("image")]}
     page = head("현장갤러리 | %s" % BRAND, desc, "gallery/", depth, jsonld=gld) + "<body>\n" + top + """
-<main><div class="wrap">%s<h1 style="margin:10px 0 6px">현장갤러리</h1><p class="sub">방역과 하수구·배관 현장 기록입니다. 사진을 누르면 크게 볼 수 있습니다.</p>%s
+<main id="main"><div class="wrap">%s<h1 style="margin:10px 0 6px">현장갤러리</h1><p class="sub">방역과 하수구·배관 현장 기록입니다. 사진을 누르면 크게 볼 수 있습니다.</p>%s
 <div class="grid ggrid">%s</div>
 <div class="pcta"><p><b>우리 집도 같은 증상이신가요?</b></p><p>증상과 지역을 말씀해 주시면 바로 안내해 드립니다.</p><a class="btn" href="tel:%s">📞 전화상담 %s</a> <a class="btn ghost" href="../posts/">현장일지 보기</a></div></div></main>
 %s
@@ -695,6 +695,7 @@ def build_privacy():
         ("2. 수집·이용 목적", "방역·하수구 서비스 상담 및 견적 안내, 문의에 대한 답변, 서비스 일정 협의와 사후 관리, 이용후기 게시 확인."),
         ("3. 보유 및 이용 기간", ("%s까지 보관한 뒤 지체 없이 파기합니다. 접속 IP 주소는 접수일로부터 90일 뒤 삭제합니다. 다만 관계 법령에서 보존을 요구하는 경우 해당 기간 동안 보관합니다." if S.get("gatewayUrl") else "%s까지 보관한 뒤 지체 없이 파기합니다. 다만 관계 법령에서 보존을 요구하는 경우 해당 기간 동안 보관합니다.") % ret),
         ("4. 제3자 제공", "고객의 개인정보를 동의 없이 제3자에게 제공하지 않습니다."),
+        ("4-1. 이용 통계", "홈페이지의 전화·카카오톡·문자 버튼이 눌린 횟수를 날짜별 숫자로만 집계하며, 접속 기기·IP 주소·쿠키 등 개인을 알아볼 수 있는 정보는 저장하지 않습니다." if S.get("inquiryEndpoint") else "이 홈페이지는 방문자 통계 목적의 쿠키나 외부 분석 도구를 사용하지 않습니다."),
         ("5. 처리 위탁 및 국외 이전", ("문의·후기 접수 내용은 Google LLC(미국)의 Google 스프레드시트·드라이브에 저장됩니다. 이전 항목: 위 1항의 정보, 이전 시기·방법: 문의 등록 시 암호화된 통신으로 전송, 이용 목적: 접수 내용의 저장·보관, 보유 기간: 위 3항과 같음. 동의하지 않으실 수 있으며, 이 경우 전화 %s 로 문의해 주세요." % phone) if srv else "현재 문의는 고객의 휴대폰 문자 앱 또는 전화로 직접 접수되며 별도 서버에 저장하지 않습니다."),
         ("6. 파기 절차 및 방법", "보유 기간이 지난 정보는 시트에서 삭제하는 방식으로 파기합니다."),
         ("7. 정보주체의 권리", "고객은 언제든지 본인의 개인정보 열람·정정·삭제·처리정지를 요청할 수 있습니다. 전화 %s 로 요청해 주세요." % phone),

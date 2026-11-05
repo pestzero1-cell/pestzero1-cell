@@ -17,7 +17,7 @@ window.SITE = {
   siteUrl: "",                     // 예: "https://www.homeroach.com"  (끝에 / 없이)
   naverVerification: "",           // 네이버 서치어드바이저 소유확인 코드(content 값만)
   googleVerification: "",          // 구글 서치콘솔 소유확인 코드(content 값만)
-  ogImage: "images/svc-pest.jpg",  // 링크 공유 시 보이는 대표 이미지
+  ogImage: "images/og.jpg",  // 링크 공유 시 보이는 대표 이미지
 
   owner: "오창환",
   // 푸터에 표시되는 사업자 정보 (주소 등은 실제 값으로 확인해 주세요)

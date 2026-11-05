@@ -17,7 +17,7 @@ var POW_BITS = 15;                // 스팸 방지 퀴즈 난이도(접수 1건�
 var TICKET_MIN_MS = 2500, TICKET_MAX_MS = 2 * 3600 * 1000;   // 접수 표는 발급 2.5초 후~2시간 안에 한 번만 사용 가능
 var SPAM_WORDS = /카지노|바카라|토토|먹튀|도박|슬롯\s*머신|불법\s*대출|대출\s*상담|비아그라|시알리스|야동|성인\s*용품|출장\s*안마|주식\s*리딩|코인\s*리딩|리딩방|텔레그램|텔레\s*@|톡방\s*입장|casino|viagra|cialis|backlink|seo\s*service|loan\s*offer|crypto\s*invest/i;   // 광고·사기 글에 자주 나오는 단어(필요하면 추가)
 var MAX_ROWS = 20000;             // 시트가 이 이상 쌓이면 새 접수를 막습니다(폭주 방지)
-var LIMITS = { inq: [40, 600], rev: [10, 600], tk: [200, 600] };   // [최대 건수, 기준 시간(초)] — 이 시간 안에 이 건수를 넘으면 접수 거절
+var LIMITS = { inq: [40, 600], rev: [10, 600], tk: [200, 600], ev: [300, 600] };   // [최대 건수, 기준 시간(초)] — 이 시간 안에 이 건수를 넘으면 접수 거절
 
 function doGet(e) {
   var a = e && e.parameter && e.parameter.action;
@@ -43,6 +43,7 @@ function doPost(e) {
       case "inquiry": return json(addInquiry(p));
       case "review_submit": return json(addReview(p));
       case "login": return json(login(p));
+      case "evt": return json(evt(p));
     }
     if (!checkToken(p.token)) return json({ ok: false, error: "auth" });
     switch (act) {
@@ -63,6 +64,7 @@ function doPost(e) {
       case "price_reset": return json(priceReset(p));
       case "notify_status": return json(notifyStatus());
       case "notify_test": return json(notifyTest());
+      case "stats": return json(statsGet());
       case "ip_block": return json(ipBlock(p));
       case "ip_unblock": return json(ipUnblock(p));
       case "ip_list": return json(ipList());
@@ -196,6 +198,37 @@ function notifyTest() {
   var r = sendSms("[홈페이지] 문자 알림 시험입니다.", true);
   audit("알림 시험", "이메일 " + (notifyEmail() ? "발송" : "미설정") + " / 문자 " + (r.ok ? "발송" : (r.error || "실패")));
   return { ok: true, email: !!notifyEmail(), sms: r };
+}
+
+// ---------- 방문자 통계(개인정보 없음): 전화·카카오톡·문자 버튼을 누른 횟수만 날짜별로 셉니다 ----------
+// 접속 기기·IP·쿠키를 저장하지 않고, 하루·종류별 숫자 하나만 저장합니다. 외부 분석 서비스를 쓰지 않습니다.
+var EVT_TYPES = { call: "전화", kakao: "카카오톡", sms: "문자" };
+function statDay(offset) { return new Date(Date.now() + 9 * 3600 * 1000 - (offset || 0) * 86400000).toISOString().slice(0, 10); }
+function evt(p) {
+  var t = String(p.t || "");
+  if (!EVT_TYPES[t]) return { ok: false, error: "bad" };
+  if (!allow("ev")) return { ok: false, error: "busy" };
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(3000);
+    var pr = PropertiesService.getScriptProperties(), k = "ev_" + statDay(0) + "_" + t;
+    pr.setProperty(k, String(Number(pr.getProperty(k) || 0) + 1));
+  } catch (e) { return { ok: false, error: "busy" }; } finally { try { lock.releaseLock(); } catch (e2) {} }
+  return { ok: true };
+}
+function statsGet() {
+  var all = PropertiesService.getScriptProperties().getProperties(), days = [], i, t, row;
+  for (i = 0; i < 30; i++) {
+    var d = statDay(i); row = { d: d };
+    for (t in EVT_TYPES) row[t] = Number(all["ev_" + d + "_" + t] || 0);
+    days.push(row);
+  }
+  return { ok: true, types: EVT_TYPES, days: days };
+}
+function statsPurge() {   // 60일 지난 통계 삭제(트리거로 가끔 실행하거나 직접 실행)
+  var pr = PropertiesService.getScriptProperties(), all = pr.getProperties(), cut = statDay(60), n = 0;
+  for (var k in all) { var m = /^ev_(\d{4}-\d{2}-\d{2})_/.exec(k); if (m && m[1] < cut) { pr.deleteProperty(k); n++; } }
+  return n;
 }
 
 // ---------- 접속 IP 확인(게이트웨이를 쓸 때) · 차단 목록 ----------
